@@ -28,7 +28,7 @@ module ietf-ldp {
   description
     "";
 
-  revision 2015-02-24 {
+  revision 2015-02-26 {
     description
       "Initial revision.";
     reference
@@ -72,6 +72,18 @@ module ietf-ldp {
     description
       "This feature indicates that the system allows to configure
       session attributes at the per-neighbor level.";
+  }
+
+  feature policy-label-assignment-config {
+    description
+      "This feature indicates that the system allows to configure
+      policies to assign lables according to certain prefixes.";
+  }
+
+  feature policy-ordered-label-config {
+    description
+      "This feature indicates that the system allows to configure
+      ordered lable policies.";
   }
 
   feature session-protection {
@@ -322,6 +334,77 @@ module ietf-ldp {
         "Enables Nonstop Routing (NSR)";
     }    
   } // global-attributes
+
+  grouping policy-attributes {
+    description
+      "LDP policy attributes.";
+    container label-policy {
+      description
+        "Lable policy attributes.";
+      container independent {
+        description
+          "Independent lable policy attributes.";
+        container assign {
+          if-feature policy-label-assignment-config;
+          description
+            "Lable assignment policies";
+          leaf prefix-list {
+            type string;
+            description
+              "Assign lables according to certain prefixes.";
+          }
+          leaf host-routes-only {
+            type boolean;
+            description
+              "'true' to apply host routes only.";
+          }
+        }
+        container advertise {
+          description
+            "Lable advertising policies.";
+          container explicit-null {
+            presence "Present to enable explicit null.";
+            description
+              "Enables an egress router to advertise an
+              explicit null label (value 0) in place of an
+              implicit null label (value 3) to the
+              penultimate hop router.";
+            leaf prefix-list {
+              type string;
+              description
+                "Prefix list name. Applies the filters in the
+                specified prefix list to label 
+                advertisements.
+                If the prefix list is not specified, explicit
+                null label advertisement is enabled for all
+                directly connected prefixes.";
+            }
+          }
+          leaf prefix-list {
+            type string;
+            description
+              "Applies the prefix list to outgoing label
+              advertisements.";
+          }
+        }
+        container accept {
+          description
+            "Lable advertisement acceptance policies.";
+          leaf prefix-list {
+            type string;
+            description
+              "Applies the prefix list to incoming label
+              advertisements.";
+          }
+        }
+      } // independent
+      container ordered {
+        if-feature policy-ordered-label-config;
+        description
+          "Ordered lable policy attributes.";
+      } // ordered
+    } // label-policy
+  } // policy-attributes
   
   /*
    * Configuration data nodes
@@ -386,11 +469,35 @@ module ietf-ldp {
           container ipv4 {
             description 
               "IPv4 address family.";
-          }
+            leaf enable {
+              type boolean;
+              description
+                "'true' to enable IPv4 address family.";
+            }
+            uses policy-attributes;
+            leaf transport-address {
+              type inet:ipv4-address;
+              description
+                "The transport address advertised in LDP Hello
+                messages.";
+            }
+          } // ipv4
           container ipv6 {
             description 
               "IPv6 address family.";
-          }
+            leaf enable {
+              type boolean;
+              description
+                "'true' to enable IPv6 address family.";
+            }
+            uses policy-attributes;
+            leaf transport-address {
+              type inet:ipv6-address;
+              description
+                "The transport address advertised in LDP Hello
+                messages.";
+            }
+          } // ipv6
         }
 
         container discovery {
@@ -509,6 +616,7 @@ module ietf-ldp {
                     description
                       "Enable the target.";
                   }
+                  uses policy-attributes;
                 }
               } // ipv4
               container ipv6 {
@@ -531,6 +639,7 @@ module ietf-ldp {
                     description
                       "Enable the target.";
                   }
+                  uses policy-attributes;
                 }
               } // ipv6
             } // address-family

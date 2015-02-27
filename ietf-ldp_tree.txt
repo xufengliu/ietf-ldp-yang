@@ -38,7 +38,35 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
          +--rw igp-synchronization-delay?   uint16
          +--rw address-family
          |  +--rw ipv4
+         |  |  +--rw enable?              boolean
+         |  |  +--rw label-policy
+         |  |  |  +--rw independent
+         |  |  |  |  +--rw assign {policy-label-assignment-config}?
+         |  |  |  |  |  +--rw prefix-list?        string
+         |  |  |  |  |  +--rw host-routes-only?   boolean
+         |  |  |  |  +--rw advertise
+         |  |  |  |  |  +--rw explicit-null!
+         |  |  |  |  |  |  +--rw prefix-list?   string
+         |  |  |  |  |  +--rw prefix-list?     string
+         |  |  |  |  +--rw accept
+         |  |  |  |     +--rw prefix-list?   string
+         |  |  |  +--rw ordered {policy-ordered-label-config}?
+         |  |  +--rw transport-address?   inet:ipv4-address
          |  +--rw ipv6
+         |     +--rw enable?              boolean
+         |     +--rw label-policy
+         |     |  +--rw independent
+         |     |  |  +--rw assign {policy-label-assignment-config}?
+         |     |  |  |  +--rw prefix-list?        string
+         |     |  |  |  +--rw host-routes-only?   boolean
+         |     |  |  +--rw advertise
+         |     |  |  |  +--rw explicit-null!
+         |     |  |  |  |  +--rw prefix-list?   string
+         |     |  |  |  +--rw prefix-list?     string
+         |     |  |  +--rw accept
+         |     |  |     +--rw prefix-list?   string
+         |     |  +--rw ordered {policy-ordered-label-config}?
+         |     +--rw transport-address?   inet:ipv6-address
          +--rw discovery
          |  +--rw interfaces
          |  |  +--rw hello-holdtime?   uint16
@@ -60,12 +88,36 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
          |     +--rw address-family
          |        +--rw ipv4
          |        |  +--rw target* [address]
-         |        |     +--rw address    inet:ipv4-address
-         |        |     +--rw enable?    boolean
+         |        |     +--rw address         inet:ipv4-address
+         |        |     +--rw enable?         boolean
+         |        |     +--rw label-policy
+         |        |        +--rw independent
+         |        |        |  +--rw assign {policy-label-assignment-config}?
+         |        |        |  |  +--rw prefix-list?        string
+         |        |        |  |  +--rw host-routes-only?   boolean
+         |        |        |  +--rw advertise
+         |        |        |  |  +--rw explicit-null!
+         |        |        |  |  |  +--rw prefix-list?   string
+         |        |        |  |  +--rw prefix-list?     string
+         |        |        |  +--rw accept
+         |        |        |     +--rw prefix-list?   string
+         |        |        +--rw ordered {policy-ordered-label-config}?
          |        +--rw ipv6
          |           +--rw target* [address]
-         |              +--rw address    inet:ipv6-address
-         |              +--rw enable?    boolean
+         |              +--rw address         inet:ipv6-address
+         |              +--rw enable?         boolean
+         |              +--rw label-policy
+         |                 +--rw independent
+         |                 |  +--rw assign {policy-label-assignment-config}?
+         |                 |  |  +--rw prefix-list?        string
+         |                 |  |  +--rw host-routes-only?   boolean
+         |                 |  +--rw advertise
+         |                 |  |  +--rw explicit-null!
+         |                 |  |  |  +--rw prefix-list?   string
+         |                 |  |  +--rw prefix-list?     string
+         |                 |  +--rw accept
+         |                 |     +--rw prefix-list?   string
+         |                 +--rw ordered {policy-ordered-label-config}?
          +--rw neighbors
             +--rw md5-password?          string
             +--rw session-ka-holdtime?   uint16
