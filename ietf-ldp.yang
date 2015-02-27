@@ -28,7 +28,7 @@ module ietf-ldp {
   description
     "";
 
-  revision 2015-02-16 {
+  revision 2015-02-24 {
     description
       "Initial revision.";
     reference
@@ -38,22 +38,10 @@ module ietf-ldp {
   /*
    * Features
    */
-  feature per-interface-timer-config {
+  feature capability-config {
     description
       "This feature indicates that the system allows to configure
-      interface hello timers at the per-interface level.";
-  }
-
-  feature graceful-restart-helper-mode {
-    description
-      "This feature indicates that the system supports graceful
-      restart helper mode.";
-  }
-
-  feature session-protection {
-    description
-      "This feature indicates that the system supports session 
-      protection";
+      LDP capability.";
   }
 
   feature global-session-authentication {
@@ -62,10 +50,34 @@ module ietf-ldp {
        authentication at global level.";
   }
 
-  feature capability-config {
+  feature graceful-restart-helper-mode {
+    description
+      "This feature indicates that the system supports graceful
+      restart helper mode.";
+  }
+
+  feature per-interface-timer-config {
     description
       "This feature indicates that the system allows to configure
-      LDP capability.";
+      interface hello timers at the per-interface level.";
+  }
+
+  feature per-neighbor-graceful-restart-config {
+    description
+      "This feature indicates that the system allows to configure
+      graceful restart at the per-neighbor level.";
+  }
+
+  feature per-neighbor-session-attributes-config {
+    description
+      "This feature indicates that the system allows to configure
+      session attributes at the per-neighbor level.";
+  }
+
+  feature session-protection {
+    description
+      "This feature indicates that the system supports session 
+      protection";
   }
 
   /*
@@ -88,7 +100,7 @@ module ietf-ldp {
   grouping basic-discovery-timers {
     description
       "Basic discovery timer attributes.";
-    leaf hello-hold-time {
+    leaf hello-holdtime {
       type uint16 {
         range 15..3600;
       }
@@ -114,7 +126,7 @@ module ietf-ldp {
   grouping extended-discovery-timers {
     description
       "Extended discovery timer attributes.";
-    leaf hello-hold-time {
+    leaf hello-holdtime {
       type uint16 {
         range 15..3600;
       }
@@ -194,7 +206,7 @@ module ietf-ldp {
         description
           "";
       }
-      leaf forwarding-hold-time {
+      leaf forwarding-holdtime {
         type uint16 {
           range 30..3600;
         }
@@ -208,7 +220,7 @@ module ietf-ldp {
   grouping neighbor-attributes {
     description "Neighbor configuration attributes.";
 
-    leaf keepalive-hold-time {
+    leaf session-ka-holdtime {
       type uint16 {
         range 45..3600;
       }
@@ -219,7 +231,7 @@ module ietf-ldp {
         Inactivity is defined as not receiving LDP packets from the
         neighbor.";
     }
-    leaf keepalive-interval {
+    leaf session-ka-interval {
       type uint16 {
         range 15..1200;
       }
@@ -230,21 +242,15 @@ module ietf-ldp {
         other LDP packets transmitted over the LDP session.";
     }
 
-    leaf md5-password {
-      if-feature global-session-authentication;
-      type string {
-        length "1..80";
-      }
-      description
-        "Assigns an encrypted MD5 password to an LDP
-        neighbor";
-    }
-
     container session-protection {
       if-feature session-protection;
-      presence "Present if session protection is enabled.";
       description
         "Session protection attributes.";
+      leaf enable {
+        type boolean;
+        description
+          "'true' if session protection is enabled.";
+      }
       leaf duration {
         type union {
           type uint32;
@@ -261,22 +267,38 @@ module ietf-ldp {
     } // session-protection
   } // neighbor-attributes
 
+  grouping neighbor-authentication {
+    description
+      "Neighbor authentication attributes.";
+    leaf md5-password {      
+      type string {
+        length "1..80";
+      }
+      description
+        "Assigns an encrypted MD5 password to an LDP
+        neighbor";
+    } // md5-password
+  } // neighbor-authentication
+
   grouping neighbor-attributes-container {
     description "Container of neighbor configuration attributes.";
     container neighbors {
       description 
         "Container of neighbor configuration attributes.";
+      uses neighbor-authentication {
+        if-feature global-session-authentication;
+      }
       uses neighbor-attributes;
     }
   } // neighbor-attributes-container
 
   grouping instance-attributes {
-    description "Configuration attributes at global level.";
+    description "Configuration attributes at instance level.";
 
     uses graceful-restart-attributes;
 
-    leaf igp-synchronization {
-      type uint8 {
+    leaf igp-synchronization-delay {
+      type uint16 {
         range 3..60;
       }
       units seconds;
@@ -286,13 +308,20 @@ module ietf-ldp {
         completed so that IGP can start advertising the normal
         metric for the link.";
     }  
+  } // instance-attributes
+  
+  grouping global-attributes {
+    description "Configuration attributes at global level.";
+
+    uses instance-attributes;
+
     leaf nonstop-routing {
       type boolean;
       default false;
       description
         "Enables Nonstop Routing (NSR)";
     }    
-  } // instance-instance-attributes
+  } // global-attributes
   
   /*
    * Configuration data nodes
@@ -311,7 +340,7 @@ module ietf-ldp {
       description
         "LDP.";
 
-      uses instance-attributes;      
+      uses global-attributes;      
       uses discovery-attributes-container;
       uses neighbor-attributes-container;
 
@@ -341,6 +370,11 @@ module ietf-ldp {
             type boolean;
             description
               "Enable upstream label assignment.";
+          }
+          leaf end-of-lib {
+            type boolean;
+            description
+              "Enable end-of-lib capability.";
           }
         } // capability
 
@@ -407,6 +441,11 @@ module ietf-ldp {
                       "IP address to be advertised as the LDP
                       transport address.";
                   }
+                  leaf enable {
+                    type boolean;
+                    description
+                      "Enable IPv4 address familyon the interface.";
+                  }
                 }
                 container ipv6 {
                   must "/if:interfaces/if:interface"
@@ -431,6 +470,11 @@ module ietf-ldp {
                       "IP address to be advertised as the LDP
                       transport address.";
                   }
+                  leaf enable {
+                    type boolean;
+                    description
+                      "Enable IPv6 address familyon the interface.";
+                  }
                 } // ipv6
               } // address-family
             } // list interface
@@ -441,18 +485,55 @@ module ietf-ldp {
             description
               "A list of targeted neighbors for extended discovery.";
             uses extended-discovery-timers;
-            list targeted {
-              key "address";
-              description
-                "Targeted discovery params.";
+
+            container address-family {
+              description 
+                "Per-vrf per-af params.";
+              container ipv4 {
+                description 
+                  "IPv4 address family.";
+                list target {
+                  key "address";
+                  description
+                    "Targeted discovery params.";
               
-              leaf address {
-                type inet:ip-address;
-                description
-                  "Configures a remote LDP neighbor and enables
-                  extended LDP discovery of the specified neighbor.";
-              }
-            } // list of targeted
+                  leaf address {
+                    type inet:ipv4-address;
+                    description
+                      "Configures a remote LDP neighbor and enables
+                      extended LDP discovery of the specified
+                      neighbor.";
+                  }
+                  leaf enable {
+                    type boolean;
+                    description
+                      "Enable the target.";
+                  }
+                }
+              } // ipv4
+              container ipv6 {
+                description 
+                  "IPv6 address family.";
+                list target {
+                  key "address";
+                  description
+                    "Targeted discovery params.";
+              
+                  leaf address {
+                    type inet:ipv6-address;
+                    description
+                      "Configures a remote LDP neighbor and enables
+                      extended LDP discovery of the specified
+                      neighbor.";
+                  }
+                  leaf enable {
+                    type boolean;
+                    description
+                      "Enable the target.";
+                  }
+                }
+              } // ipv6
+            } // address-family
           } // targeted
         } // discovery
 
@@ -460,10 +541,13 @@ module ietf-ldp {
           description
             "Neighbors configuration attributes.";
           
+          uses neighbor-authentication {
+            if-feature global-session-authentication;
+          }
           uses neighbor-attributes;
 
           list neighbor {
-            key "lsr-id label-space-id";
+            key "lsr-id";
             description
               "List of neighbors.";
             
@@ -475,19 +559,16 @@ module ietf-ldp {
               description "LSR ID.";
             }
             
-            leaf label-space-id {
-              type uint16;
-              description "Label space id.";
-            }
+            uses neighbor-authentication;
             
-            leaf md5-password {
-              type string {
-                length "1..80";
-              }
-              description
-                "Assigns an encrypted MD5 password to an LDP
-                neighbor";
+            uses graceful-restart-attributes {
+              if-feature per-neighbor-graceful-restart-config;
             }
+
+            uses neighbor-attributes {
+              if-feature per-neighbor-session-attributes-config;
+            }
+
             container address-family {
               description 
                 "Per-vrf per-af params.";
