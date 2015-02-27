@@ -1,0 +1,73 @@
+module: ietf-ldp
+augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
+   +--rw ldp
+      +--rw graceful-restart
+      |  +--rw enable?                 boolean
+      |  +--rw helper-enable?          boolean {graceful-restart-helper-mode}?
+      |  +--rw reconnect-time?         uint16
+      |  +--rw recovery-time?          uint16
+      |  +--rw forwarding-hold-time?   uint16
+      +--rw igp-synchronization?   uint8
+      +--rw nonstop-routing?       boolean
+      +--rw discovery
+      |  +--rw interfaces
+      |  |  +--rw hello-hold-time?   uint16
+      |  |  +--rw hello-interval?    uint16
+      |  +--rw targeted
+      |     +--rw hello-hold-time?   uint16
+      |     +--rw hello-interval?    uint16
+      +--rw neighbors
+      |  +--rw keepalive-hold-time?   uint16
+      |  +--rw keepalive-interval?    uint16
+      |  +--rw md5-password?          string {global-session-authentication}?
+      |  +--rw session-protection! {session-protection}?
+      |     +--rw duration?   union
+      +--rw instance* [name]
+         +--rw name                   string
+         +--rw router-id?             union
+         +--rw capability {capability-config}?
+         |  +--rw upstream-lbl-assignment?   boolean
+         +--rw graceful-restart
+         |  +--rw enable?                 boolean
+         |  +--rw helper-enable?          boolean {graceful-restart-helper-mode}?
+         |  +--rw reconnect-time?         uint16
+         |  +--rw recovery-time?          uint16
+         |  +--rw forwarding-hold-time?   uint16
+         +--rw igp-synchronization?   uint8
+         +--rw nonstop-routing?       boolean
+         +--rw address-family
+         |  +--rw ipv4
+         |  +--rw ipv6
+         +--rw discovery
+         |  +--rw interfaces
+         |  |  +--rw hello-hold-time?   uint16
+         |  |  +--rw hello-interval?    uint16
+         |  |  +--rw interface* [interface]
+         |  |     +--rw interface          if:interface-ref
+         |  |     +--rw hello-hold-time?   uint16
+         |  |     +--rw hello-interval?    uint16
+         |  |     +--rw address-family
+         |  |        +--rw ipv4
+         |  |        |  +--rw transport-address?   union
+         |  |        +--rw ipv6
+         |  |           +--rw transport-address?   union
+         |  +--rw targeted
+         |     +--rw hello-hold-time?   uint16
+         |     +--rw hello-interval?    uint16
+         |     +--rw targeted* [address]
+         |        +--rw address    inet:ip-address
+         +--rw neighbors
+            +--rw keepalive-hold-time?   uint16
+            +--rw keepalive-interval?    uint16
+            +--rw md5-password?          string {global-session-authentication}?
+            +--rw session-protection! {session-protection}?
+            |  +--rw duration?   union
+            +--rw neighbor* [lsr-id label-space-id]
+               +--rw lsr-id            union
+               +--rw label-space-id    uint16
+               +--rw md5-password?     string
+               +--rw address-family
+                  +--rw ipv4
+                  +--rw ipv6
+augment /rt:routing-state/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
+   +--ro ldp

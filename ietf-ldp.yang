@@ -1,0 +1,536 @@
+module ietf-ldp {
+  namespace "urn:ietf:params:xml:ns:yang:ietf-ldp";
+  // replace with IANA namespace when assigned
+  prefix ldp;
+
+  import ietf-inet-types {
+    prefix "inet";
+  }
+  
+  import ietf-yang-types {
+    prefix "yang";
+  }
+  
+  import ietf-interfaces {
+    prefix "if";
+  }
+  
+  import ietf-ip {
+    prefix "ip";
+  }
+  
+  import ietf-routing {
+    prefix "rt";
+  }
+  
+  organization "TBD";
+  contact "TBD";
+  description
+    "";
+
+  revision 2015-02-16 {
+    description
+      "Initial revision.";
+    reference
+      "";
+  }
+
+  /*
+   * Features
+   */
+  feature per-interface-timer-config {
+    description
+      "This feature indicates that the system allows to configure
+      interface hello timers at the per-interface level.";
+  }
+
+  feature graceful-restart-helper-mode {
+    description
+      "This feature indicates that the system supports graceful
+      restart helper mode.";
+  }
+
+  feature session-protection {
+    description
+      "This feature indicates that the system supports session 
+      protection";
+  }
+
+  feature global-session-authentication {
+    description
+      "This feature indicates that the system allows to configure
+       authentication at global level.";
+  }
+
+  feature capability-config {
+    description
+      "This feature indicates that the system allows to configure
+      LDP capability.";
+  }
+
+  /*
+   * Typedefs
+   */
+
+
+  /*
+   * Identities
+   */
+
+  identity ldp {
+    base "rt:routing-protocol";
+    description "LDP";
+  }
+
+  /*
+   * Groupings
+   */
+  grouping basic-discovery-timers {
+    description
+      "Basic discovery timer attributes.";
+    leaf hello-hold-time {
+      type uint16 {
+        range 15..3600;
+      }
+      units seconds;
+      default 15;
+      description
+        "The time interval for which a LDP link Hello adjacency
+        is maintained in the absence of link Hello messages from
+        the LDP neighbor";
+    }
+    leaf hello-interval {
+      type uint16 {
+        range 5..1200;
+      }
+      units seconds;
+      default 5;
+      description
+        "The interval between consecutive LDP link Hello messages
+        used in basic LDP discovery";
+    }
+  } // basic-discovery-timers
+
+  grouping extended-discovery-timers {
+    description
+      "Extended discovery timer attributes.";
+    leaf hello-hold-time {
+      type uint16 {
+        range 15..3600;
+      }
+      units seconds;
+      default 45;
+      description
+        "The time interval for which LDP targeted Hello adjacency
+        is maintained in the absence of targeted Hello messages
+        from an LDP neighbor.";
+    }
+    leaf hello-interval {
+      type uint16 {
+        range 5..3600;
+      }
+      units seconds;
+      default 15;
+      description
+        "The interval between consecutive LDP targeted Hello
+        messages used in extended LDP discovery.";
+    }        
+  } // extended-discovery-timers
+
+  grouping discovery-attributes-container {
+    description
+      "Dicscovery configuration attributes.";
+
+    container discovery {
+      description "Neibgbor discovery attributes.";
+      
+      container interfaces {
+        description
+          "Basic discovery attributes.";
+        uses basic-discovery-timers;
+      }
+      
+      container targeted
+      {
+        description
+          "Extended discovery attributes.";
+        uses extended-discovery-timers;
+      } // targeted
+    } // discovery
+  } // discovery-attributes
+
+  grouping graceful-restart-attributes {
+    description
+      "Graceful restart configuration attributes.";
+    container graceful-restart {
+      description 
+        "Attributes for graceful restart.";      
+      leaf enable {
+        type boolean;
+        description 
+          "Enable or disable graceful restart.";
+      }
+      leaf helper-enable {
+        if-feature graceful-restart-helper-mode;
+        type boolean;
+        description 
+          "Enable or disable graceful restart helper mode.";
+      }
+      leaf reconnect-time {
+        type uint16 {
+          range 10..1800;
+        }
+        units seconds;
+        description
+          "Specifies the time interval that the remote LDP peer
+          must wait for the local LDP peer to reconnect after the
+          remote peer detects the LDP communication failure.";
+      }
+      leaf recovery-time {
+        type uint16 {
+          range 30..3600;
+        }
+        units seconds;
+        description
+          "";
+      }
+      leaf forwarding-hold-time {
+        type uint16 {
+          range 30..3600;
+        }
+        units seconds;
+        description
+          "";
+      }
+    } // graceful-restart
+  } // graceful-restart-attributes
+
+  grouping neighbor-attributes {
+    description "Neighbor configuration attributes.";
+
+    leaf keepalive-hold-time {
+      type uint16 {
+        range 45..3600;
+      }
+      units seconds;
+      description
+        "The time interval after which an inactive LDP session
+        terminates and the corresponding TCP session closes.
+        Inactivity is defined as not receiving LDP packets from the
+        neighbor.";
+    }
+    leaf keepalive-interval {
+      type uint16 {
+        range 15..1200;
+      }
+      units seconds;
+      description
+        "The interval between successive transmissions of keepalive
+        packets. Keepalive packets are only sent in the absence of
+        other LDP packets transmitted over the LDP session.";
+    }
+
+    leaf md5-password {
+      if-feature global-session-authentication;
+      type string {
+        length "1..80";
+      }
+      description
+        "Assigns an encrypted MD5 password to an LDP
+        neighbor";
+    }
+
+    container session-protection {
+      if-feature session-protection;
+      presence "Present if session protection is enabled.";
+      description
+        "Session protection attributes.";
+      leaf duration {
+        type union {
+          type uint32;
+          type enumeration {
+            enum "infinite" {
+              description "The duration is infinite.";
+            }                
+          }
+        }
+        units seconds;
+        description
+          "Session protection duration.";
+      }
+    } // session-protection
+  } // neighbor-attributes
+
+  grouping neighbor-attributes-container {
+    description "Container of neighbor configuration attributes.";
+    container neighbors {
+      description 
+        "Container of neighbor configuration attributes.";
+      uses neighbor-attributes;
+    }
+  } // neighbor-attributes-container
+
+  grouping instance-attributes {
+    description "Configuration attributes at global level.";
+
+    uses graceful-restart-attributes;
+
+    leaf igp-synchronization {
+      type uint8 {
+        range 3..60;
+      }
+      units seconds;
+      description
+        "Sets the interval that the LDP waits before notifying the
+        Interior Gateway Protocol (IGP) that label exchange is
+        completed so that IGP can start advertising the normal
+        metric for the link.";
+    }  
+    leaf nonstop-routing {
+      type boolean;
+      default false;
+      description
+        "Enables Nonstop Routing (NSR)";
+    }    
+  } // instance-instance-attributes
+  
+  /*
+   * Configuration data nodes
+   */
+
+  augment "/rt:routing/rt:routing-instance/rt:routing-protocols/"
+    + "rt:routing-protocol" {
+    when "rt:type = 'ldp:ldp'" {
+      description
+        "This augment is only valid for a protocol instance
+        of LDP.";
+    }
+    description "LDP augmentation.";
+
+    container ldp {
+      description
+        "LDP.";
+
+      uses instance-attributes;      
+      uses discovery-attributes-container;
+      uses neighbor-attributes-container;
+
+      list instance {
+        key "name";
+        description
+          "Per-vrf global params.";
+        
+        leaf name {
+          type string;
+          description
+            "VRF instance name.";
+        }
+
+        leaf router-id {
+          type union {
+            type yang:dotted-quad;
+            type uint32;
+          }
+          description "Router ID.";
+        }
+
+        container capability {
+          if-feature capability-config;
+          description "Configure capability.";
+          leaf upstream-lbl-assignment {
+            type boolean;
+            description
+              "Enable upstream label assignment.";
+          }
+        } // capability
+
+        uses instance-attributes;
+
+        container address-family {
+          description 
+            "Per-vrf per-af params.";
+          container ipv4 {
+            description 
+              "IPv4 address family.";
+          }
+          container ipv6 {
+            description 
+              "IPv6 address family.";
+          }
+        }
+
+        container discovery {
+          description
+            "Neibgbor discovery configuration.";
+
+          container interfaces {
+            description
+              "A list of interfaces for basic descovery.";
+            uses basic-discovery-timers;
+
+            list interface {
+              key "interface";
+              description
+                "List of LDP interfaces.";
+              leaf interface {
+                type if:interface-ref;
+                description
+                  "Interface.";            
+              }
+              uses basic-discovery-timers {
+                if-feature per-interface-timer-config;
+              }
+
+              container address-family {
+                description 
+                  "Per-vrf per-af params.";
+                container ipv4 {
+                  must "/if:interfaces/if:interface"
+                    + "[name = current()/../../interface]/ip:ipv4" {
+                    description
+                      "Only if IPv4 is enabled on the interface.";
+                  }
+                  description 
+                    "IPv4 address family.";
+                  leaf transport-address {
+                    type union {
+                      type enumeration {
+                        enum "use-interface-address" {
+                          description 
+                            "Use interface address as the transport
+                            address.";
+                        }
+                      }                      
+                      type inet:ipv4-address;
+                    }
+                    description
+                      "IP address to be advertised as the LDP
+                      transport address.";
+                  }
+                }
+                container ipv6 {
+                  must "/if:interfaces/if:interface"
+                    + "[name = current()/../../interface]/ip:ipv6" {
+                    description
+                      "Only if IPv6 is enabled on the interface.";
+                  }
+                  description 
+                    "IPv6 address family.";
+                  leaf transport-address {
+                    type union {
+                      type enumeration {
+                        enum "use-interface-address" {
+                          description 
+                            "Use interface address as the transport
+                            address.";
+                        }
+                      }                      
+                      type inet:ipv4-address;
+                    }
+                    description
+                      "IP address to be advertised as the LDP
+                      transport address.";
+                  }
+                } // ipv6
+              } // address-family
+            } // list interface
+          } // interfaces
+          
+          container targeted
+          {
+            description
+              "A list of targeted neighbors for extended discovery.";
+            uses extended-discovery-timers;
+            list targeted {
+              key "address";
+              description
+                "Targeted discovery params.";
+              
+              leaf address {
+                type inet:ip-address;
+                description
+                  "Configures a remote LDP neighbor and enables
+                  extended LDP discovery of the specified neighbor.";
+              }
+            } // list of targeted
+          } // targeted
+        } // discovery
+
+        container neighbors {
+          description
+            "Neighbors configuration attributes.";
+          
+          uses neighbor-attributes;
+
+          list neighbor {
+            key "lsr-id label-space-id";
+            description
+              "List of neighbors.";
+            
+            leaf lsr-id {
+              type union {
+                type yang:dotted-quad;
+                type uint32;
+              }
+              description "LSR ID.";
+            }
+            
+            leaf label-space-id {
+              type uint16;
+              description "Label space id.";
+            }
+            
+            leaf md5-password {
+              type string {
+                length "1..80";
+              }
+              description
+                "Assigns an encrypted MD5 password to an LDP
+                neighbor";
+            }
+            container address-family {
+              description 
+                "Per-vrf per-af params.";
+              container ipv4 {
+                description 
+                  "IPv4 address family.";
+              }
+              container ipv6 {
+                description 
+                  "IPv6 address family.";
+              } // ipv6
+            } // address-family
+          } // list neighbor
+        } // neighbors        
+      } // instance
+    } // container ldp
+  }
+
+  /*
+   * Operational state data nodes
+   */
+
+  augment "/rt:routing-state/rt:routing-instance/"
+    + "rt:routing-protocols/rt:routing-protocol" {
+    when "rt:type = 'ldp:ldp'"  {
+      description
+        "This augment is only valid for a protocol instance
+        of type 'ldp'.";
+    }
+    description
+      "LDP state.";
+    container ldp {
+      description "LDP";
+      
+    }
+  }
+
+  /*
+   * RPCs
+   */
+
+  /*
+   * Notifications
+   */
+
+}
