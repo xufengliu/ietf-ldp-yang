@@ -77,13 +77,13 @@ module ietf-ldp {
   feature policy-label-assignment-config {
     description
       "This feature indicates that the system allows to configure
-      policies to assign lables according to certain prefixes.";
+      policies to assign labels according to certain prefixes.";
   }
 
   feature policy-ordered-label-config {
     description
       "This feature indicates that the system allows to configure
-      ordered lable policies.";
+      ordered label policies.";
   }
 
   feature session-protection {
@@ -340,18 +340,18 @@ module ietf-ldp {
       "LDP policy attributes.";
     container label-policy {
       description
-        "Lable policy attributes.";
+        "Label policy attributes.";
       container independent {
         description
-          "Independent lable policy attributes.";
+          "Independent label policy attributes.";
         container assign {
           if-feature policy-label-assignment-config;
           description
-            "Lable assignment policies";
+            "Label assignment policies";
           leaf prefix-list {
             type string;
             description
-              "Assign lables according to certain prefixes.";
+              "Assign labels according to certain prefixes.";
           }
           leaf host-routes-only {
             type boolean;
@@ -361,7 +361,7 @@ module ietf-ldp {
         }
         container advertise {
           description
-            "Lable advertising policies.";
+            "Label advertising policies.";
           container explicit-null {
             presence "Present to enable explicit null.";
             description
@@ -389,7 +389,7 @@ module ietf-ldp {
         }
         container accept {
           description
-            "Lable advertisement acceptance policies.";
+            "Label advertisement acceptance policies.";
           leaf prefix-list {
             type string;
             description
@@ -401,11 +401,39 @@ module ietf-ldp {
       container ordered {
         if-feature policy-ordered-label-config;
         description
-          "Ordered lable policy attributes.";
+          "Ordered label policy attributes.";
       } // ordered
     } // label-policy
   } // policy-attributes
   
+  grouping neighbor-af-policy-attributes {
+    description
+      "LDP policy attributes under neighbor address-family.";
+    container label-policy {
+      description
+        "Label policy attributes.";
+      container advertise {
+	description
+	  "Label advertising policies.";
+          leaf prefix-list {
+            type string;
+            description
+              "Applies the prefix list to outgoing label
+              advertisements.";
+          }
+        }
+    }
+    container accept {
+      description
+	"Label advertisement acceptance policies.";
+      leaf prefix-list {
+	type string;
+	description
+	  "Applies the prefix list to incoming label advertisements.";
+      }// accept
+    } // label-policy
+  } // neighbor-af-policy-attributes
+
   /*
    * Configuration data nodes
    */
@@ -684,10 +712,12 @@ module ietf-ldp {
               container ipv4 {
                 description 
                   "IPv4 address family.";
+		uses neighbor-af-policy-attributes;
               }
               container ipv6 {
                 description 
                   "IPv6 address family.";
+		uses neighbor-af-policy-attributes;
               } // ipv6
             } // address-family
           } // list neighbor

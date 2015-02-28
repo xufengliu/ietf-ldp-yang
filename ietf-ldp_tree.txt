@@ -141,6 +141,16 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
                |  +--rw duration?   union
                +--rw address-family
                   +--rw ipv4
+                  |  +--rw label-policy
+                  |  |  +--rw advertise
+                  |  |     +--rw prefix-list?   string
+                  |  +--rw accept
+                  |     +--rw prefix-list?   string
                   +--rw ipv6
+                     +--rw label-policy
+                     |  +--rw advertise
+                     |     +--rw prefix-list?   string
+                     +--rw accept
+                        +--rw prefix-list?   string
 augment /rt:routing-state/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
    +--ro ldp
