@@ -28,7 +28,7 @@ module ietf-ldp {
   description
     "";
 
-  revision 2015-02-26 {
+  revision 2015-02-28 {
     description
       "Initial revision.";
     reference
@@ -72,6 +72,13 @@ module ietf-ldp {
     description
       "This feature indicates that the system allows to configure
       session attributes at the per-neighbor level.";
+  }
+
+  feature policy-extended-discovery-config {
+    description
+      "This feature indicates that the system allows to configure
+      policies to control the acceptance of extended neighbor
+      discovery hello messages.";
   }
 
   feature policy-label-assignment-config {
@@ -348,16 +355,24 @@ module ietf-ldp {
           if-feature policy-label-assignment-config;
           description
             "Label assignment policies";
-          leaf prefix-list {
-            type string;
+          choice prefix-option {
             description
-              "Assign labels according to certain prefixes.";
-          }
-          leaf host-routes-only {
-            type boolean;
-            description
-              "'true' to apply host routes only.";
-          }
+              "Use either prefix-list or host-routes-only.";
+            case prefix-list {
+              leaf prefix-list {
+                type string;
+                description
+                  "Assign labels according to certain prefixes.";
+              }
+            }
+            case host-routes-only {
+              leaf host-routes-only {
+                type boolean;
+                description
+                  "'true' to apply host routes only.";
+              }
+            }
+          } // prefix-option
         }
         container advertise {
           description
@@ -415,24 +430,65 @@ module ietf-ldp {
       container advertise {
 	description
 	  "Label advertising policies.";
+        container explicit-null {
+          presence "Present to enable explicit null.";
+          description
+            "Enables an egress router to advertise an
+            explicit null label (value 0) in place of an
+            implicit null label (value 3) to the
+            penultimate hop router.";
           leaf prefix-list {
             type string;
             description
-              "Applies the prefix list to outgoing label
-              advertisements.";
+              "Prefix list name. Applies the filters in the
+              specified prefix list to label 
+              advertisements.
+              If the prefix list is not specified, explicit
+              null label advertisement is enabled for all
+              directly connected prefixes.";
           }
         }
-    }
-    container accept {
-      description
-	"Label advertisement acceptance policies.";
-      leaf prefix-list {
-	type string;
-	description
-	  "Applies the prefix list to incoming label advertisements.";
-      }// accept
+        leaf prefix-list {
+          type string;
+            description
+              "Applies the prefix list to outgoing label
+              advertisements.";
+        }
+      }
+      container accept {
+        description
+          "Label advertisement acceptance policies.";
+        leaf prefix-list {
+          type string;
+          description
+            "Applies the prefix list to incoming label
+            advertisements.";
+        }
+      } // accept
     } // label-policy
   } // neighbor-af-policy-attributes
+
+  grouping extended-discovery-policy-attributes {
+    description
+      "LDP policy to control the acceptance of extended neighbor
+      discovery hello messages.";
+    container hello-accept {
+      if-feature policy-extended-discovery-config;
+      description
+        "Extended discovery acceptance policies.";
+      
+      leaf enable {
+        type boolean;
+        description 
+          "'true' to accept; 'false' to deny.";
+      }
+      leaf peer-list {
+        type string;
+        description
+          "The name of a peer ACL.";
+      }
+    } // hello-accept
+  } // extended-discovery-policy-attributes
 
   /*
    * Configuration data nodes
@@ -620,6 +676,7 @@ module ietf-ldp {
             description
               "A list of targeted neighbors for extended discovery.";
             uses extended-discovery-timers;
+            uses extended-discovery-policy-attributes;
 
             container address-family {
               description 
@@ -644,7 +701,6 @@ module ietf-ldp {
                     description
                       "Enable the target.";
                   }
-                  uses policy-attributes;
                 }
               } // ipv4
               container ipv6 {
@@ -667,7 +723,6 @@ module ietf-ldp {
                     description
                       "Enable the target.";
                   }
-                  uses policy-attributes;
                 }
               } // ipv6
             } // address-family
