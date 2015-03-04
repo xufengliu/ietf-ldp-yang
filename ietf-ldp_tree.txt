@@ -25,6 +25,7 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |     +--rw duration?   union
       +--rw instance* [name]
          +--rw name                         string
+         +--rw admin-down?                  boolean
          +--rw router-id?                   union
          +--rw capability {capability-config}?
          |  +--rw upstream-lbl-assignment?   boolean
@@ -54,6 +55,12 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
          |  |  |  |  +--rw accept
          |  |  |  |     +--rw prefix-list?   string
          |  |  |  +--rw ordered {policy-ordered-label-config}?
+         |  |  |     +--rw egress-lsr
+         |  |  |     |  +--rw prefix-list?   string
+         |  |  |     +--rw advertise
+         |  |  |     |  +--rw prefix-list?   string
+         |  |  |     +--rw accept
+         |  |  |        +--rw prefix-list?   string
          |  |  +--rw transport-address?   inet:ipv4-address
          |  +--rw ipv6
          |     +--rw enable?              boolean
@@ -72,6 +79,12 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
          |     |  |  +--rw accept
          |     |  |     +--rw prefix-list?   string
          |     |  +--rw ordered {policy-ordered-label-config}?
+         |     |     +--rw egress-lsr
+         |     |     |  +--rw prefix-list?   string
+         |     |     +--rw advertise
+         |     |     |  +--rw prefix-list?   string
+         |     |     +--rw accept
+         |     |        +--rw prefix-list?   string
          |     +--rw transport-address?   inet:ipv6-address
          +--rw discovery
          |  +--rw interfaces
@@ -112,6 +125,7 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
             |  +--rw duration?   union
             +--rw neighbor* [lsr-id]
                +--rw lsr-id                 union
+               +--rw admin-down?            boolean
                +--rw md5-password?          string
                +--rw graceful-restart
                |  +--rw enable?                boolean
