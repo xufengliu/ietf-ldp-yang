@@ -23,12 +23,16 @@ module ietf-ldp {
     prefix "rt";
   }
   
+  import routing-policy {
+    prefix "rpl";
+  }
+  
   organization "TBD";
   contact "TBD";
   description
     "";
 
-  revision 2015-03-03 {
+  revision 2015-03-05 {
     description
       "Initial revision.";
     reference
@@ -102,7 +106,30 @@ module ietf-ldp {
   /*
    * Typedefs
    */
+  typedef prefix-list-ref {
+    type leafref {
+      path "/rpl:routing-policy/rpl:defined-sets/rpl:prefix-set/"
+        +"rpl:prefix-set-name";
+    }
+    description
+      "A type for a reference to a prefix list.";
+  }
 
+  typedef oper-status-event-type {
+    type enumeration {
+      enum up {
+        value 1;
+        description
+          "Operational status changed to up.";
+      }
+      enum down {
+        value 2;
+        description
+          "Operational status changed to down.";
+      }
+    }
+    description "Operational status event type for notifications.";
+  }
 
   /*
    * Identities
@@ -116,6 +143,72 @@ module ietf-ldp {
   /*
    * Groupings
    */
+  grouping ldp-instance-ref {
+    description
+      "An absolute reference to an LDP instance.";
+    leaf routing-instance-ref {
+      type rt:routing-instance-ref;
+      description
+        "Reference to the routing instance.";
+    }
+
+    leaf ldp-ref {
+      type leafref {
+        path "/rt:routing/rt:routing-instance"
+          + "[rt:name = current()/../routing-instance-ref]/"
+          + "rt:routing-protocols/rt:routing-protocol/rt:name";
+      }
+      description
+        "Reference to an LDP protocal name.";
+    }
+    leaf ldp-instance-ref {
+      type leafref {
+        path "/rt:routing/rt:routing-instance"
+          + "[rt:name = current()/../routing-instance-ref]/"
+          + "rt:routing-protocols/rt:routing-protocol"
+          + "[rt:name = current()/../ldp-ref]/ldp/instance/name";
+      }
+      description
+        "Reference to an LDP instance.";
+    }
+  } // ldp-instance-ref
+
+  grouping ldp-neighbor-ref {
+    description
+      "An absolute reference to an LDP neighbor.";
+    uses ldp-instance-ref;
+    leaf neighbor-ref {
+      type leafref {
+        path "/rt:routing/rt:routing-instance"
+          + "[rt:name = current()/../routing-instance-ref]/"
+          + "rt:routing-protocols/rt:routing-protocol"
+          + "[rt:name = current()/../ldp-ref]/ldp/instance"
+          + "[name = current()/../ldp-instance-ref]/neighbors/"
+          + "neighbor/lsr-id";
+      }
+      description
+        "Reference to an LDP neighbor.";
+    }
+  } // ldp-neighbor-ref
+
+  grouping ldp-interface-ref {
+    description
+      "An absolute reference to an LDP interface.";
+    uses ldp-instance-ref;
+    leaf interface-ref {
+      type leafref {
+        path "/rt:routing/rt:routing-instance"
+          + "[rt:name = current()/../routing-instance-ref]/"
+          + "rt:routing-protocols/rt:routing-protocol"
+          + "[rt:name = current()/../ldp-ref]/ldp/instance"
+          + "[name = current()/../ldp-instance-ref]/discovery/"
+          + "interfaces/interface/interface";
+      }
+      description
+        "Reference to an LDP interface.";
+    }
+  } // ldp-interface-ref
+
   grouping basic-discovery-timers {
     description
       "Basic discovery timer attributes.";
@@ -360,7 +453,7 @@ module ietf-ldp {
               "Use either prefix-list or host-routes-only.";
             case prefix-list {
               leaf prefix-list {
-                type string;
+                type prefix-list-ref;
                 description
                   "Assign labels according to certain prefixes.";
               }
@@ -385,7 +478,7 @@ module ietf-ldp {
               implicit null label (value 3) to the
               penultimate hop router.";
             leaf prefix-list {
-              type string;
+              type prefix-list-ref;
               description
                 "Prefix list name. Applies the filters in the
                 specified prefix list to label 
@@ -396,7 +489,7 @@ module ietf-ldp {
             }
           }
           leaf prefix-list {
-            type string;
+            type prefix-list-ref;
             description
               "Applies the prefix list to outgoing label
               advertisements.";
@@ -406,7 +499,7 @@ module ietf-ldp {
           description
             "Label advertisement acceptance policies.";
           leaf prefix-list {
-            type string;
+            type prefix-list-ref;
             description
               "Applies the prefix list to incoming label
               advertisements.";
@@ -421,7 +514,7 @@ module ietf-ldp {
           description
             "Egress LSR label assignment policies";
           leaf prefix-list {
-            type string;
+            type prefix-list-ref;
             description
               "Assign labels according to certain prefixes.";
           }
@@ -430,7 +523,7 @@ module ietf-ldp {
           description
             "Label advertising policies.";
           leaf prefix-list {
-            type string;
+            type prefix-list-ref;
             description
               "Applies the prefix list to outgoing label
               advertisements.";
@@ -440,7 +533,7 @@ module ietf-ldp {
           description
             "Label advertisement acceptance policies.";
           leaf prefix-list {
-            type string;
+            type prefix-list-ref;
             description
               "Applies the prefix list to incoming label
               advertisements.";
@@ -467,7 +560,7 @@ module ietf-ldp {
             implicit null label (value 3) to the
             penultimate hop router.";
           leaf prefix-list {
-            type string;
+            type prefix-list-ref;
             description
               "Prefix list name. Applies the filters in the
               specified prefix list to label 
@@ -478,7 +571,7 @@ module ietf-ldp {
           }
         }
         leaf prefix-list {
-          type string;
+          type prefix-list-ref;
             description
               "Applies the prefix list to outgoing label
               advertisements.";
@@ -488,7 +581,7 @@ module ietf-ldp {
         description
           "Label advertisement acceptance policies.";
         leaf prefix-list {
-          type string;
+          type prefix-list-ref;
           description
             "Applies the prefix list to incoming label
             advertisements.";
@@ -850,5 +943,25 @@ module ietf-ldp {
   /*
    * Notifications
    */
+  notification ldp-neighbor-event {
+    description 
+      "Notification event for a change of LDP neighbor operational
+      status.";
+    leaf event-type {
+      type oper-status-event-type;
+      description "Event type.";
+    }
+    uses ldp-neighbor-ref;
+  }
 
+  notification ldp-adjacency-event {
+    description 
+      "Notification event for a change of LDP adjacency operational
+      status.";
+    leaf event-type {
+      type oper-status-event-type;
+      description "Event type.";
+    }
+    uses ldp-interface-ref;
+  }  
 }

@@ -45,22 +45,22 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
          |  |  |  |  +--rw assign {policy-label-assignment-config}?
          |  |  |  |  |  +--rw (prefix-option)?
          |  |  |  |  |     +--:(prefix-list)
-         |  |  |  |  |     |  +--rw prefix-list?        string
+         |  |  |  |  |     |  +--rw prefix-list?        prefix-list-ref
          |  |  |  |  |     +--:(host-routes-only)
          |  |  |  |  |        +--rw host-routes-only?   boolean
          |  |  |  |  +--rw advertise
          |  |  |  |  |  +--rw explicit-null!
-         |  |  |  |  |  |  +--rw prefix-list?   string
-         |  |  |  |  |  +--rw prefix-list?     string
+         |  |  |  |  |  |  +--rw prefix-list?   prefix-list-ref
+         |  |  |  |  |  +--rw prefix-list?     prefix-list-ref
          |  |  |  |  +--rw accept
-         |  |  |  |     +--rw prefix-list?   string
+         |  |  |  |     +--rw prefix-list?   prefix-list-ref
          |  |  |  +--rw ordered {policy-ordered-label-config}?
          |  |  |     +--rw egress-lsr
-         |  |  |     |  +--rw prefix-list?   string
+         |  |  |     |  +--rw prefix-list?   prefix-list-ref
          |  |  |     +--rw advertise
-         |  |  |     |  +--rw prefix-list?   string
+         |  |  |     |  +--rw prefix-list?   prefix-list-ref
          |  |  |     +--rw accept
-         |  |  |        +--rw prefix-list?   string
+         |  |  |        +--rw prefix-list?   prefix-list-ref
          |  |  +--rw transport-address?   inet:ipv4-address
          |  +--rw ipv6
          |     +--rw enable?              boolean
@@ -69,22 +69,22 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
          |     |  |  +--rw assign {policy-label-assignment-config}?
          |     |  |  |  +--rw (prefix-option)?
          |     |  |  |     +--:(prefix-list)
-         |     |  |  |     |  +--rw prefix-list?        string
+         |     |  |  |     |  +--rw prefix-list?        prefix-list-ref
          |     |  |  |     +--:(host-routes-only)
          |     |  |  |        +--rw host-routes-only?   boolean
          |     |  |  +--rw advertise
          |     |  |  |  +--rw explicit-null!
-         |     |  |  |  |  +--rw prefix-list?   string
-         |     |  |  |  +--rw prefix-list?     string
+         |     |  |  |  |  +--rw prefix-list?   prefix-list-ref
+         |     |  |  |  +--rw prefix-list?     prefix-list-ref
          |     |  |  +--rw accept
-         |     |  |     +--rw prefix-list?   string
+         |     |  |     +--rw prefix-list?   prefix-list-ref
          |     |  +--rw ordered {policy-ordered-label-config}?
          |     |     +--rw egress-lsr
-         |     |     |  +--rw prefix-list?   string
+         |     |     |  +--rw prefix-list?   prefix-list-ref
          |     |     +--rw advertise
-         |     |     |  +--rw prefix-list?   string
+         |     |     |  +--rw prefix-list?   prefix-list-ref
          |     |     +--rw accept
-         |     |        +--rw prefix-list?   string
+         |     |        +--rw prefix-list?   prefix-list-ref
          |     +--rw transport-address?   inet:ipv6-address
          +--rw discovery
          |  +--rw interfaces
@@ -143,17 +143,30 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
                   |  +--rw label-policy
                   |     +--rw advertise
                   |     |  +--rw explicit-null!
-                  |     |  |  +--rw prefix-list?   string
-                  |     |  +--rw prefix-list?     string
+                  |     |  |  +--rw prefix-list?   prefix-list-ref
+                  |     |  +--rw prefix-list?     prefix-list-ref
                   |     +--rw accept
-                  |        +--rw prefix-list?   string
+                  |        +--rw prefix-list?   prefix-list-ref
                   +--rw ipv6
                      +--rw label-policy
                         +--rw advertise
                         |  +--rw explicit-null!
-                        |  |  +--rw prefix-list?   string
-                        |  +--rw prefix-list?     string
+                        |  |  +--rw prefix-list?   prefix-list-ref
+                        |  +--rw prefix-list?     prefix-list-ref
                         +--rw accept
-                           +--rw prefix-list?   string
+                           +--rw prefix-list?   prefix-list-ref
 augment /rt:routing-state/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
    +--ro ldp
+notifications:
+   +---n ldp-neighbor-event     
+   |  +--ro event-type?             oper-status-event-type
+   |  +--ro routing-instance-ref?   rt:routing-instance-ref
+   |  +--ro ldp-ref?                leafref
+   |  +--ro ldp-instance-ref?       leafref
+   |  +--ro neighbor-ref?           leafref
+   +---n ldp-adjacency-event    
+      +--ro event-type?             oper-status-event-type
+      +--ro routing-instance-ref?   rt:routing-instance-ref
+      +--ro ldp-ref?                leafref
+      +--ro ldp-instance-ref?       leafref
+      +--ro interface-ref?          leafref
