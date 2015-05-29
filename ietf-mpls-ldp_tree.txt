@@ -2,6 +2,7 @@ module: ietf-mpls-ldp
 augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
    +--rw mpls-ldp
       +--rw lsr-id?                      yang:dotted-quad
+  admin-dwon
       +--rw capability
       |  +--rw end-of-lib {capability-end-of-lib-config}?
       |  |  +--rw enable?   boolean
@@ -17,54 +18,35 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |  +--rw forwarding-holdtime?   uint16
       +--rw igp-synchronization-delay?   uint16
       +--rw nonstop-routing?             boolean
-      +--rw address-family
+      +--rw address-family* [af]
+      |  +--rw af              address-family-type
+      |  +--rw enable?         boolean
+      |  +--rw label-policy
+      |  |  +--rw independent-mode
+      |  |  |  +--rw assign {policy-label-assignment-config}?
+      |  |  |  |  +--rw (prefix-option)?
+      |  |  |  |     +--:(prefix-list)
+      |  |  |  |     |  +--rw prefix-list?        prefix-list-ref
+      |  |  |  |     +--:(host-routes-only)
+      |  |  |  |        +--rw host-routes-only?   boolean
+      |  |  |  +--rw advertise
+      |  |  |  |  +--rw explicit-null!
+      |  |  |  |  |  +--rw prefix-list?   prefix-list-ref
+      |  |  |  |  +--rw prefix-list?     prefix-list-ref
+      |  |  |  +--rw accept
+      |  |  |     +--rw prefix-list?   prefix-list-ref
+      |  |  +--rw ordered-mode {policy-ordered-label-config}?
+      |  |     +--rw egress-lsr
+      |  |     |  +--rw prefix-list?   prefix-list-ref
+      |  |     +--rw advertise
+      |  |     |  +--rw prefix-list?   prefix-list-ref
+      |  |     +--rw accept
+      |  |        +--rw prefix-list?   prefix-list-ref
+             rw transport-addr
+
       |  +--rw ipv4
-      |  |  +--rw enable?              boolean
-      |  |  +--rw label-policy
-      |  |  |  +--rw independent-mode
-      |  |  |  |  +--rw assign {policy-label-assignment-config}?
-      |  |  |  |  |  +--rw (prefix-option)?
-      |  |  |  |  |     +--:(prefix-list)
-      |  |  |  |  |     |  +--rw prefix-list?        prefix-list-ref
-      |  |  |  |  |     +--:(host-routes-only)
-      |  |  |  |  |        +--rw host-routes-only?   boolean
-      |  |  |  |  +--rw advertise
-      |  |  |  |  |  +--rw explicit-null!
-      |  |  |  |  |  |  +--rw prefix-list?   prefix-list-ref
-      |  |  |  |  |  +--rw prefix-list?     prefix-list-ref
-      |  |  |  |  +--rw accept
-      |  |  |  |     +--rw prefix-list?   prefix-list-ref
-      |  |  |  +--rw ordered-mode {policy-ordered-label-config}?
-      |  |  |     +--rw egress-lsr
-      |  |  |     |  +--rw prefix-list?   prefix-list-ref
-      |  |  |     +--rw advertise
-      |  |  |     |  +--rw prefix-list?   prefix-list-ref
-      |  |  |     +--rw accept
-      |  |  |        +--rw prefix-list?   prefix-list-ref
       |  |  +--rw transport-address?   inet:ipv4-address
       |  +--rw ipv6
-      |     +--rw enable?              boolean
-      |     +--rw label-policy
-      |     |  +--rw independent-mode
-      |     |  |  +--rw assign {policy-label-assignment-config}?
-      |     |  |  |  +--rw (prefix-option)?
-      |     |  |  |     +--:(prefix-list)
-      |     |  |  |     |  +--rw prefix-list?        prefix-list-ref
-      |     |  |  |     +--:(host-routes-only)
-      |     |  |  |        +--rw host-routes-only?   boolean
-      |     |  |  +--rw advertise
-      |     |  |  |  +--rw explicit-null!
-      |     |  |  |  |  +--rw prefix-list?   prefix-list-ref
-      |     |  |  |  +--rw prefix-list?     prefix-list-ref
-      |     |  |  +--rw accept
-      |     |  |     +--rw prefix-list?   prefix-list-ref
-      |     |  +--rw ordered-mode {policy-ordered-label-config}?
-      |     |     +--rw egress-lsr
-      |     |     |  +--rw prefix-list?   prefix-list-ref
-      |     |     +--rw advertise
-      |     |     |  +--rw prefix-list?   prefix-list-ref
-      |     |     +--rw accept
-      |     |        +--rw prefix-list?   prefix-list-ref
       |     +--rw transport-address?   inet:ipv6-address
       +--rw discovery
       |  +--rw interfaces
@@ -75,13 +57,13 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |  |     +--rw hello-holdtime?              uint16
       |  |     +--rw hello-interval?              uint16
       |  |     +--rw igp-synchronization-delay?   uint16 {per-interface-timer-config}?
-      |  |     +--rw address-family
+      |  |     +--rw address-family* [af]
+      |  |        +--rw af        address-family-type
+      |  |        +--rw enable?   boolean
       |  |        +--rw ipv4
       |  |        |  +--rw transport-address?   union
-      |  |        |  +--rw enable?              boolean
       |  |        +--rw ipv6
       |  |           +--rw transport-address?   union
-      |  |           +--rw enable?              boolean
       |  +--rw targeted
       |     +--rw hello-holdtime?   uint16
       |     +--rw hello-interval?   uint16

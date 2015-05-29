@@ -32,7 +32,7 @@ module ietf-mpls-ldp {
   description
     "";
 
-  revision 2015-04-26 {
+  revision 2015-04-28 {
     description
       "Initial revision.";
     reference
@@ -130,6 +130,19 @@ module ietf-mpls-ldp {
   /*
    * Typedefs
    */
+  typedef address-family-type {
+    type enumeration {
+      enum ipv4 {
+        description "IPv4";
+      }
+      enum ipv6 {
+        description "IPv6";
+      }
+    }
+    description
+      "Address family type.";
+  }
+
   typedef peer-list-ref {
     type leafref {
       path "/rpl:routing-policy/rpl:defined-sets/rpl:neighbor-set/"
@@ -772,18 +785,30 @@ module ietf-mpls-ldp {
       
       uses global-attributes;      
 
-      container address-family {
+      list address-family {
+        key "af";
         description 
           "Per-vrf per-af params.";
+        leaf af {
+          type address-family-type;
+          description
+            "Address family type value.";
+        }
+
+        leaf enable {
+          type boolean;
+          description
+            "'true' to enable the address family.";
+        }
+        uses policy-attributes;
+
         container ipv4 {
+          when "../af = 'ipv4'" {
+            description
+              "Only for IPv4.";
+          }
           description 
             "IPv4 address family.";
-          leaf enable {
-            type boolean;
-            description
-              "'true' to enable IPv4 address family.";
-          }
-          uses policy-attributes;
           leaf transport-address {
             type inet:ipv4-address;
             description
@@ -792,14 +817,12 @@ module ietf-mpls-ldp {
           }
         } // ipv4
         container ipv6 {
+          when "../af = 'ipv6'" {
+            description
+              "Only for IPv6.";
+          }
           description 
             "IPv6 address family.";
-          leaf enable {
-            type boolean;
-            description
-              "'true' to enable IPv6 address family.";
-          }
-          uses policy-attributes;
           leaf transport-address {
             type inet:ipv6-address;
             description
@@ -843,9 +866,21 @@ module ietf-mpls-ldp {
                 advertising the normal metric for the link.";
             }
             
-            container address-family {
+            list address-family {
+              key "af";
               description 
                 "Per-vrf per-af params.";
+              leaf af {
+                type address-family-type;
+                description
+                  "Address family type value.";
+              }
+              leaf enable {
+                type boolean;
+                description
+                  "Enable the address family on the interface.";
+              }
+
               container ipv4 {
                 must "/if:interfaces/if:interface"
                   + "[name = current()/../../interface]/ip:ipv4" {
@@ -868,11 +903,6 @@ module ietf-mpls-ldp {
                   description
                     "IP address to be advertised as the LDP
                     transport address.";
-                }
-                leaf enable {
-                  type boolean;
-                  description
-                    "Enable IPv4 address familyon the interface.";
                 }
               }
               container ipv6 {
@@ -897,11 +927,6 @@ module ietf-mpls-ldp {
                   description
                     "IP address to be advertised as the LDP
                     transport address.";
-                }
-                leaf enable {
-                  type boolean;
-                  description
-                    "Enable IPv6 address familyon the interface.";
                 }
               } // ipv6
             } // address-family
