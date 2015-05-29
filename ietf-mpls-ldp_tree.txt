@@ -1,0 +1,180 @@
+module: ietf-mpls-ldp
+augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
+   +--rw mpls-ldp
+      +--rw lsr-id?                      yang:dotted-quad
+      +--rw capability
+      |  +--rw end-of-lib {capability-end-of-lib-config}?
+      |  |  +--rw enable?   boolean
+      |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec-config}?
+      |  |  +--rw enable?   boolean
+      |  +--rw upstream-label-assignment {capability-upstream-label-assignment-config}?
+      |     +--rw enable?   boolean
+      +--rw graceful-restart
+      |  +--rw enable?                boolean
+      |  +--rw helper-enable?         boolean {graceful-restart-helper-mode}?
+      |  +--rw reconnect-time?        uint16
+      |  +--rw recovery-time?         uint16
+      |  +--rw forwarding-holdtime?   uint16
+      +--rw igp-synchronization-delay?   uint16
+      +--rw nonstop-routing?             boolean
+      +--rw address-family
+      |  +--rw ipv4
+      |  |  +--rw enable?              boolean
+      |  |  +--rw label-policy
+      |  |  |  +--rw independent-mode
+      |  |  |  |  +--rw assign {policy-label-assignment-config}?
+      |  |  |  |  |  +--rw (prefix-option)?
+      |  |  |  |  |     +--:(prefix-list)
+      |  |  |  |  |     |  +--rw prefix-list?        prefix-list-ref
+      |  |  |  |  |     +--:(host-routes-only)
+      |  |  |  |  |        +--rw host-routes-only?   boolean
+      |  |  |  |  +--rw advertise
+      |  |  |  |  |  +--rw explicit-null!
+      |  |  |  |  |  |  +--rw prefix-list?   prefix-list-ref
+      |  |  |  |  |  +--rw prefix-list?     prefix-list-ref
+      |  |  |  |  +--rw accept
+      |  |  |  |     +--rw prefix-list?   prefix-list-ref
+      |  |  |  +--rw ordered-mode {policy-ordered-label-config}?
+      |  |  |     +--rw egress-lsr
+      |  |  |     |  +--rw prefix-list?   prefix-list-ref
+      |  |  |     +--rw advertise
+      |  |  |     |  +--rw prefix-list?   prefix-list-ref
+      |  |  |     +--rw accept
+      |  |  |        +--rw prefix-list?   prefix-list-ref
+      |  |  +--rw transport-address?   inet:ipv4-address
+      |  +--rw ipv6
+      |     +--rw enable?              boolean
+      |     +--rw label-policy
+      |     |  +--rw independent-mode
+      |     |  |  +--rw assign {policy-label-assignment-config}?
+      |     |  |  |  +--rw (prefix-option)?
+      |     |  |  |     +--:(prefix-list)
+      |     |  |  |     |  +--rw prefix-list?        prefix-list-ref
+      |     |  |  |     +--:(host-routes-only)
+      |     |  |  |        +--rw host-routes-only?   boolean
+      |     |  |  +--rw advertise
+      |     |  |  |  +--rw explicit-null!
+      |     |  |  |  |  +--rw prefix-list?   prefix-list-ref
+      |     |  |  |  +--rw prefix-list?     prefix-list-ref
+      |     |  |  +--rw accept
+      |     |  |     +--rw prefix-list?   prefix-list-ref
+      |     |  +--rw ordered-mode {policy-ordered-label-config}?
+      |     |     +--rw egress-lsr
+      |     |     |  +--rw prefix-list?   prefix-list-ref
+      |     |     +--rw advertise
+      |     |     |  +--rw prefix-list?   prefix-list-ref
+      |     |     +--rw accept
+      |     |        +--rw prefix-list?   prefix-list-ref
+      |     +--rw transport-address?   inet:ipv6-address
+      +--rw discovery
+      |  +--rw interfaces
+      |  |  +--rw hello-holdtime?   uint16
+      |  |  +--rw hello-interval?   uint16
+      |  |  +--rw interface* [interface]
+      |  |     +--rw interface                    if:interface-ref
+      |  |     +--rw hello-holdtime?              uint16
+      |  |     +--rw hello-interval?              uint16
+      |  |     +--rw igp-synchronization-delay?   uint16 {per-interface-timer-config}?
+      |  |     +--rw address-family
+      |  |        +--rw ipv4
+      |  |        |  +--rw transport-address?   union
+      |  |        |  +--rw enable?              boolean
+      |  |        +--rw ipv6
+      |  |           +--rw transport-address?   union
+      |  |           +--rw enable?              boolean
+      |  +--rw targeted
+      |     +--rw hello-holdtime?   uint16
+      |     +--rw hello-interval?   uint16
+      |     +--rw hello-accept {policy-extended-discovery-config}?
+      |     |  +--rw enable?      boolean
+      |     |  +--rw peer-list?   peer-list-ref
+      |     +--rw address-family
+      |        +--rw ipv4
+      |        |  +--rw target* [address]
+      |        |     +--rw address    inet:ipv4-address
+      |        |     +--rw enable?    boolean
+      |        +--rw ipv6
+      |           +--rw target* [address]
+      |              +--rw address    inet:ipv6-address
+      |              +--rw enable?    boolean
+      +--rw neighbors
+         +--rw md5-password?                   string
+         +--rw session-ka-holdtime?            uint16
+         +--rw session-ka-interval?            uint16
+         +--rw session-downstream-on-demand {session-downstream-on-demand-config}?
+         |  +--rw enable?      boolean
+         |  +--rw peer-list?   peer-list-ref
+         +--rw session-protection {session-protection}?
+         |  +--rw enable?      boolean
+         |  +--rw duration?    union
+         |  +--rw peer-list?   peer-list-ref
+         +--rw neighbor* [lsr-id]
+            +--rw lsr-id                 union
+            +--rw admin-down?            boolean
+            +--rw md5-password?          string
+            +--rw graceful-restart
+            |  +--rw enable?           boolean
+            |  +--rw reconnect-time?   uint16
+            |  +--rw recovery-time?    uint16
+            +--rw session-ka-holdtime?   uint16
+            +--rw session-ka-interval?   uint16
+            +--rw session-protection {session-protection}?
+            |  +--rw enable?     boolean
+            |  +--rw duration?   union
+            +--rw address-family
+               +--rw ipv4
+               |  +--rw label-policy
+               |     +--rw advertise
+               |     |  +--rw prefix-list?   prefix-list-ref
+               |     +--rw accept
+               |        +--rw prefix-list?   prefix-list-ref
+               +--rw ipv6
+                  +--rw label-policy
+                     +--rw advertise
+                     |  +--rw prefix-list?   prefix-list-ref
+                     +--rw accept
+                        +--rw prefix-list?   prefix-list-ref
+augment /rt:routing-state/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
+   +--ro mpls-ldp
+rpcs:
+   +---x mpls-ldp-clear-neighbor               
+   |  +--ro input     
+   |     +--ro routing-instance-ref?   rt:routing-instance-ref
+   |     +--ro ldp-protocol-name?      leafref
+   |     +--ro lsr-id?                 union
+   +---x mpls-ldp-clear-adjacency              
+   |  +--ro input     
+   |     +--ro routing-instance-ref?   rt:routing-instance-ref
+   |     +--ro ldp-protocol-name?      leafref
+   |     +--ro adjacency
+   |        +--ro (adjacency-type)?
+   |           +--:(targeted)
+   |           |  +--ro targeted!
+   |           |     +--ro target-address?   inet:ip-address
+   |           +--:(link)
+   |              +--ro link!
+   |                 +--ro next-hop-interface?   if:interface-ref
+   |                 +--ro next-hop-address?     inet:ip-address
+   +---x mpls-ldp-clear-neighbor-statistics    
+      +--ro input     
+         +--ro routing-instance-ref?   rt:routing-instance-ref
+         +--ro ldp-protocol-name?      leafref
+         +--ro lsr-id?                 union
+notifications:
+   +---n mpls-ldp-neighbor-event     
+   |  +--ro event-type?             oper-status-event-type
+   |  +--ro routing-instance-ref?   rt:routing-instance-ref
+   |  +--ro ldp-protocol-name?      leafref
+   |  +--ro neighbor-ref?           leafref
+   +---n mpls-ldp-adjacency-event    
+      +--ro event-type?             oper-status-event-type
+      +--ro routing-instance-ref?   rt:routing-instance-ref
+      +--ro ldp-protocol-name?      leafref
+      +--ro (adjacency-type)?
+         +--:(targeted)
+         |  +--ro targeted
+         |     +--ro target-address?   inet:ip-address
+         +--:(link)
+            +--ro link
+               +--ro next-hop-interface?   if:interface-ref
+               +--ro next-hop-address?     inet:ip-address
