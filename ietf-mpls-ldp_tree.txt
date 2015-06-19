@@ -2,14 +2,48 @@ module: ietf-mpls-ldp
 augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
    +--rw mpls-ldp
       +--rw lsr-id?                      yang:dotted-quad
-  admin-dwon
+      +--rw mldp {mldp}?
+      |  +--rw enable?           boolean
+      |  +--rw address-family* [af]
+      |     +--rw af                      address-family-type
+      |     +--rw multicast-only-frr {mldp-mofrr}?
+      |     |  +--rw prefix-list?   prefix-list-ref
+      |     +--rw recursive-fec
+      |     |  +--rw prefix-list?   prefix-list-ref
+      |     +--rw configured-lsps-ipv4
+      |     |  +--rw lsp* [lsp-type root-addr]
+      |     |     +--rw lsp-type       enumeration
+      |     |     +--rw root-addr      inet:ipv4-address
+      |     |     +--rw source-addr?   inet:ipv4-address
+      |     |     +--rw group-addr?    inet:ipv4-address
+      |     +--rw configured-lsps-ipv6
+      |        +--rw lsp* [lsp-type root-addr]
+      |           +--rw lsp-type       enumeration
+      |           +--rw root-addr      inet:ipv6-address
+      |           +--rw source-addr?   inet:ipv6-address
+      |           +--rw group-addr?    inet:ipv6-address
       +--rw capability
       |  +--rw end-of-lib {capability-end-of-lib-config}?
       |  |  +--rw enable?   boolean
       |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec-config}?
       |  |  +--rw enable?   boolean
       |  +--rw upstream-label-assignment {capability-upstream-label-assignment-config}?
-      |     +--rw enable?   boolean
+      |  |  +--rw enable?   boolean
+      |  +--rw mldp {mldp}?
+      |     +--rw p2mp
+      |     |  +--rw enable?   boolean
+      |     +--rw mp2mp
+      |     |  +--rw enable?   boolean
+      |     +--rw make-before-break
+      |     |  +--rw enable?             boolean
+      |     |  +--rw switchover-delay?   uint16
+      |     |  +--rw timeout?            uint16
+      |     +--rw hsmp
+      |     |  +--rw enable?   boolean
+      |     +--rw node-protection
+      |        +--rw enable?   boolean
+      |        +--rw plr?      boolean
+      |        +--rw mpt?      boolean
       +--rw graceful-restart
       |  +--rw enable?                boolean
       |  +--rw helper-enable?         boolean {graceful-restart-helper-mode}?
@@ -42,8 +76,6 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |  |     |  +--rw prefix-list?   prefix-list-ref
       |  |     +--rw accept
       |  |        +--rw prefix-list?   prefix-list-ref
-             rw transport-addr
-
       |  +--rw ipv4
       |  |  +--rw transport-address?   inet:ipv4-address
       |  +--rw ipv6
@@ -79,6 +111,14 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |           +--rw target* [address]
       |              +--rw address    inet:ipv6-address
       |              +--rw enable?    boolean
+      +--rw forwarding-nexthop {forwarding-nexthop-config}?
+      |  +--rw interfaces
+      |     +--rw interface* [interface]
+      |        +--rw interface         if:interface-ref
+      |        +--rw address-family* [af]
+      |           +--rw af              address-family-type
+      |           +--rw ldp-disable?    boolean
+      |           +--rw mldp-disable?   boolean {mldp}?
       +--rw neighbors
          +--rw md5-password?                   string
          +--rw session-ka-holdtime?            uint16
@@ -93,6 +133,12 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
          +--rw neighbor* [lsr-id]
             +--rw lsr-id                 union
             +--rw admin-down?            boolean
+            +--rw capability
+            |  +--rw mldp {mldp}?
+            |     +--rw p2mp
+            |     |  +--rw enable?   boolean
+            |     +--rw mp2mp
+            |        +--rw enable?   boolean
             +--rw md5-password?          string
             +--rw graceful-restart
             |  +--rw enable?           boolean
