@@ -32,7 +32,7 @@ module ietf-mpls-ldp {
   description
     "";
 
-  revision 2015-06-15 {
+  revision 2015-06-22 {
     description
       "Initial revision.";
     reference
@@ -271,7 +271,7 @@ module ietf-mpls-ldp {
           }
           leaf next-hop-address {
             type inet:ip-address;
-            must "../interface" {
+            must "../next-hop-interface" {
               description 
                 "Applicable when interface is specified.";
             }
@@ -1441,7 +1441,7 @@ module ietf-mpls-ldp {
               }
               leaf next-hop-address {
                 type inet:ip-address;
-                must "../interface" {
+                must "../next-hop-interface" {
                   description 
                     "Applicable when interface is specified.";
                 }
