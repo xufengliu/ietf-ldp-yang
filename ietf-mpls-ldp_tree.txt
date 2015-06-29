@@ -11,15 +11,17 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |     +--rw recursive-fec
       |     |  +--rw prefix-list?   prefix-list-ref
       |     +--rw configured-lsps-ipv4
-      |     |  +--rw lsp* [lsp-type root-addr]
+      |     |  +--rw lsp* [lsp-type root-addr lsp-id]
       |     |     +--rw lsp-type       enumeration
       |     |     +--rw root-addr      inet:ipv4-address
+      |     |     +--rw lsp-id         uint16
       |     |     +--rw source-addr?   inet:ipv4-address
       |     |     +--rw group-addr?    inet:ipv4-address
       |     +--rw configured-lsps-ipv6
-      |        +--rw lsp* [lsp-type root-addr]
+      |        +--rw lsp* [lsp-type root-addr lsp-id]
       |           +--rw lsp-type       enumeration
       |           +--rw root-addr      inet:ipv6-address
+      |           +--rw lsp-id         uint16
       |           +--rw source-addr?   inet:ipv6-address
       |           +--rw group-addr?    inet:ipv6-address
       +--rw capability
@@ -138,7 +140,17 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
             |     +--rw p2mp
             |     |  +--rw enable?   boolean
             |     +--rw mp2mp
+            |     |  +--rw enable?   boolean
+            |     +--rw make-before-break
+            |     |  +--rw enable?             boolean
+            |     |  +--rw switchover-delay?   uint16
+            |     |  +--rw timeout?            uint16
+            |     +--rw hsmp
+            |     |  +--rw enable?   boolean
+            |     +--rw node-protection
             |        +--rw enable?   boolean
+            |        +--rw plr?      boolean
+            |        +--rw mpt?      boolean
             +--rw md5-password?          string
             +--rw graceful-restart
             |  +--rw enable?           boolean

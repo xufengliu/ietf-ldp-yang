@@ -32,7 +32,7 @@ module ietf-mpls-ldp {
   description
     "";
 
-  revision 2015-06-22 {
+  revision 2015-06-28 {
     description
       "Initial revision.";
     reference
@@ -745,9 +745,9 @@ module ietf-mpls-ldp {
     } // hello-accept
   } // extended-discovery-policy-attributes
 
-  grouping p2mp-mp2mp-capabilities {
+  grouping mldp-capabilities {
     description
-      "mLDP p2mp and mp2mp capabilities.";
+      "mLDP capabilities.";
     container p2mp {
       description
         "Configure point-to-multipoint capability.";
@@ -766,7 +766,63 @@ module ietf-mpls-ldp {
           "Enable multipoint-to-multipoint.";
       }
     }
-  } // p2mp-mp2mp-capabilities
+    container make-before-break {
+      description
+        "Configure make-before-break capability.";
+      leaf enable {
+        type boolean;
+        description
+          "Enable make-before-break.";
+      }
+      leaf switchover-delay {
+        type uint16;
+        units seconds;
+        description
+          "Switchover delay in seconds.";
+      }
+      leaf timeout {
+        type uint16;
+        units seconds;
+        description
+          "Timeout in seconds.";
+      }
+    }
+    container hsmp {
+      description
+        "Configure hub-and-spoke-multipoint capability.";
+      reference
+        "RFC7140: LDP Extensions for Hub and Spoke Multipoint
+              Label Switched Path";
+      leaf enable {
+        type boolean;
+        description
+          "Enable hub-and-spoke-multipoint.";
+      }
+    }
+    container node-protection {
+      description
+        "Configure node-protection capability.";
+      reference
+        "RFC7140: LDP Extensions for Hub and Spoke Multipoint
+              Label Switched Path";
+      leaf enable {
+        type boolean;
+        description
+          "Enable node-protection.";
+      }
+      leaf plr {
+        type boolean;
+        description
+          "Point of Local Repair capable for MP LSP node
+          protection.";
+      }
+      leaf mpt {
+        type boolean;
+        description
+          "Merge Point capable for MP LSP node protection.";
+      }
+    }
+  } // mldp-capabilities
 
   /*
    * Configuration data nodes
@@ -842,7 +898,8 @@ module ietf-mpls-ldp {
             description
               "Configured IPv4 multicast LSPs.";
             list lsp {
-              key "lsp-type root-addr";
+              key "lsp-type root-addr lsp-id";
+              unique "source-addr group-addr";
               description
                 "List of configured multicast LSPs.";
               
@@ -857,12 +914,15 @@ module ietf-mpls-ldp {
                 }
                 description
                   "Multicast LSP type.";
-              }
-              
+              }              
               leaf root-addr {
                 type inet:ipv4-address;
                 description
                   "Root address.";
+              }
+              leaf lsp-id {
+                type uint16;
+                description "ID to identify the LSP.";
               }
               leaf source-addr {
                 type inet:ipv4-address;
@@ -885,7 +945,8 @@ module ietf-mpls-ldp {
             description
               "Configured IPv6 multicast LSPs.";
             list lsp {
-              key "lsp-type root-addr";
+              key "lsp-type root-addr lsp-id";
+              unique "source-addr group-addr";
               description
                 "List of configured multicast LSPs.";
               
@@ -905,6 +966,10 @@ module ietf-mpls-ldp {
                 type inet:ipv6-address;
                 description
                   "Root address.";
+              }
+              leaf lsp-id {
+                type uint16;
+                description "ID to identify the LSP.";
               }
               leaf source-addr {
                 type inet:ipv6-address;
@@ -957,64 +1022,7 @@ module ietf-mpls-ldp {
           if-feature mldp;
           description
             "Multipoint capabilities.";
-          uses p2mp-mp2mp-capabilities;
-          container make-before-break {
-            description
-              "Configure make-before-break capability.";
-            leaf enable {
-              type boolean;
-              description
-                "Enable make-before-break.";
-            }
-
-            leaf switchover-delay {
-              type uint16;
-              units seconds;
-              description
-                "Switchover delay in seconds.";
-            }
-            leaf timeout {
-              type uint16;
-              units seconds;
-              description
-                "Timeout in seconds.";
-            }
-          }
-          container hsmp {
-            description
-              "Configure hub-and-spoke-multipoint capability.";
-            reference
-              "RFC7140: LDP Extensions for Hub and Spoke Multipoint
-              Label Switched Path";
-            leaf enable {
-              type boolean;
-              description
-                "Enable hub-and-spoke-multipoint.";
-            }
-          }
-          container node-protection {
-            description
-              "Configure node-protection capability.";
-            reference
-              "RFC7140: LDP Extensions for Hub and Spoke Multipoint
-              Label Switched Path";
-            leaf enable {
-              type boolean;
-              description
-                "Enable node-protection.";
-            }
-            leaf plr {
-              type boolean;
-              description
-                "Point of Local Repair capable for MP LSP node
-                protection.";
-            }
-            leaf mpt {
-              type boolean;
-              description
-                "Merge Point capable for MP LSP node protection.";
-            }
-          }
+          uses mldp-capabilities;
         }
       } // capability
       
@@ -1323,7 +1331,7 @@ module ietf-mpls-ldp {
               if-feature mldp;
               description
                 "mLDP capabilities.";
-              uses p2mp-mp2mp-capabilities;
+              uses mldp-capabilities;
             }
           }
 
