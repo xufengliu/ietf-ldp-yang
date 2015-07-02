@@ -11,25 +11,27 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |     +--rw recursive-fec
       |     |  +--rw prefix-list?   prefix-list-ref
       |     +--rw configured-lsps-ipv4
-      |     |  +--rw lsp* [lsp-type root-addr lsp-id]
-      |     |     +--rw lsp-type       enumeration
-      |     |     +--rw root-addr      inet:ipv4-address
-      |     |     +--rw lsp-id         uint16
-      |     |     +--rw source-addr?   inet:ipv4-address
-      |     |     +--rw group-addr?    inet:ipv4-address
+      |     |  +--rw root* [lsp-type root-addr]
+      |     |     +--rw lsp-type     enumeration
+      |     |     +--rw root-addr    inet:ipv4-address
+      |     |     +--rw lsp* [lsp-id source-addr group-addr]
+      |     |        +--rw lsp-id         uint16
+      |     |        +--rw source-addr    inet:ipv4-address-no-zone
+      |     |        +--rw group-addr     inet:ipv4-address-no-zone
       |     +--rw configured-lsps-ipv6
-      |        +--rw lsp* [lsp-type root-addr lsp-id]
-      |           +--rw lsp-type       enumeration
-      |           +--rw root-addr      inet:ipv6-address
-      |           +--rw lsp-id         uint16
-      |           +--rw source-addr?   inet:ipv6-address
-      |           +--rw group-addr?    inet:ipv6-address
+      |        +--rw root* [lsp-type root-addr]
+      |           +--rw lsp-type     enumeration
+      |           +--rw root-addr    inet:ipv6-address
+      |           +--rw lsp* [lsp-id source-addr group-addr]
+      |              +--rw lsp-id         uint16
+      |              +--rw source-addr    inet:ipv6-address-no-zone
+      |              +--rw group-addr     inet:ipv6-address-no-zone
       +--rw capability
-      |  +--rw end-of-lib {capability-end-of-lib-config}?
+      |  +--rw end-of-lib {capability-end-of-lib}?
       |  |  +--rw enable?   boolean
-      |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec-config}?
+      |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec}?
       |  |  +--rw enable?   boolean
-      |  +--rw upstream-label-assignment {capability-upstream-label-assignment-config}?
+      |  +--rw upstream-label-assignment {capability-upstream-label-assignment}?
       |  |  +--rw enable?   boolean
       |  +--rw mldp {mldp}?
       |     +--rw p2mp
@@ -40,9 +42,9 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |     |  +--rw enable?             boolean
       |     |  +--rw switchover-delay?   uint16
       |     |  +--rw timeout?            uint16
-      |     +--rw hsmp
+      |     +--rw hsmp {capability-mldp-hsmp}?
       |     |  +--rw enable?   boolean
-      |     +--rw node-protection
+      |     +--rw node-protection {capability-mldp-node-protection}?
       |        +--rw enable?   boolean
       |        +--rw plr?      boolean
       |        +--rw mpt?      boolean
@@ -145,9 +147,9 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
             |     |  +--rw enable?             boolean
             |     |  +--rw switchover-delay?   uint16
             |     |  +--rw timeout?            uint16
-            |     +--rw hsmp
+            |     +--rw hsmp {capability-mldp-hsmp}?
             |     |  +--rw enable?   boolean
-            |     +--rw node-protection
+            |     +--rw node-protection {capability-mldp-node-protection}?
             |        +--rw enable?   boolean
             |        +--rw plr?      boolean
             |        +--rw mpt?      boolean

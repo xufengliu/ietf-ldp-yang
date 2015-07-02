@@ -32,7 +32,7 @@ module ietf-mpls-ldp {
   description
     "";
 
-  revision 2015-06-28 {
+  revision 2015-06-30 {
     description
       "Initial revision.";
     reference
@@ -48,19 +48,31 @@ module ietf-mpls-ldp {
       administrative down on a VRF instance and a neighbor.";
   }
 
-  feature capability-end-of-lib-config {
+  feature capability-end-of-lib {
     description
       "This feature indicates that the system allows to configure
       LDP end-of-lib capability.";
   }
 
-  feature capability-typed-wildcard-fec-config {
+  feature capability-mldp-hsmp {
+    description
+      "This feature indicates that the system allows to configure
+      mLDP hub-and-spoke-multipoint capability.";
+  }
+
+  feature capability-mldp-node-protection {
+    description
+      "This feature indicates that the system allows to configure
+      mLDP node-protection capability.";
+  }
+
+  feature capability-typed-wildcard-fec {
     description
       "This feature indicates that the system allows to configure
       LDP typed-wildcard-fec capability.";
   }
 
-  feature capability-upstream-label-assignment-config {
+  feature capability-upstream-label-assignment {
     description
       "This feature indicates that the system allows to configure
       LDP upstream label assignment capability.";
@@ -334,38 +346,6 @@ module ietf-mpls-ldp {
         messages used in extended LDP discovery.";
     }        
   } // extended-discovery-timers
-
-  grouping discovery-attributes-container {
-    description
-      "Dicscovery configuration attributes.";
-
-    container discovery {
-      description "Neibgbor discovery attributes.";
-      
-      container interfaces {
-        description
-          "Basic discovery attributes.";
-        uses basic-discovery-timers;
-      }
-      
-      container targeted
-      {
-        description
-          "Extended discovery attributes.";
-        uses extended-discovery-timers;
-        container hello-accept {
-          if-feature policy-extended-discovery-config;
-          description
-            "Extended discovery acceptance policies.";
-          leaf enable {
-            type boolean;
-            description 
-              "'true' to accept; 'false' to deny.";
-          }
-        } // hello-accept
-      } // targeted
-    } // discovery
-  } // discovery-attributes
 
   grouping graceful-restart-attributes {
     description
@@ -788,11 +768,12 @@ module ietf-mpls-ldp {
       }
     }
     container hsmp {
+      if-feature capability-mldp-hsmp;
       description
         "Configure hub-and-spoke-multipoint capability.";
       reference
         "RFC7140: LDP Extensions for Hub and Spoke Multipoint
-              Label Switched Path";
+        Label Switched Path";
       leaf enable {
         type boolean;
         description
@@ -800,11 +781,12 @@ module ietf-mpls-ldp {
       }
     }
     container node-protection {
+      if-feature capability-mldp-node-protection;
       description
         "Configure node-protection capability.";
       reference
-        "RFC7140: LDP Extensions for Hub and Spoke Multipoint
-              Label Switched Path";
+        "draft-ietf-mpls-mldp-node-protection: mLDP Node
+        Protection.";
       leaf enable {
         type boolean;
         description
@@ -897,11 +879,10 @@ module ietf-mpls-ldp {
             }
             description
               "Configured IPv4 multicast LSPs.";
-            list lsp {
-              key "lsp-type root-addr lsp-id";
-              unique "source-addr group-addr";
+            list root {
+              key "lsp-type root-addr";
               description
-                "List of configured multicast LSPs.";
+                "List of roots for configured multicast LSPs.";
               
               leaf lsp-type {
                 type enumeration {
@@ -920,21 +901,35 @@ module ietf-mpls-ldp {
                 description
                   "Root address.";
               }
-              leaf lsp-id {
-                type uint16;
-                description "ID to identify the LSP.";
-              }
-              leaf source-addr {
-                type inet:ipv4-address;
+
+              list lsp {
+                must "(lsp-id = 0 and source-addr != '0.0.0.0' and "
+                  + "group-addr != '0.0.0.0') or "
+                  + "(lsp-id != 0 and source-addr = '0.0.0.0' and "
+                  + "group-addr = '0.0.0.0')" {
+                  description
+                    "A LSP can be identified by either <lsp-id> or 
+                    <source-addr, group-addr>.";
+                }
+                key "lsp-id source-addr group-addr";
                 description
-                  "Source address.";
-              }
-              leaf group-addr {
-                type inet:ipv4-address;
-                description
-                  "Group address.";
-              }
-            } // list lsp
+                  "List of LSPs.";
+                leaf lsp-id {
+                  type uint16;
+                  description "ID to identify the LSP.";
+                }
+                leaf source-addr {
+                  type inet:ipv4-address-no-zone;
+                  description
+                    "Source address.";
+                }
+                leaf group-addr {
+                  type inet:ipv4-address-no-zone;
+                  description
+                    "Group address.";
+                }
+              } // list lsp
+            } // list root
           } // configured-lsps-ipv4
 
           container configured-lsps-ipv6 {
@@ -944,11 +939,11 @@ module ietf-mpls-ldp {
             }
             description
               "Configured IPv6 multicast LSPs.";
-            list lsp {
-              key "lsp-type root-addr lsp-id";
-              unique "source-addr group-addr";
+
+            list root {
+              key "lsp-type root-addr";
               description
-                "List of configured multicast LSPs.";
+                "List of roots for configured multicast LSPs.";
               
               leaf lsp-type {
                 type enumeration {
@@ -961,27 +956,41 @@ module ietf-mpls-ldp {
                 }
                 description
                   "Multicast LSP type.";
-              }
+              }              
               leaf root-addr {
                 type inet:ipv6-address;
                 description
                   "Root address.";
               }
-              leaf lsp-id {
-                type uint16;
-                description "ID to identify the LSP.";
-              }
-              leaf source-addr {
-                type inet:ipv6-address;
+
+              list lsp {
+                must "(lsp-id = 0 and source-addr != '::' and "
+                  + "group-addr != '::') or "
+                  + "(lsp-id != 0 and source-addr = '::' and "
+                  + "group-addr = '::')" {
+                  description
+                    "A LSP can be identified by either <lsp-id> or 
+                    <source-addr, group-addr>.";
+                }
+                key "lsp-id source-addr group-addr";
                 description
-                  "Source address.";
-              }
-              leaf group-addr {
-                type inet:ipv6-address;
-                description
-                  "Group address.";
-              }
-            } // list lsp
+                  "List of LSPs.";
+                leaf lsp-id {
+                  type uint16;
+                  description "ID to identify the LSP.";
+                }
+                leaf source-addr {
+                  type inet:ipv6-address-no-zone;
+                  description
+                    "Source address.";
+                }
+                leaf group-addr {
+                  type inet:ipv6-address-no-zone;
+                  description
+                    "Group address.";
+                }
+              } // list lsp
+            } // list root
           } // configured-lsps-ipv6
         } // list address-family
       } // mldp
@@ -989,7 +998,7 @@ module ietf-mpls-ldp {
       container capability {
         description "Configure capability.";
         container end-of-lib {
-          if-feature capability-end-of-lib-config;
+          if-feature capability-end-of-lib;
           description
             "Configure upstream label assignment capability.";
           leaf enable {
@@ -999,7 +1008,7 @@ module ietf-mpls-ldp {
           }
         }
         container typed-wildcard-fec {
-          if-feature capability-typed-wildcard-fec-config;
+          if-feature capability-typed-wildcard-fec;
           description
             "Configure typed-wildcard-fec capability.";
           leaf enable {
@@ -1009,7 +1018,7 @@ module ietf-mpls-ldp {
           }
         }
         container upstream-label-assignment {
-          if-feature capability-upstream-label-assignment-config;
+          if-feature capability-upstream-label-assignment;
           description
             "Configure upstream label assignment capability.";
           leaf enable {
