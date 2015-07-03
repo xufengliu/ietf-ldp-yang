@@ -5,27 +5,42 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       +--rw mldp {mldp}?
       |  +--rw enable?           boolean
       |  +--rw address-family* [af]
-      |     +--rw af                      address-family-type
+      |     +--rw af                    address-family-type
       |     +--rw multicast-only-frr {mldp-mofrr}?
       |     |  +--rw prefix-list?   prefix-list-ref
       |     +--rw recursive-fec
       |     |  +--rw prefix-list?   prefix-list-ref
-      |     +--rw configured-lsps-ipv4
-      |     |  +--rw root* [lsp-type root-addr]
-      |     |     +--rw lsp-type     enumeration
-      |     |     +--rw root-addr    inet:ipv4-address
-      |     |     +--rw lsp* [lsp-id source-addr group-addr]
-      |     |        +--rw lsp-id         uint16
-      |     |        +--rw source-addr    inet:ipv4-address-no-zone
-      |     |        +--rw group-addr     inet:ipv4-address-no-zone
-      |     +--rw configured-lsps-ipv6
-      |        +--rw root* [lsp-type root-addr]
-      |           +--rw lsp-type     enumeration
-      |           +--rw root-addr    inet:ipv6-address
-      |           +--rw lsp* [lsp-id source-addr group-addr]
-      |              +--rw lsp-id         uint16
-      |              +--rw source-addr    inet:ipv6-address-no-zone
-      |              +--rw group-addr     inet:ipv6-address-no-zone
+      |     +--rw configured-lsps
+      |        +--rw p2mp
+      |        |  +--rw roots-ipv4
+      |        |  |  +--rw root* [root-addr]
+      |        |  |     +--rw root-addr    inet:ipv4-address
+      |        |  |     +--rw lsp* [lsp-id source-addr group-addr]
+      |        |  |        +--rw lsp-id         uint16
+      |        |  |        +--rw source-addr    inet:ipv4-address-no-zone
+      |        |  |        +--rw group-addr     inet:ipv4-address-no-zone
+      |        |  +--rw roots-ipv6
+      |        |     +--rw root* [root-addr]
+      |        |        +--rw root-addr    inet:ipv6-address
+      |        |        +--rw lsp* [lsp-id source-addr group-addr]
+      |        |           +--rw lsp-id         uint16
+      |        |           +--rw source-addr    inet:ipv6-address-no-zone
+      |        |           +--rw group-addr     inet:ipv6-address-no-zone
+      |        +--rw mp2mp
+      |           +--rw roots-ipv4
+      |           |  +--rw root* [root-addr]
+      |           |     +--rw root-addr    inet:ipv4-address
+      |           |     +--rw lsp* [lsp-id source-addr group-addr]
+      |           |        +--rw lsp-id         uint16
+      |           |        +--rw source-addr    inet:ipv4-address-no-zone
+      |           |        +--rw group-addr     inet:ipv4-address-no-zone
+      |           +--rw roots-ipv6
+      |              +--rw root* [root-addr]
+      |                 +--rw root-addr    inet:ipv6-address
+      |                 +--rw lsp* [lsp-id source-addr group-addr]
+      |                    +--rw lsp-id         uint16
+      |                    +--rw source-addr    inet:ipv6-address-no-zone
+      |                    +--rw group-addr     inet:ipv6-address-no-zone
       +--rw capability
       |  +--rw end-of-lib {capability-end-of-lib}?
       |  |  +--rw enable?   boolean
@@ -42,12 +57,13 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |     |  +--rw enable?             boolean
       |     |  +--rw switchover-delay?   uint16
       |     |  +--rw timeout?            uint16
-      |     +--rw hsmp {capability-mldp-hsmp}?
+      |     +--rw hub-and-spoke {capability-mldp-hsmp}?
       |     |  +--rw enable?   boolean
       |     +--rw node-protection {capability-mldp-node-protection}?
-      |        +--rw enable?   boolean
-      |        +--rw plr?      boolean
-      |        +--rw mpt?      boolean
+      |        +--rw plr?           boolean
+      |        +--rw merge-point
+      |           +--rw enable?                            boolean
+      |           +--rw targeted-session-teardown-delay?   uint16
       +--rw graceful-restart
       |  +--rw enable?                boolean
       |  +--rw helper-enable?         boolean {graceful-restart-helper-mode}?
@@ -147,12 +163,13 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
             |     |  +--rw enable?             boolean
             |     |  +--rw switchover-delay?   uint16
             |     |  +--rw timeout?            uint16
-            |     +--rw hsmp {capability-mldp-hsmp}?
+            |     +--rw hub-and-spoke {capability-mldp-hsmp}?
             |     |  +--rw enable?   boolean
             |     +--rw node-protection {capability-mldp-node-protection}?
-            |        +--rw enable?   boolean
-            |        +--rw plr?      boolean
-            |        +--rw mpt?      boolean
+            |        +--rw plr?           boolean
+            |        +--rw merge-point
+            |           +--rw enable?                            boolean
+            |           +--rw targeted-session-teardown-delay?   uint16
             +--rw md5-password?          string
             +--rw graceful-restart
             |  +--rw enable?           boolean
@@ -209,14 +226,31 @@ notifications:
    |  +--ro ldp-protocol-name?      leafref
    |  +--ro neighbor-ref?           leafref
    +---n mpls-ldp-adjacency-event    
+   |  +--ro event-type?             oper-status-event-type
+   |  +--ro routing-instance-ref?   rt:routing-instance-ref
+   |  +--ro ldp-protocol-name?      leafref
+   |  +--ro (adjacency-type)?
+   |     +--:(targeted)
+   |     |  +--ro targeted
+   |     |     +--ro target-address?   inet:ip-address
+   |     +--:(link)
+   |        +--ro link
+   |           +--ro next-hop-interface?   if:interface-ref
+   |           +--ro next-hop-address?     inet:ip-address
+   +---n mpls-ldp-fec-event          
+   |  +--ro event-type?             oper-status-event-type
+   |  +--ro routing-instance-ref?   rt:routing-instance-ref
+   |  +--ro ldp-protocol-name?      leafref
+   |  +--ro prefix?                 inet:ip-prefix
+   +---n mpls-mldp-fec-event         
       +--ro event-type?             oper-status-event-type
       +--ro routing-instance-ref?   rt:routing-instance-ref
       +--ro ldp-protocol-name?      leafref
-      +--ro (adjacency-type)?
-         +--:(targeted)
-         |  +--ro targeted
-         |     +--ro target-address?   inet:ip-address
-         +--:(link)
-            +--ro link
-               +--ro next-hop-interface?   if:interface-ref
-               +--ro next-hop-address?     inet:ip-address
+      +--ro tree-type?              multipoint-type
+      +--ro root?                   inet:ip-address
+      +--ro (lsp-key-type)?
+         +--:(lsp-id-based)
+         |  +--ro lsp-id?                 uint16
+         +--:(source-group-based)
+            +--ro source-addr?            inet:ip-address
+            +--ro group-addr?             inet:ip-address
