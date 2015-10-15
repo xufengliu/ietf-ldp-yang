@@ -1,15 +1,89 @@
 module: ietf-mpls-ldp
 augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
    +--rw mpls-ldp
-      +--rw lsr-id?                      yang:dotted-quad
+      +--rw config
+      |  +--rw capability
+      |  |  +--rw end-of-lib {capability-end-of-lib}?
+      |  |  |  +--rw enable?   boolean
+      |  |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec}?
+      |  |  |  +--rw enable?   boolean
+      |  |  +--rw upstream-label-assignment {capability-upstream-label-assignment}?
+      |  |  |  +--rw enable?   boolean
+      |  |  +--rw mldp {mldp}?
+      |  |     +--rw p2mp
+      |  |     |  +--rw enable?   boolean
+      |  |     +--rw mp2mp
+      |  |     |  +--rw enable?   boolean
+      |  |     +--rw make-before-break
+      |  |     |  +--rw enable?             boolean
+      |  |     |  +--rw switchover-delay?   uint16
+      |  |     |  +--rw timeout?            uint16
+      |  |     +--rw hub-and-spoke {capability-mldp-hsmp}?
+      |  |     |  +--rw enable?   boolean
+      |  |     +--rw node-protection {capability-mldp-node-protection}?
+      |  |        +--rw plr?           boolean
+      |  |        +--rw merge-point
+      |  |           +--rw enable?                            boolean
+      |  |           +--rw targeted-session-teardown-delay?   uint16
+      |  +--rw graceful-restart
+      |  |  +--rw enable?                boolean
+      |  |  +--rw helper-enable?         boolean {graceful-restart-helper-mode}?
+      |  |  +--rw reconnect-time?        uint16
+      |  |  +--rw recovery-time?         uint16
+      |  |  +--rw forwarding-holdtime?   uint16
+      |  +--rw igp-synchronization-delay?   uint16
+      |  +--rw lsr-id?                      yang:dotted-quad
+      |  +--rw nonstop-routing?             boolean
+      +--ro state
+      |  +--ro capability
+      |  |  +--ro end-of-lib {capability-end-of-lib}?
+      |  |  |  +--ro enable?   boolean
+      |  |  +--ro typed-wildcard-fec {capability-typed-wildcard-fec}?
+      |  |  |  +--ro enable?   boolean
+      |  |  +--ro upstream-label-assignment {capability-upstream-label-assignment}?
+      |  |  |  +--ro enable?   boolean
+      |  |  +--ro mldp {mldp}?
+      |  |     +--ro p2mp
+      |  |     |  +--ro enable?   boolean
+      |  |     +--ro mp2mp
+      |  |     |  +--ro enable?   boolean
+      |  |     +--ro make-before-break
+      |  |     |  +--ro enable?             boolean
+      |  |     |  +--ro switchover-delay?   uint16
+      |  |     |  +--ro timeout?            uint16
+      |  |     +--ro hub-and-spoke {capability-mldp-hsmp}?
+      |  |     |  +--ro enable?   boolean
+      |  |     +--ro node-protection {capability-mldp-node-protection}?
+      |  |        +--ro plr?           boolean
+      |  |        +--ro merge-point
+      |  |           +--ro enable?                            boolean
+      |  |           +--ro targeted-session-teardown-delay?   uint16
+      |  +--ro graceful-restart
+      |  |  +--ro enable?                boolean
+      |  |  +--ro helper-enable?         boolean {graceful-restart-helper-mode}?
+      |  |  +--ro reconnect-time?        uint16
+      |  |  +--ro recovery-time?         uint16
+      |  |  +--ro forwarding-holdtime?   uint16
+      |  +--ro igp-synchronization-delay?   uint16
+      |  +--ro lsr-id?                      yang:dotted-quad
+      |  +--ro nonstop-routing?             boolean
       +--rw mldp {mldp}?
-      |  +--rw enable?           boolean
+      |  +--rw config
+      |  |  +--rw enable?   boolean
+      |  +--ro state
+      |  |  +--ro enable?   boolean
       |  +--rw address-family* [af]
-      |     +--rw af                    address-family-type
-      |     +--rw multicast-only-frr {mldp-mofrr}?
-      |     |  +--rw prefix-list?   prefix-list-ref
-      |     +--rw recursive-fec
-      |     |  +--rw prefix-list?   prefix-list-ref
+      |     +--rw af                 address-family-type
+      |     +--rw config
+      |     |  +--rw multicast-only-frr {mldp-mofrr}?
+      |     |  |  +--rw prefix-list?   prefix-list-ref
+      |     |  +--rw recursive-fec
+      |     |     +--rw prefix-list?   prefix-list-ref
+      |     +--ro state
+      |     |  +--ro multicast-only-frr {mldp-mofrr}?
+      |     |  |  +--ro prefix-list?   prefix-list-ref
+      |     |  +--ro recursive-fec
+      |     |     +--ro prefix-list?   prefix-list-ref
       |     +--rw configured-lsps
       |        +--rw p2mp
       |        |  +--rw roots-ipv4
@@ -41,160 +115,243 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |                    +--rw lsp-id         uint16
       |                    +--rw source-addr    inet:ipv6-address-no-zone
       |                    +--rw group-addr     inet:ipv6-address-no-zone
-      +--rw capability
-      |  +--rw end-of-lib {capability-end-of-lib}?
-      |  |  +--rw enable?   boolean
-      |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec}?
-      |  |  +--rw enable?   boolean
-      |  +--rw upstream-label-assignment {capability-upstream-label-assignment}?
-      |  |  +--rw enable?   boolean
-      |  +--rw mldp {mldp}?
-      |     +--rw p2mp
-      |     |  +--rw enable?   boolean
-      |     +--rw mp2mp
-      |     |  +--rw enable?   boolean
-      |     +--rw make-before-break
-      |     |  +--rw enable?             boolean
-      |     |  +--rw switchover-delay?   uint16
-      |     |  +--rw timeout?            uint16
-      |     +--rw hub-and-spoke {capability-mldp-hsmp}?
-      |     |  +--rw enable?   boolean
-      |     +--rw node-protection {capability-mldp-node-protection}?
-      |        +--rw plr?           boolean
-      |        +--rw merge-point
-      |           +--rw enable?                            boolean
-      |           +--rw targeted-session-teardown-delay?   uint16
-      +--rw graceful-restart
-      |  +--rw enable?                boolean
-      |  +--rw helper-enable?         boolean {graceful-restart-helper-mode}?
-      |  +--rw reconnect-time?        uint16
-      |  +--rw recovery-time?         uint16
-      |  +--rw forwarding-holdtime?   uint16
-      +--rw igp-synchronization-delay?   uint16
-      +--rw nonstop-routing?             boolean
       +--rw address-family* [af]
-      |  +--rw af              address-family-type
-      |  +--rw enable?         boolean
-      |  +--rw label-policy
-      |  |  +--rw independent-mode
-      |  |  |  +--rw assign {policy-label-assignment-config}?
-      |  |  |  |  +--rw (prefix-option)?
-      |  |  |  |     +--:(prefix-list)
-      |  |  |  |     |  +--rw prefix-list?        prefix-list-ref
-      |  |  |  |     +--:(host-routes-only)
-      |  |  |  |        +--rw host-routes-only?   boolean
-      |  |  |  +--rw advertise
-      |  |  |  |  +--rw explicit-null!
-      |  |  |  |  |  +--rw prefix-list?   prefix-list-ref
-      |  |  |  |  +--rw prefix-list?     prefix-list-ref
-      |  |  |  +--rw accept
-      |  |  |     +--rw prefix-list?   prefix-list-ref
-      |  |  +--rw ordered-mode {policy-ordered-label-config}?
-      |  |     +--rw egress-lsr
-      |  |     |  +--rw prefix-list?   prefix-list-ref
-      |  |     +--rw advertise
-      |  |     |  +--rw prefix-list?   prefix-list-ref
-      |  |     +--rw accept
-      |  |        +--rw prefix-list?   prefix-list-ref
-      |  +--rw ipv4
-      |  |  +--rw transport-address?   inet:ipv4-address
-      |  +--rw ipv6
-      |     +--rw transport-address?   inet:ipv6-address
+      |  +--rw af        address-family-type
+      |  +--rw config
+      |  |  +--rw enable?         boolean
+      |  |  +--rw label-policy
+      |  |  |  +--rw independent-mode
+      |  |  |  |  +--rw assign {policy-label-assignment-config}?
+      |  |  |  |  |  +--rw (prefix-option)?
+      |  |  |  |  |     +--:(prefix-list)
+      |  |  |  |  |     |  +--rw prefix-list?        prefix-list-ref
+      |  |  |  |  |     +--:(host-routes-only)
+      |  |  |  |  |        +--rw host-routes-only?   boolean
+      |  |  |  |  +--rw advertise
+      |  |  |  |  |  +--rw explicit-null!
+      |  |  |  |  |  |  +--rw prefix-list?   prefix-list-ref
+      |  |  |  |  |  +--rw prefix-list?     prefix-list-ref
+      |  |  |  |  +--rw accept
+      |  |  |  |     +--rw prefix-list?   prefix-list-ref
+      |  |  |  +--rw ordered-mode {policy-ordered-label-config}?
+      |  |  |     +--rw egress-lsr
+      |  |  |     |  +--rw prefix-list?   prefix-list-ref
+      |  |  |     +--rw advertise
+      |  |  |     |  +--rw prefix-list?   prefix-list-ref
+      |  |  |     +--rw accept
+      |  |  |        +--rw prefix-list?   prefix-list-ref
+      |  |  +--rw ipv4
+      |  |  |  +--rw transport-address?   inet:ipv4-address
+      |  |  +--rw ipv6
+      |  |     +--rw transport-address?   inet:ipv6-address
+      |  +--ro state
+      |     +--ro enable?         boolean
+      |     +--ro label-policy
+      |     |  +--ro independent-mode
+      |     |  |  +--ro assign {policy-label-assignment-config}?
+      |     |  |  |  +--ro (prefix-option)?
+      |     |  |  |     +--:(prefix-list)
+      |     |  |  |     |  +--ro prefix-list?        prefix-list-ref
+      |     |  |  |     +--:(host-routes-only)
+      |     |  |  |        +--ro host-routes-only?   boolean
+      |     |  |  +--ro advertise
+      |     |  |  |  +--ro explicit-null!
+      |     |  |  |  |  +--ro prefix-list?   prefix-list-ref
+      |     |  |  |  +--ro prefix-list?     prefix-list-ref
+      |     |  |  +--ro accept
+      |     |  |     +--ro prefix-list?   prefix-list-ref
+      |     |  +--ro ordered-mode {policy-ordered-label-config}?
+      |     |     +--ro egress-lsr
+      |     |     |  +--ro prefix-list?   prefix-list-ref
+      |     |     +--ro advertise
+      |     |     |  +--ro prefix-list?   prefix-list-ref
+      |     |     +--ro accept
+      |     |        +--ro prefix-list?   prefix-list-ref
+      |     +--ro ipv4
+      |     |  +--ro transport-address?   inet:ipv4-address
+      |     +--ro ipv6
+      |        +--ro transport-address?   inet:ipv6-address
       +--rw discovery
       |  +--rw interfaces
-      |  |  +--rw hello-holdtime?   uint16
-      |  |  +--rw hello-interval?   uint16
+      |  |  +--rw config
+      |  |  |  +--rw hello-holdtime?   uint16
+      |  |  |  +--rw hello-interval?   uint16
+      |  |  +--ro state
+      |  |  |  +--ro hello-holdtime?   uint16
+      |  |  |  +--ro hello-interval?   uint16
       |  |  +--rw interface* [interface]
-      |  |     +--rw interface                    if:interface-ref
-      |  |     +--rw hello-holdtime?              uint16
-      |  |     +--rw hello-interval?              uint16
-      |  |     +--rw igp-synchronization-delay?   uint16 {per-interface-timer-config}?
+      |  |     +--rw interface         if:interface-ref
+      |  |     +--rw config
+      |  |     |  +--rw hello-holdtime?              uint16
+      |  |     |  +--rw hello-interval?              uint16
+      |  |     |  +--rw igp-synchronization-delay?   uint16 {per-interface-timer-config}?
+      |  |     +--ro state
+      |  |     |  +--ro hello-holdtime?              uint16
+      |  |     |  +--ro hello-interval?              uint16
+      |  |     |  +--ro igp-synchronization-delay?   uint16 {per-interface-timer-config}?
       |  |     +--rw address-family* [af]
       |  |        +--rw af        address-family-type
-      |  |        +--rw enable?   boolean
-      |  |        +--rw ipv4
-      |  |        |  +--rw transport-address?   union
-      |  |        +--rw ipv6
-      |  |           +--rw transport-address?   union
+      |  |        +--rw config
+      |  |        |  +--rw enable?   boolean
+      |  |        |  +--rw ipv4
+      |  |        |  |  +--rw transport-address?   union
+      |  |        |  +--rw ipv6
+      |  |        |     +--rw transport-address?   union
+      |  |        +--ro state
+      |  |           +--ro enable?   boolean
+      |  |           +--ro ipv4
+      |  |           |  +--ro transport-address?   union
+      |  |           +--ro ipv6
+      |  |              +--ro transport-address?   union
       |  +--rw targeted
-      |     +--rw hello-holdtime?   uint16
-      |     +--rw hello-interval?   uint16
-      |     +--rw hello-accept {policy-extended-discovery-config}?
-      |     |  +--rw enable?      boolean
-      |     |  +--rw peer-list?   peer-list-ref
+      |     +--rw config
+      |     |  +--rw hello-holdtime?   uint16
+      |     |  +--rw hello-interval?   uint16
+      |     |  +--rw hello-accept {policy-extended-discovery-config}?
+      |     |     +--rw enable?      boolean
+      |     |     +--rw peer-list?   peer-list-ref
+      |     +--ro state
+      |     |  +--ro hello-holdtime?   uint16
+      |     |  +--ro hello-interval?   uint16
+      |     |  +--ro hello-accept {policy-extended-discovery-config}?
+      |     |     +--ro enable?      boolean
+      |     |     +--ro peer-list?   peer-list-ref
       |     +--rw address-family
       |        +--rw ipv4
       |        |  +--rw target* [address]
       |        |     +--rw address    inet:ipv4-address
-      |        |     +--rw enable?    boolean
+      |        |     +--rw config
+      |        |     |  +--rw enable?   boolean
+      |        |     +--ro state
+      |        |        +--ro enable?   boolean
       |        +--rw ipv6
       |           +--rw target* [address]
       |              +--rw address    inet:ipv6-address
-      |              +--rw enable?    boolean
+      |              +--rw config
+      |              |  +--rw enable?   boolean
+      |              +--ro state
+      |                 +--ro enable?   boolean
       +--rw forwarding-nexthop {forwarding-nexthop-config}?
       |  +--rw interfaces
       |     +--rw interface* [interface]
       |        +--rw interface         if:interface-ref
       |        +--rw address-family* [af]
-      |           +--rw af              address-family-type
-      |           +--rw ldp-disable?    boolean
-      |           +--rw mldp-disable?   boolean {mldp}?
+      |           +--rw af        address-family-type
+      |           +--rw config
+      |           |  +--rw ldp-disable?    boolean
+      |           |  +--rw mldp-disable?   boolean {mldp}?
+      |           +--ro state
+      |              +--ro ldp-disable?    boolean
+      |              +--ro mldp-disable?   boolean {mldp}?
       +--rw neighbors
-         +--rw md5-password?                   string
-         +--rw session-ka-holdtime?            uint16
-         +--rw session-ka-interval?            uint16
-         +--rw session-downstream-on-demand {session-downstream-on-demand-config}?
-         |  +--rw enable?      boolean
-         |  +--rw peer-list?   peer-list-ref
-         +--rw session-protection {session-protection}?
-         |  +--rw enable?      boolean
-         |  +--rw duration?    union
-         |  +--rw peer-list?   peer-list-ref
+         +--rw config
+         |  +--rw md5-password?                   string
+         |  +--rw session-ka-holdtime?            uint16
+         |  +--rw session-ka-interval?            uint16
+         |  +--rw session-downstream-on-demand {session-downstream-on-demand-config}?
+         |  |  +--rw enable?      boolean
+         |  |  +--rw peer-list?   peer-list-ref
+         |  +--rw session-protection {session-protection}?
+         |     +--rw enable?      boolean
+         |     +--rw duration?    union
+         |     +--rw peer-list?   peer-list-ref
+         +--ro state
+         |  +--ro md5-password?                   string
+         |  +--ro session-ka-holdtime?            uint16
+         |  +--ro session-ka-interval?            uint16
+         |  +--ro session-downstream-on-demand {session-downstream-on-demand-config}?
+         |  |  +--ro enable?      boolean
+         |  |  +--ro peer-list?   peer-list-ref
+         |  +--ro session-protection {session-protection}?
+         |     +--ro enable?      boolean
+         |     +--ro duration?    union
+         |     +--ro peer-list?   peer-list-ref
          +--rw neighbor* [lsr-id]
-            +--rw lsr-id                 union
-            +--rw admin-down?            boolean
-            +--rw capability
-            |  +--rw mldp {mldp}?
-            |     +--rw p2mp
-            |     |  +--rw enable?   boolean
-            |     +--rw mp2mp
-            |     |  +--rw enable?   boolean
-            |     +--rw make-before-break
-            |     |  +--rw enable?             boolean
-            |     |  +--rw switchover-delay?   uint16
-            |     |  +--rw timeout?            uint16
-            |     +--rw hub-and-spoke {capability-mldp-hsmp}?
-            |     |  +--rw enable?   boolean
-            |     +--rw node-protection {capability-mldp-node-protection}?
-            |        +--rw plr?           boolean
-            |        +--rw merge-point
-            |           +--rw enable?                            boolean
-            |           +--rw targeted-session-teardown-delay?   uint16
-            +--rw md5-password?          string
-            +--rw graceful-restart
-            |  +--rw enable?           boolean
-            |  +--rw reconnect-time?   uint16
-            |  +--rw recovery-time?    uint16
-            +--rw session-ka-holdtime?   uint16
-            +--rw session-ka-interval?   uint16
-            +--rw session-protection {session-protection}?
-            |  +--rw enable?     boolean
-            |  +--rw duration?   union
-            +--rw address-family
-               +--rw ipv4
-               |  +--rw label-policy
-               |     +--rw advertise
-               |     |  +--rw prefix-list?   prefix-list-ref
-               |     +--rw accept
-               |        +--rw prefix-list?   prefix-list-ref
-               +--rw ipv6
-                  +--rw label-policy
-                     +--rw advertise
-                     |  +--rw prefix-list?   prefix-list-ref
-                     +--rw accept
-                        +--rw prefix-list?   prefix-list-ref
-augment /rt:routing-state/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
-   +--ro mpls-ldp
+            +--rw lsr-id    union
+            +--rw config
+            |  +--rw admin-down?            boolean
+            |  +--rw capability
+            |  |  +--rw mldp {mldp}?
+            |  |     +--rw p2mp
+            |  |     |  +--rw enable?   boolean
+            |  |     +--rw mp2mp
+            |  |     |  +--rw enable?   boolean
+            |  |     +--rw make-before-break
+            |  |     |  +--rw enable?             boolean
+            |  |     |  +--rw switchover-delay?   uint16
+            |  |     |  +--rw timeout?            uint16
+            |  |     +--rw hub-and-spoke {capability-mldp-hsmp}?
+            |  |     |  +--rw enable?   boolean
+            |  |     +--rw node-protection {capability-mldp-node-protection}?
+            |  |        +--rw plr?           boolean
+            |  |        +--rw merge-point
+            |  |           +--rw enable?                            boolean
+            |  |           +--rw targeted-session-teardown-delay?   uint16
+            |  +--rw md5-password?          string
+            |  +--rw graceful-restart
+            |  |  +--rw enable?           boolean
+            |  |  +--rw reconnect-time?   uint16
+            |  |  +--rw recovery-time?    uint16
+            |  +--rw session-ka-holdtime?   uint16
+            |  +--rw session-ka-interval?   uint16
+            |  +--rw session-protection {session-protection}?
+            |  |  +--rw enable?     boolean
+            |  |  +--rw duration?   union
+            |  +--rw address-family
+            |     +--rw ipv4
+            |     |  +--rw label-policy
+            |     |     +--rw advertise
+            |     |     |  +--rw prefix-list?   prefix-list-ref
+            |     |     +--rw accept
+            |     |        +--rw prefix-list?   prefix-list-ref
+            |     +--rw ipv6
+            |        +--rw label-policy
+            |           +--rw advertise
+            |           |  +--rw prefix-list?   prefix-list-ref
+            |           +--rw accept
+            |              +--rw prefix-list?   prefix-list-ref
+            +--ro state
+               +--ro admin-down?            boolean
+               +--ro capability
+               |  +--ro mldp {mldp}?
+               |     +--ro p2mp
+               |     |  +--ro enable?   boolean
+               |     +--ro mp2mp
+               |     |  +--ro enable?   boolean
+               |     +--ro make-before-break
+               |     |  +--ro enable?             boolean
+               |     |  +--ro switchover-delay?   uint16
+               |     |  +--ro timeout?            uint16
+               |     +--ro hub-and-spoke {capability-mldp-hsmp}?
+               |     |  +--ro enable?   boolean
+               |     +--ro node-protection {capability-mldp-node-protection}?
+               |        +--ro plr?           boolean
+               |        +--ro merge-point
+               |           +--ro enable?                            boolean
+               |           +--ro targeted-session-teardown-delay?   uint16
+               +--ro md5-password?          string
+               +--ro graceful-restart
+               |  +--ro enable?           boolean
+               |  +--ro reconnect-time?   uint16
+               |  +--ro recovery-time?    uint16
+               +--ro session-ka-holdtime?   uint16
+               +--ro session-ka-interval?   uint16
+               +--ro session-protection {session-protection}?
+               |  +--ro enable?     boolean
+               |  +--ro duration?   union
+               +--ro address-family
+                  +--ro ipv4
+                  |  +--ro label-policy
+                  |     +--ro advertise
+                  |     |  +--ro prefix-list?   prefix-list-ref
+                  |     +--ro accept
+                  |        +--ro prefix-list?   prefix-list-ref
+                  +--ro ipv6
+                     +--ro label-policy
+                        +--ro advertise
+                        |  +--ro prefix-list?   prefix-list-ref
+                        +--ro accept
+                           +--ro prefix-list?   prefix-list-ref
 rpcs:
    +---x mpls-ldp-clear-neighbor               
    |  +--ro input     
