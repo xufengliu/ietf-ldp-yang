@@ -203,6 +203,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |           |  +--ro transport-address?   union
       |  |           |  +--ro hello-adjacencies* [adjacent-address]
       |  |           |     +--ro adjacent-address    inet:ipv4-address
+      |  |           |     +--ro flag*               identityref
       |  |           |     +--ro hello-holdtime
       |  |           |     |  +--ro adjacent?     uint16
       |  |           |     |  +--ro negotiated?   uint16
@@ -213,6 +214,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |              +--ro transport-address?   union
       |  |              +--ro hello-adjacencies* [adjacent-address]
       |  |                 +--ro adjacent-address    inet:ipv6-address
+      |  |                 +--ro flag*               identityref
       |  |                 +--ro hello-holdtime
       |  |                 |  +--ro adjacent?     uint16
       |  |                 |  +--ro negotiated?   uint16
@@ -239,6 +241,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |        |  |  +--ro hello-adjacencies* [local-address adjacent-address]
       |        |  |     +--ro local-address       inet:ipv4-address
       |        |  |     +--ro adjacent-address    inet:ipv4-address
+      |        |  |     +--ro flag*               identityref
       |        |  |     +--ro hello-holdtime
       |        |  |     |  +--ro adjacent?     uint16
       |        |  |     |  +--ro negotiated?   uint16
@@ -249,6 +252,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |        |     +--ro hello-adjacencies* [local-address adjacent-address]
       |        |        +--ro local-address       inet:ipv6-address
       |        |        +--ro adjacent-address    inet:ipv6-address
+      |        |        +--ro flag*               identityref
       |        |        +--ro hello-holdtime
       |        |        |  +--ro adjacent?     uint16
       |        |        |  +--ro negotiated?   uint16
@@ -256,19 +260,23 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |        |        +--ro next-hello?         uint16
       |        |        +--ro peer?               leafref
       |        +--rw ipv4
-      |        |  +--rw target* [address]
-      |        |     +--rw address    inet:ipv4-address
+      |        |  +--rw target* [adjacent-address]
+      |        |     +--rw adjacent-address    inet:ipv4-address
       |        |     +--rw config
-      |        |     |  +--rw enable?   boolean
+      |        |     |  +--rw enable?          boolean
+      |        |     |  +--rw local-address?   inet:ipv4-address
       |        |     +--ro state
-      |        |        +--ro enable?   boolean
+      |        |        +--ro enable?          boolean
+      |        |        +--ro local-address?   inet:ipv4-address
       |        +--rw ipv6
-      |           +--rw target* [address]
-      |              +--rw address    inet:ipv6-address
+      |           +--rw target* [adjacent-address]
+      |              +--rw adjacent-address    inet:ipv6-address
       |              +--rw config
-      |              |  +--rw enable?   boolean
+      |              |  +--rw enable?          boolean
+      |              |  +--rw local-address?   inet:ipv6-address
       |              +--ro state
-      |                 +--ro enable?   boolean
+      |                 +--ro enable?          boolean
+      |                 +--ro local-address?   inet:ipv6-address
       +--rw forwarding-nexthop {forwarding-nexthop-config}?
       |  +--rw interfaces
       |     +--rw interface* [interface]
@@ -387,6 +395,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
                |  |  +--ro hello-adjacencies* [local-address adjacent-address]
                |  |     +--ro local-address       inet:ipv4-address
                |  |     +--ro adjacent-address    inet:ipv4-address
+               |  |     +--ro flag*               identityref
                |  |     +--ro hello-holdtime
                |  |     |  +--ro adjacent?     uint16
                |  |     |  +--ro negotiated?   uint16
@@ -402,6 +411,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
                |     +--ro hello-adjacencies* [local-address adjacent-address]
                |        +--ro local-address       inet:ipv6-address
                |        +--ro adjacent-address    inet:ipv6-address
+               |        +--ro flag*               identityref
                |        +--ro hello-holdtime
                |        |  +--ro adjacent?     uint16
                |        |  +--ro negotiated?   uint16

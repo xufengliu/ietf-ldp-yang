@@ -36,7 +36,7 @@ module ietf-mpls-ldp {
   description
     "";
 
-  revision 2016-02-19 {
+  revision 2016-02-26 {
     description
       "Initial revision.";
     reference
@@ -257,7 +257,22 @@ module ietf-mpls-ldp {
   /*
    * Identities
    */
+  identity adjacency-flag-base {
+    description "Base type for adjacency flags.";
+  }
 
+  identity adjacency-flag-active {
+    base "adjacency-flag-base";
+    description 
+      "This adjacency is configured and actively created.";
+  }
+
+  identity adjacency-flag-passive {
+    base "adjacency-flag-base";
+    description 
+      "This adjacency is not configured and passively accepted.";
+  }
+  
   /*
    * Groupings
    */
@@ -266,6 +281,12 @@ module ietf-mpls-ldp {
     description
       "Adjacency state attributes.";
     
+    leaf-list flag {
+      type identityref {
+        base "adjacency-flag-base";
+      }
+      description "Adjacency flags.";
+    }
     container hello-holdtime {
       description "Hello holdtime state.";
       leaf adjacent {
@@ -1879,11 +1900,11 @@ module ietf-mpls-ldp {
               description
                 "IPv4 address family.";
               list target {
-                key "address";
+                key "adjacent-address";
                 description
                   "Targeted discovery params.";
                 
-                leaf address {
+                leaf adjacent-address {
                   type inet:ipv4-address;
                   description
                     "Configures a remote LDP neighbor and enables
@@ -1898,6 +1919,11 @@ module ietf-mpls-ldp {
                     description
                       "Enable the target.";
                   }
+                  leaf local-address {
+                    type inet:ipv4-address;
+                    description
+                      "The local address.";
+                  }
                 }
                 container state {
                   config false;
@@ -1908,7 +1934,12 @@ module ietf-mpls-ldp {
                     description
                       "Enable the target.";
                   }
-                }
+                  leaf local-address {
+                    type inet:ipv4-address;
+                    description
+                      "The local address.";
+                  }
+                } // state
               }
             } // ipv4
             container ipv6 {
@@ -1919,11 +1950,11 @@ module ietf-mpls-ldp {
               description
                 "IPv6 address family.";
               list target {
-                key "address";
+                key "adjacent-address";
                 description
                   "Targeted discovery params.";
 
-                leaf address {
+                leaf adjacent-address {
                   type inet:ipv6-address;
                   description
                     "Configures a remote LDP neighbor and enables
@@ -1938,6 +1969,11 @@ module ietf-mpls-ldp {
                     description
                       "Enable the target.";
                   }
+                  leaf local-address {
+                    type inet:ipv6-address;
+                    description
+                      "The local address.";
+                  }
                 }
                 container state {
                   config false;
@@ -1948,7 +1984,12 @@ module ietf-mpls-ldp {
                     description
                       "Enable the target.";
                   }
-                }
+                  leaf local-address {
+                    type inet:ipv6-address;
+                    description
+                      "The local address.";
+                  }
+                } // state
               }
             } // ipv6
           } // address-family
