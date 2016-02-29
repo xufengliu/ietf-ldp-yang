@@ -6,33 +6,37 @@ module ietf-mpls-ldp {
   import ietf-inet-types {
     prefix "inet";
   }
-  
+
   import ietf-yang-types {
     prefix "yang";
   }
-  
+
   import ietf-interfaces {
     prefix "if";
   }
-  
+
   import ietf-ip {
     prefix "ip";
   }
-  
+
   import ietf-routing {
     prefix "rt";
   }
-  
+
+  import ietf-mpls {
+    prefix "mpls";
+  }
+
   import routing-policy {
     prefix "rpl";
   }
-  
+
   organization "TBD";
   contact "TBD";
   description
     "";
 
-  revision 2015-10-12 {
+  revision 2016-02-19 {
     description
       "Initial revision.";
     reference
@@ -42,6 +46,7 @@ module ietf-mpls-ldp {
   /*
    * Features
    */
+
   feature admin-down-config {
     description
       "This feature indicates that the system allows to configure
@@ -90,6 +95,7 @@ module ietf-mpls-ldp {
        authentication at global level.";
   }
 
+
   feature graceful-restart-helper-mode {
     description
       "This feature indicates that the system supports graceful
@@ -104,7 +110,7 @@ module ietf-mpls-ldp {
 
   feature mldp-mofrr {
     description
-      "This feature indicates that the system supports mLDP 
+      "This feature indicates that the system supports mLDP
        Multicast only FRR (MoFRR).";
   }
 
@@ -153,7 +159,7 @@ module ietf-mpls-ldp {
 
   feature session-protection {
     description
-      "This feature indicates that the system supports session 
+      "This feature indicates that the system supports session
        protection";
   }
 
@@ -173,6 +179,33 @@ module ietf-mpls-ldp {
       "Address family type.";
   }
 
+  typedef duration32-inf {
+    type union {
+      type uint32;
+      type enumeration {
+        enum "infinite" {
+          description "The duration is infinite.";
+        }
+      }
+    }
+    units seconds;
+    description
+      "Duration represented as 32 bit seconds with infinite.";
+  }
+
+  typedef label-adv-mode {
+    type enumeration {
+      enum downstream-unsolicited {
+        description "Downstream Unsolicited.";
+      }
+      enum downstream-on-demand {
+        description "Downstream on Demand.";
+      }
+    }
+    description
+      "Label Advertisement Mode.";
+  }
+
   typedef multipoint-type {
     type enumeration {
       enum p2mp {
@@ -187,6 +220,7 @@ module ietf-mpls-ldp {
   }
 
   typedef peer-list-ref {
+
     type leafref {
       path "/rpl:routing-policy/rpl:defined-sets/rpl:neighbor-sets/"
         + "rpl:neighbor-set/rpl:neighbor-set-name";
@@ -224,139 +258,39 @@ module ietf-mpls-ldp {
    * Identities
    */
 
-  identity mpls-ldp {
-    base "rt:routing-protocol";
-    description "LDP";
-  }
-
   /*
    * Groupings
    */
-  grouping ldp-instance-ref {
-    description
-      "An absolute reference to an LDP instance.";
-    leaf routing-instance-ref {
-      type rt:routing-instance-ref;
-      description
-        "Reference to the routing instance.";
-    }
 
-    leaf ldp-protocol-name {
-      type leafref {
-        path "/rt:routing/rt:routing-instance"
-          + "[rt:name = current()/../routing-instance-ref]/"
-          + "rt:routing-protocols/rt:routing-protocol/rt:name";
-      }
-      description
-        "Reference to an LDP protocal name.";
-    }
-  } // ldp-instance-ref
-
-  grouping ldp-neighbor-ref {
+  grouping adjacency-state-attributes {
     description
-      "An absolute reference to an LDP neighbor.";
-    uses ldp-instance-ref;
-    leaf neighbor-ref {
-      type leafref {
-        path "/rt:routing/rt:routing-instance"
-          + "[rt:name = current()/../routing-instance-ref]/"
-          + "rt:routing-protocols/rt:routing-protocol"
-          + "[rt:name = current()/../ldp-protocol-name]/mpls-ldp/"
-          + "neighbors/neighbor/lsr-id";
+      "Adjacency state attributes.";
+    
+    container hello-holdtime {
+      description "Hello holdtime state.";
+      leaf adjacent {
+        type uint16;
+        units seconds;
+        description "Peer holdtime.";
       }
-      description
-        "Reference to an LDP neighbor.";
-    }
-  } // ldp-neighbor-ref
-
-  grouping ldp-adjacency-ref {
-    description
-      "An absolute reference to an LDP adjacency.";
-    uses ldp-instance-ref;
-    choice adjacency-type {
-      description
-        "Interface or targeted adjacency.";
-      case targeted {
-        container targeted {
-          description "Targeted adjacency.";
-          leaf target-address {
-            type inet:ip-address;
-            description 
-              "The target address.";
-          }
-        } // targeted
+      leaf negotiated {
+        type uint16;
+        units seconds;
+        description "Negotiated holdtime.";
       }
-      case link {
-        container link {
-          description "Link adjacency.";
-          leaf next-hop-interface {
-            type if:interface-ref;
-            description 
-              "Interface connecting to next-hop.";
-          }
-          leaf next-hop-address {
-            type inet:ip-address;
-            must "../next-hop-interface" {
-              description 
-                "Applicable when interface is specified.";
-            }
-            description 
-              "IP address of next-hop.";
-          }
-        } // link
+      leaf remaining {
+        type uint16;
+        units seconds;
+        description "Remaining holdtime.";
       }
     }
-  } // ldp-adjacency-ref
-
-  grouping ldp-fec-event {
-    description
-      "A LDP FEC event.";
-    uses ldp-instance-ref;
-    leaf prefix {
-      type inet:ip-prefix;
-      description
-        "FEC.";
+    
+    leaf next-hello {
+      type uint16;
+      units seconds;
+      description "Time to send the next hello message.";
     }
-  } // ldp-fec-event
-
-  grouping mldp-fec-event {
-    description
-      "A mLDP FEC event.";
-    uses ldp-instance-ref;
-    leaf tree-type {
-      type multipoint-type;
-      description
-        "p2mp or mp2mp.";
-    }
-    leaf root {
-      type inet:ip-address;
-      description
-        "Root address.";
-    }
-    choice lsp-key-type {
-      description
-        "LSP ID based or source-group based .";
-      case lsp-id-based {
-        leaf lsp-id {
-          type uint16;
-          description
-            "ID to identify the LSP.";
-        }
-      }
-      case source-group-based {
-        leaf source-addr {
-          type inet:ip-address;
-          description
-            "LSP source address.";
-        }
-        leaf group-addr {
-          type inet:ip-address;
-          description
-            "Multicast group address.";
-        }
-      } // case source-group-based
-    }
-  } // mldp-fec-event
+  } // adjacency-state-attributes
 
   grouping basic-discovery-timers {
     description
@@ -384,6 +318,29 @@ module ietf-mpls-ldp {
     }
   } // basic-discovery-timers
 
+  grouping extended-discovery-policy-attributes {
+    description
+      "LDP policy to control the acceptance of extended neighbor
+       discovery hello messages.";
+    container hello-accept {
+      if-feature policy-extended-discovery-config;
+      description
+        "Extended discovery acceptance policies.";
+
+      leaf enable {
+        type boolean;
+        description
+          "'true' to accept; 'false' to deny.";
+      }
+      leaf peer-list {
+        type peer-list-ref;
+        description
+
+          "The name of a peer ACL.";
+      }
+    } // hello-accept
+  } // extended-discovery-policy-attributes
+
   grouping extended-discovery-timers {
     description
       "Extended discovery timer attributes.";
@@ -395,6 +352,7 @@ module ietf-mpls-ldp {
       default 45;
       description
         "The time interval for which LDP targeted Hello adjacency
+
          is maintained in the absence of targeted Hello messages
          from an LDP neighbor.";
     }
@@ -407,24 +365,30 @@ module ietf-mpls-ldp {
       description
         "The interval between consecutive LDP targeted Hello
          messages used in extended LDP discovery.";
-    }        
+    }
   } // extended-discovery-timers
+
+  grouping global-attributes {
+    description "Configuration attributes at global level.";
+
+    uses instance-attributes;
+  } // global-attributes
 
   grouping graceful-restart-attributes {
     description
       "Graceful restart configuration attributes.";
     container graceful-restart {
-      description 
-        "Attributes for graceful restart.";      
+      description
+        "Attributes for graceful restart.";
       leaf enable {
         type boolean;
-        description 
+        description
           "Enable or disable graceful restart.";
       }
       leaf helper-enable {
         if-feature graceful-restart-helper-mode;
         type boolean;
-        description 
+        description
           "Enable or disable graceful restart helper mode.";
       }
       leaf reconnect-time {
@@ -460,11 +424,11 @@ module ietf-mpls-ldp {
     description
       "Per neighbor graceful restart configuration attributes.";
     container graceful-restart {
-      description 
-        "Attributes for graceful restart.";      
+      description
+        "Attributes for graceful restart.";
       leaf enable {
         type boolean;
-        description 
+        description
           "Enable or disable graceful restart.";
       }
       leaf reconnect-time {
@@ -488,116 +452,6 @@ module ietf-mpls-ldp {
     } // graceful-restart
   } // graceful-restart-attributes-per-neighbor
 
-  grouping neighbor-attributes {
-    description "Neighbor configuration attributes.";
-
-    leaf session-ka-holdtime {
-      type uint16 {
-        range 45..3600;
-      }
-      units seconds;
-      description
-        "The time interval after which an inactive LDP session
-         terminates and the corresponding TCP session closes.
-         Inactivity is defined as not receiving LDP packets from the
-         neighbor.";
-    }
-    leaf session-ka-interval {
-      type uint16 {
-        range 15..1200;
-      }
-      units seconds;
-      description
-        "The interval between successive transmissions of keepalive
-         packets. Keepalive packets are only sent in the absence of
-         other LDP packets transmitted over the LDP session.";
-    }
-  } // neighbor-attributes
-
-  grouping session-protection-per-vrf {
-    description "Session protection attributes.";
-    container session-protection {
-      if-feature session-protection;
-      description
-        "Session protection attributes.";
-      leaf enable {
-        type boolean;
-        description
-          "'true' if session protection is enabled.";
-      }
-      leaf duration {
-        type union {
-          type uint32;
-          type enumeration {
-            enum "infinite" {
-              description "The duration is infinite.";
-            }                
-          }
-        }
-        units seconds;
-        description
-          "Session protection duration.";
-      }
-      leaf peer-list {
-        type peer-list-ref;
-        description
-          "The name of a peer ACL.";
-      }
-    } // session-protection
-  } // session-protection-per-vrf
-
-  grouping session-protection-per-neighbor {
-    description "Session protection attributes.";
-    container session-protection {
-      if-feature session-protection;
-      description
-        "Session protection attributes.";
-      leaf enable {
-        type boolean;
-        description
-          "'true' if session protection is enabled.";
-      }
-      leaf duration {
-        type union {
-          type uint32;
-          type enumeration {
-            enum "infinite" {
-              description "The duration is infinite.";
-            }                
-          }
-        }
-        units seconds;
-        description
-          "Session protection duration.";
-      }
-    } // session-protection
-  } // session-protection-per-neighbor
-
-  grouping neighbor-authentication {
-    description
-      "Neighbor authentication attributes.";
-    leaf md5-password {      
-      type string {
-        length "1..80";
-      }
-      description
-        "Assigns an encrypted MD5 password to an LDP
-         neighbor";
-    } // md5-password
-  } // neighbor-authentication
-
-  grouping neighbor-attributes-container {
-    description "Container of neighbor configuration attributes.";
-    container neighbors {
-      description 
-        "Container of neighbor configuration attributes.";
-      uses neighbor-authentication {
-        if-feature global-session-authentication;
-      }
-      uses neighbor-attributes;
-    }
-  } // neighbor-attributes-container
-
   grouping instance-attributes {
     description "Configuration attributes at instance level.";
 
@@ -606,7 +460,7 @@ module ietf-mpls-ldp {
       container end-of-lib {
         if-feature capability-end-of-lib;
         description
-          "Configure upstream label assignment capability.";
+          "Configure end-of-lib capability.";
         leaf enable {
           type boolean;
           description
@@ -635,12 +489,13 @@ module ietf-mpls-ldp {
       }
       container mldp {
         if-feature mldp;
+
         description
           "Multipoint capabilities.";
         uses mldp-capabilities;
       }
     } // capability
-      
+
     uses graceful-restart-attributes;
 
     leaf igp-synchronization-delay {
@@ -659,178 +514,84 @@ module ietf-mpls-ldp {
       description "Router ID.";
     }
   } // instance-attributes
-  
-  grouping global-attributes {
-    description "Configuration attributes at global level.";
 
-    uses instance-attributes;
-
-    leaf nonstop-routing {
-      type boolean;
-      default false;
-      description
-        "Enables Nonstop Routing (NSR)";
-    }    
-  } // global-attributes
-
-  grouping policy-attributes {
+  grouping ldp-adjacency-ref {
     description
-      "LDP policy attributes.";
-    container label-policy {
+      "An absolute reference to an LDP adjacency.";
+    uses ldp-instance-ref;
+    choice adjacency-type {
       description
-        "Label policy attributes.";
-      container independent-mode {
-        description
-          "Independent label policy attributes.";
-        container assign {
-          if-feature policy-label-assignment-config;
-          description
-            "Label assignment policies";
-          choice prefix-option {
+        "Interface or targeted adjacency.";
+      case targeted {
+        container targeted {
+          description "Targeted adjacency.";
+          leaf target-address {
+            type inet:ip-address;
             description
-              "Use either prefix-list or host-routes-only.";
-            case prefix-list {
-              leaf prefix-list {
-                type prefix-list-ref;
-                description
-                  "Assign labels according to certain prefixes.";
-              }
-            }
-            case host-routes-only {
-              leaf host-routes-only {
-                type boolean;
-                description
-                  "'true' to apply host routes only.";
-              }
-            }
-          } // prefix-option
-        }
-        container advertise {
-          description
-            "Label advertising policies.";
-          container explicit-null {
-            presence "Present to enable explicit null.";
+              "The target address.";
+          }
+        } // targeted
+      }
+      case link {
+        container link {
+          description "Link adjacency.";
+          leaf next-hop-interface {
+            type if:interface-ref;
             description
-              "Enables an egress router to advertise an
-               explicit null label (value 0) in place of an
-               implicit null label (value 3) to the
-               penultimate hop router.";
-            leaf prefix-list {
-              type prefix-list-ref;
+              "Interface connecting to next-hop.";
+          }
+          leaf next-hop-address {
+            type inet:ip-address;
+            must "../next-hop-interface" {
               description
-                "Prefix list name. Applies the filters in the
-                 specified prefix list to label 
-                 advertisements.
-                 If the prefix list is not specified, explicit
-                 null label advertisement is enabled for all
-                 directly connected prefixes.";
-            }
-          }
-          leaf prefix-list {
-            type prefix-list-ref;
-            description
-              "Applies the prefix list to outgoing label
-               advertisements.";
-          }
-        }
-        container accept {
-          description
-            "Label advertisement acceptance policies.";
-          leaf prefix-list {
-            type prefix-list-ref;
-            description
-              "Applies the prefix list to incoming label
-               advertisements.";
-          }
-        }
-      } // independent-mode
-      container ordered-mode {
-        if-feature policy-ordered-label-config;
-        description
-          "Ordered label policy attributes.";
-        container egress-lsr {
-          description
-            "Egress LSR label assignment policies";
-          leaf prefix-list {
-            type prefix-list-ref;
-            description
-              "Assign labels according to certain prefixes.";
-          }
-        }
-        container advertise {
-          description
-            "Label advertising policies.";
-          leaf prefix-list {
-            type prefix-list-ref;
-            description
-              "Applies the prefix list to outgoing label
-               advertisements.";
-          }
-        }
-        container accept {
-          description
-            "Label advertisement acceptance policies.";
-          leaf prefix-list {
-            type prefix-list-ref;
-            description
-              "Applies the prefix list to incoming label
-               advertisements.";
-          }
-        }
-      } // ordered-mode
-    } // label-policy
-  } // policy-attributes
-  
-  grouping neighbor-af-policy-attributes {
-    description
-      "LDP policy attributes under neighbor address-family.";
-    container label-policy {
-      description
-        "Label policy attributes.";
-      container advertise {
-	description
-	  "Label advertising policies.";
-        leaf prefix-list {
-          type prefix-list-ref;
-            description
-              "Applies the prefix list to outgoing label
-               advertisements.";
-        }
-      }
-      container accept {
-        description
-          "Label advertisement acceptance policies.";
-        leaf prefix-list {
-          type prefix-list-ref;
-          description
-            "Applies the prefix list to incoming label
-             advertisements.";
-        }
-      } // accept
-    } // label-policy
-  } // neighbor-af-policy-attributes
+                "Applicable when interface is specified.";
 
-  grouping extended-discovery-policy-attributes {
+            }
+            description
+              "IP address of next-hop.";
+          }
+        } // link
+      }
+    }
+  } // ldp-adjacency-ref
+
+  grouping ldp-fec-event {
     description
-      "LDP policy to control the acceptance of extended neighbor
-       discovery hello messages.";
-    container hello-accept {
-      if-feature policy-extended-discovery-config;
+      "A LDP FEC event.";
+    uses ldp-instance-ref;
+    leaf prefix {
+      type inet:ip-prefix;
       description
-        "Extended discovery acceptance policies.";
-      
-      leaf enable {
-        type boolean;
-        description 
-          "'true' to accept; 'false' to deny.";
+        "FEC.";
+    }
+  } // ldp-fec-event
+
+  grouping ldp-instance-ref {
+    description
+      "An absolute reference to an LDP instance.";
+    leaf routing-instance-ref {
+      type rt:routing-instance-ref;
+      description
+        "Reference to the routing instance.";
+    }
+
+  } // ldp-instance-ref
+
+  grouping ldp-neighbor-ref {
+    description
+      "An absolute reference to an LDP neighbor.";
+    uses ldp-instance-ref;
+    leaf neighbor-ref {
+      type leafref {
+        path "/rt:routing/rt:routing-instance"
+          + "[rt:name = current()/../routing-instance-ref]/"
+          + "mpls:mpls/mpls-ldp/"
+          + "peers/peer/lsr-id";
       }
-      leaf peer-list {
-        type peer-list-ref;
-        description
-          "The name of a peer ACL.";
-      }
-    } // hello-accept
-  } // extended-discovery-policy-attributes
+      description
+        "Reference to an LDP neighbor.";
+    }
+  } // ldp-neighbor-ref
 
   grouping mldp-capabilities {
     description
@@ -875,6 +636,7 @@ module ietf-mpls-ldp {
       }
     }
     container hub-and-spoke {
+
       if-feature capability-mldp-hsmp;
       description
         "Configure hub-and-spoke-multipoint capability.";
@@ -923,6 +685,7 @@ module ietf-mpls-ldp {
       "mLDP roots containers.";
 
     container roots-ipv4 {
+
       when "../../../af = 'ipv4'" {
         description
           "Only for IPv4.";
@@ -933,20 +696,20 @@ module ietf-mpls-ldp {
         key "root-addr";
         description
           "List of roots for configured multicast LSPs.";
-        
+
         leaf root-addr {
           type inet:ipv4-address;
           description
             "Root address.";
         }
-        
+
         list lsp {
           must "(lsp-id = 0 and source-addr != '0.0.0.0' and "
             + "group-addr != '0.0.0.0') or "
             + "(lsp-id != 0 and source-addr = '0.0.0.0' and "
             + "group-addr = '0.0.0.0')" {
             description
-              "A LSP can be identified by either <lsp-id> or 
+              "A LSP can be identified by either <lsp-id> or
                <source-addr, group-addr>.";
           }
           key "lsp-id source-addr group-addr";
@@ -971,31 +734,32 @@ module ietf-mpls-ldp {
     } // roots-ipv4
 
     container roots-ipv6 {
+
       when "../../../af = 'ipv6'" {
         description
           "Only for IPv6.";
       }
       description
         "Configured IPv6 multicast LSPs.";
-      
+
       list root {
         key "root-addr";
         description
           "List of roots for configured multicast LSPs.";
-        
+
         leaf root-addr {
           type inet:ipv6-address;
           description
             "Root address.";
         }
-        
+
         list lsp {
           must "(lsp-id = 0 and source-addr != '::' and "
             + "group-addr != '::') or "
             + "(lsp-id != 0 and source-addr = '::' and "
             + "group-addr = '::')" {
             description
-              "A LSP can be identified by either <lsp-id> or 
+              "A LSP can be identified by either <lsp-id> or
                <source-addr, group-addr>.";
           }
           key "lsp-id source-addr group-addr";
@@ -1018,35 +782,540 @@ module ietf-mpls-ldp {
         } // list lsp
       } // list root
     } // roots-ipv6
-  } // mldp-configured-lsp-roots 
+  } // mldp-configured-lsp-roots
+
+  grouping mldp-fec-event {
+    description
+      "A mLDP FEC event.";
+    uses ldp-instance-ref;
+    leaf tree-type {
+      type multipoint-type;
+      description
+        "p2mp or mp2mp.";
+    }
+    leaf root {
+      type inet:ip-address;
+      description
+        "Root address.";
+    }
+    choice lsp-key-type {
+      description
+        "LSP ID based or source-group based .";
+      case lsp-id-based {
+        leaf lsp-id {
+          type uint16;
+          description
+            "ID to identify the LSP.";
+        }
+      }
+      case source-group-based {
+        leaf source-addr {
+          type inet:ip-address;
+          description
+
+            "LSP source address.";
+        }
+        leaf group-addr {
+          type inet:ip-address;
+          description
+            "Multicast group address.";
+        }
+      } // case source-group-based
+    }
+  } // mldp-fec-event
+
+  grouping neighbor-af-policy-attributes {
+    description
+      "LDP policy attributes under neighbor address-family.";
+    container label-policy {
+      description
+        "Label policy attributes.";
+      container advertise {
+        description
+          "Label advertising policies.";
+        leaf prefix-list {
+          type prefix-list-ref;
+            description
+              "Applies the prefix list to outgoing label
+               advertisements.";
+        }
+      }
+      container accept {
+        description
+          "Label advertisement acceptance policies.";
+        leaf prefix-list {
+          type prefix-list-ref;
+          description
+            "Applies the prefix list to incoming label
+             advertisements.";
+        }
+      } // accept
+    } // label-policy
+  } // neighbor-af-policy-attributes
+
+  grouping neighbor-attributes {
+    description "Neighbor configuration attributes.";
+
+    leaf session-ka-holdtime {
+      type uint16 {
+        range 45..3600;
+      }
+      units seconds;
+      description
+        "The time interval after which an inactive LDP session
+         terminates and the corresponding TCP session closes.
+         Inactivity is defined as not receiving LDP packets from the
+         neighbor.";
+    }
+    leaf session-ka-interval {
+      type uint16 {
+        range 15..1200;
+      }
+      units seconds;
+      description
+        "The interval between successive transmissions of keepalive
+         packets. Keepalive packets are only sent in the absence of
+         other LDP packets transmitted over the LDP session.";
+    }
+  } // neighbor-attributes
+
+  grouping neighbor-authentication {
+    description
+      "Neighbor authentication attributes.";
+    leaf md5-password {
+      type string {
+        length "1..80";
+      }
+      description
+        "Assigns an encrypted MD5 password to an LDP
+         neighbor";
+    } // md5-password
+  } // neighbor-authentication
+
+  grouping neighbor-state-derived {
+    description "Neighbor derived state attributes.";
+    
+    container label-advertisement-mode {
+      description "Label advertisement mode state.";
+      leaf local {
+        type label-adv-mode;
+        description
+          "Local Label Advertisement Mode.";
+      }
+      leaf peer {
+        type label-adv-mode;
+        description
+          "Peer Label Advertisement Mode.";
+      }
+      leaf negotiated {
+        type label-adv-mode;
+        description
+          "Negotiated Label Advertisement Mode.";
+      }
+    }
+    leaf next-keep-alive {
+      type uint16;
+      units seconds;
+      description "Time to send the next KeepAlive message.";
+    }
+    leaf oper-status {
+      type enumeration {
+        enum non-existent {
+          description "NON EXISTENT state. Transport disconnected.";
+        }
+        enum initialized {
+          description "INITIALIZED state.";
+        }
+        enum openrec {
+          description "OPENREC state.";
+        }
+        enum opensent {
+          description "OPENSENT state.";
+        }
+        enum operational {
+          description "OPERATIONAL state.";
+        }
+      }
+      description
+        "Representing the operational status.";
+    }
+
+    container peer-features {
+      description "Peer features.";
+
+      uses graceful-restart-attributes-per-neighbor;
+
+      container capability {
+        description "Configure capability.";
+        container end-of-lib {
+          if-feature capability-end-of-lib;
+          description
+            "Configure end-of-lib capability.";
+          leaf enable {
+            type boolean;
+            description
+              "Enable end-of-lib capability.";
+          }
+        }
+        container typed-wildcard-fec {
+          if-feature capability-typed-wildcard-fec;
+          description
+            "Configure typed-wildcard-fec capability.";
+          leaf enable {
+            type boolean;
+            description
+              "Enable typed-wildcard-fec capability.";
+          }
+        }
+        container upstream-label-assignment {
+          if-feature capability-upstream-label-assignment;
+          description
+            "Configure upstream label assignment capability.";
+          leaf enable {
+            type boolean;
+            description
+              "Enable upstream label assignment.";
+          }
+        }
+        container mldp {
+          if-feature mldp;          
+          description
+            "Multipoint capabilities.";
+          uses mldp-capabilities;
+        }
+      } // capability
+    } // peer-features
+      
+    leaf peer-ldp-id {
+      type yang:dotted-quad;
+      description "Peer LDP ID.";
+    }
+
+    container session-holdtime {
+      description "Session holdtime state.";
+      leaf peer {
+        type uint16;
+        units seconds;
+        description "Peer holdtime.";
+      }
+      leaf negotiated {
+        type uint16;
+        units seconds;
+        description "Negotiated holdtime.";
+      }
+      leaf remaining {
+        type uint16;
+        units seconds;
+        description "Remaining holdtime.";
+      }
+    } // session-holdtime
+
+    container session-protection-status {
+      description "Session protection state.";
+
+      leaf protection-status {
+        type enumeration {
+          enum not-ready {
+            description "Protection is not ready.";
+          }
+          enum ready {
+            description "Protection is ready.";
+          }
+          enum protecting {
+            description "Protection is in use.";
+          }
+        }
+        description
+          "Representing the operational status.";
+      }
+      leaf remaining {
+        type duration32-inf;
+        description
+          "Remaining protection duration.";        
+      }
+    } // session-protection
+
+    container tcp-connection {
+      description "TCP connection state.";
+      leaf local-addr {
+        type inet:ip-address;
+        description "Local address.";
+      }
+      leaf local-port {
+        type uint16;
+        description "Local port.";
+      }
+      leaf remote-addr {
+        type inet:ip-address;
+        description "Remote address.";
+      }
+      leaf remote-port {
+        type uint16;
+        description "Remote port.";
+      }
+    } // tcp-connection
+
+    leaf up-time {
+      type string;
+      description "Up time. The interval format in ISO 8601.";
+    }
+    
+    container statistics {
+      description
+        "A collection of interface-related statistics objects.";
+
+      leaf discontinuity-time {
+        type yang:date-and-time;
+        mandatory true;
+        description
+          "The time on the most recent occasion at which any one or
+           more of this interface's counters suffered a
+           discontinuity.  If no such discontinuities have occurred
+           since the last re-initialization of the local management
+           subsystem, then this node contains the time the local
+           management subsystem re-initialized itself.";
+      }
+
+      leaf in-octets {
+        type yang:counter64;
+        description
+          "The total number of octets received.
+
+           Discontinuities in the value of this counter can occur
+           at re-initialization of the management system, and at
+           other times as indicated by the value of
+           'discontinuity-time'.";
+      }
+      leaf in-messages {
+        type yang:counter64;
+        description
+          "The number of messages received.
+
+           Discontinuities in the value of this counter can occur
+           at re-initialization of the management system, and at
+           other times as indicated by the value of
+           'discontinuity-time'.";
+      }
+      leaf out-octets {
+        type yang:counter64;
+        description
+          "The total number of octets sent.
+
+           Discontinuities in the value of this counter can occur
+           at re-initialization of the management system, and at
+           other times as indicated by the value of
+           'discontinuity-time'.";
+      }
+      leaf out-messages {
+        type yang:counter64;
+        description
+          "The number of messages sent.
+
+           Discontinuities in the value of this counter can occur
+           at re-initialization of the management system, and at
+           other times as indicated by the value of
+           'discontinuity-time'.";
+      }
+      
+      leaf total-addresses {
+        type uint32;
+        description
+          "The number of learned addresses.";
+      }
+      leaf total-labels {
+        type uint32;
+        description
+          "The number of learned labels.";
+      }
+      leaf total-labels-address-bindings {
+        type uint32;
+        description
+          "The number of learned label-address bindings.";
+      }
+    } // statistics
+  } // neighbor-state-derived
+
+  grouping policy-attributes {
+    description
+      "LDP policy attributes.";
+    container label-policy {
+      description
+        "Label policy attributes.";
+      container independent-mode {
+        description
+          "Independent label policy attributes.";
+        container assign {
+
+          if-feature policy-label-assignment-config;
+          description
+            "Label assignment policies";
+          choice prefix-option {
+            description
+              "Use either prefix-list or host-routes-only.";
+            case prefix-list {
+              leaf prefix-list {
+                type prefix-list-ref;
+                description
+                  "Assign labels according to certain prefixes.";
+              }
+            }
+            case host-routes-only {
+              leaf host-routes-only {
+                type boolean;
+                description
+                  "'true' to apply host routes only.";
+              }
+            }
+          } // prefix-option
+        }
+        container advertise {
+          description
+            "Label advertising policies.";
+          container explicit-null {
+            presence "Present to enable explicit null.";
+            description
+              "Enables an egress router to advertise an
+               explicit null label (value 0) in place of an
+               implicit null label (value 3) to the
+               penultimate hop router.";
+            leaf prefix-list {
+              type prefix-list-ref;
+              description
+                "Prefix list name. Applies the filters in the
+                 specified prefix list to label
+                 advertisements.
+                 If the prefix list is not specified, explicit
+                 null label advertisement is enabled for all
+                 directly connected prefixes.";
+            }
+          }
+          leaf prefix-list {
+            type prefix-list-ref;
+            description
+              "Applies the prefix list to outgoing label
+               advertisements.";
+
+          }
+        }
+        container accept {
+          description
+            "Label advertisement acceptance policies.";
+          leaf prefix-list {
+            type prefix-list-ref;
+            description
+              "Applies the prefix list to incoming label
+               advertisements.";
+          }
+        }
+      } // independent-mode
+      container ordered-mode {
+        if-feature policy-ordered-label-config;
+        description
+          "Ordered label policy attributes.";
+        container egress-lsr {
+          description
+            "Egress LSR label assignment policies";
+          leaf prefix-list {
+            type prefix-list-ref;
+            description
+              "Assign labels according to certain prefixes.";
+          }
+        }
+        container advertise {
+          description
+            "Label advertising policies.";
+          leaf prefix-list {
+            type prefix-list-ref;
+            description
+              "Applies the prefix list to outgoing label
+               advertisements.";
+          }
+        }
+        container accept {
+          description
+            "Label advertisement acceptance policies.";
+          leaf prefix-list {
+            type prefix-list-ref;
+            description
+              "Applies the prefix list to incoming label
+               advertisements.";
+          }
+        }
+      } // ordered-mode
+    } // label-policy
+
+  } // policy-attributes
+
+  grouping session-protection-per-vrf {
+    description "Session protection attributes.";
+    container session-protection {
+      if-feature session-protection;
+      description
+        "Session protection attributes.";
+      leaf enable {
+        type boolean;
+        description
+          "'true' if session protection is enabled.";
+      }
+      leaf duration {
+        type duration32-inf;
+        description
+          "Session protection duration.";
+      }
+      leaf peer-list {
+
+        type peer-list-ref;
+        description
+          "The name of a peer ACL.";
+      }
+    } // session-protection
+  } // session-protection-per-vrf
+
+  grouping session-protection-per-neighbor {
+    description "Session protection attributes.";
+    container session-protection {
+      if-feature session-protection;
+      description
+        "Session protection attributes.";
+      leaf enable {
+        type boolean;
+        description
+          "'true' if session protection is enabled.";
+      }
+      leaf duration {
+        type duration32-inf;
+        description
+          "Session protection duration.";
+      }
+    } // session-protection
+  } // session-protection-per-neighbor
 
   /*
    * Configuration data nodes
    */
 
-  augment "/rt:routing/rt:routing-instance/rt:routing-protocols/"
-    + "rt:routing-protocol" {
-    when "rt:type = 'ldp:mpls-ldp'" {
-      description
-        "This augment is only valid for a protocol instance
-         of LDP.";
-    }
+  augment "/rt:routing/rt:routing-instance/mpls:mpls" {
     description "LDP augmentation.";
 
     container mpls-ldp {
+      presence "Container for LDP protocol.";
       description
-        "LDP.";
+        "Container for LDP protocol.";
 
-      container config {
+      container global {
         description
-          "Configuration data.";
-        uses global-attributes;
-      }
-      container state {
-        config false;
-        description
-          "Operational state data.";
-        uses global-attributes;
+          "Global attributes for LDP.";
+        container config {
+          description
+            "Configuration data.";
+          uses global-attributes;
+        }
+        container state {
+          config false;
+          description
+            "Operational state data.";
+          uses global-attributes;
+        }
       }
 
       container mldp {
@@ -1056,7 +1325,7 @@ module ietf-mpls-ldp {
            here does not enable any MP capabilities. MP capabilities
            need to be explicitly enabled under container
            capability.";
-        
+
         container config {
           description
             "Configuration data.";
@@ -1069,6 +1338,7 @@ module ietf-mpls-ldp {
         container state {
           config false;
           description
+
             "Operational state data.";
           leaf enable {
             type boolean;
@@ -1079,14 +1349,14 @@ module ietf-mpls-ldp {
 
         list address-family {
           key "af";
-          description 
+          description
             "Per-af params.";
           leaf af {
             type address-family-type;
             description
               "Address family type value.";
           }
-          
+
           container config {
             description
               "Configuration data.";
@@ -1117,6 +1387,7 @@ module ietf-mpls-ldp {
               "Operational state data.";
             container multicast-only-frr {
               if-feature mldp-mofrr;
+
               description
                 "Multicast only FRR (MoFRR) policy.";
               leaf prefix-list {
@@ -1136,8 +1407,8 @@ module ietf-mpls-ldp {
               }
             } // recursive-for
           }
-            
-          container configured-lsps {
+
+          container configured-leaf-lsps {
             description
               "Configured multicast LSPs.";
 
@@ -1151,19 +1422,20 @@ module ietf-mpls-ldp {
                 "Configured multipoint-to-multipoint LSPs.";
               uses mldp-configured-lsp-roots;
             }
-          } // configured-lsps
+          } // configured-leaf-lsps
         } // list address-family
       } // mldp
 
       list address-family {
         key "af";
-        description 
+        description
           "Per-vrf per-af params.";
         leaf af {
           type address-family-type;
           description
             "Address family type value.";
         }
+
 
         container config {
           description
@@ -1174,13 +1446,13 @@ module ietf-mpls-ldp {
               "'true' to enable the address family.";
           }
           uses policy-attributes;
-          
+
           container ipv4 {
             when "../../af = 'ipv4'" {
               description
                 "Only for IPv4.";
             }
-            description 
+            description
               "IPv4 address family.";
             leaf transport-address {
               type inet:ipv4-address;
@@ -1194,7 +1466,7 @@ module ietf-mpls-ldp {
               description
                 "Only for IPv6.";
             }
-            description 
+            description
               "IPv6 address family.";
             leaf transport-address {
               type inet:ipv6-address;
@@ -1213,14 +1485,15 @@ module ietf-mpls-ldp {
             description
               "'true' to enable the address family.";
           }
+
           uses policy-attributes;
-          
+
           container ipv4 {
             when "../../af = 'ipv4'" {
               description
                 "Only for IPv4.";
             }
-            description 
+            description
               "IPv4 address family.";
             leaf transport-address {
               type inet:ipv4-address;
@@ -1234,7 +1507,7 @@ module ietf-mpls-ldp {
               description
                 "Only for IPv6.";
             }
-            description 
+            description
               "IPv6 address family.";
             leaf transport-address {
               type inet:ipv6-address;
@@ -1245,11 +1518,11 @@ module ietf-mpls-ldp {
           } // ipv6
         }
       }
-      
+
       container discovery {
         description
           "Neibgbor discovery configuration.";
-        
+
         container interfaces {
           description
             "A list of interfaces for basic descovery.";
@@ -1261,10 +1534,11 @@ module ietf-mpls-ldp {
           container state {
             config false;
             description
+
               "Operational state data.";
             uses basic-discovery-timers;
           }
-          
+
           list interface {
             key "interface";
             description
@@ -1272,7 +1546,7 @@ module ietf-mpls-ldp {
             leaf interface {
               type if:interface-ref;
               description
-                "Interface.";            
+                "Interface.";
             }
             container config {
               description
@@ -1309,14 +1583,20 @@ module ietf-mpls-ldp {
                 description
                   "Sets the interval that the LDP waits before
                    notifying the Interior Gateway Protocol (IGP) that
+
                    label exchange is completed so that IGP can start
                    advertising the normal metric for the link.";
               }
-            }
-            
+              leaf next-hello {
+                type uint16;
+                units seconds;
+                description "Time to send the next hello message.";
+              }
+            } // state
+
             list address-family {
               key "af";
-              description 
+              description
                 "Per-vrf per-af params.";
               leaf af {
                 type address-family-type;
@@ -1331,7 +1611,7 @@ module ietf-mpls-ldp {
                   description
                     "Enable the address family on the interface.";
                 }
-                
+
                 container ipv4 {
                   must "/if:interfaces/if:interface"
                     + "[name = current()/../../../interface]/"
@@ -1339,17 +1619,17 @@ module ietf-mpls-ldp {
                     description
                       "Only if IPv4 is enabled on the interface.";
                   }
-                  description 
+                  description
                     "IPv4 address family.";
                   leaf transport-address {
                     type union {
                       type enumeration {
                         enum "use-interface-address" {
-                          description 
+                          description
                           "Use interface address as the transport
                            address.";
                         }
-                      }                      
+                      }
                       type inet:ipv4-address;
                     }
                     description
@@ -1357,6 +1637,7 @@ module ietf-mpls-ldp {
                         transport address.";
                   }
                 }
+
                 container ipv6 {
                   must "/if:interfaces/if:interface"
                     + "[name = current()/../../../interface]/"
@@ -1364,17 +1645,17 @@ module ietf-mpls-ldp {
                     description
                       "Only if IPv6 is enabled on the interface.";
                   }
-                  description 
+                  description
                     "IPv6 address family.";
                   leaf transport-address {
                     type union {
                       type enumeration {
                         enum "use-interface-address" {
-                          description 
+                          description
                           "Use interface address as the transport
                            address.";
                         }
-                      }                      
+                      }
                       type inet:ipv4-address;
                     }
                     description
@@ -1392,7 +1673,7 @@ module ietf-mpls-ldp {
                   description
                     "Enable the address family on the interface.";
                 }
-                
+
                 container ipv4 {
                   must "/if:interfaces/if:interface"
                     + "[name = current()/../../../interface]/"
@@ -1400,23 +1681,45 @@ module ietf-mpls-ldp {
                     description
                       "Only if IPv4 is enabled on the interface.";
                   }
-                  description 
+                  description
                     "IPv4 address family.";
                   leaf transport-address {
                     type union {
                       type enumeration {
+
                         enum "use-interface-address" {
-                          description 
+                          description
                           "Use interface address as the transport
                            address.";
                         }
-                      }                      
+                      }
                       type inet:ipv4-address;
                     }
                     description
                       "IP address to be advertised as the LDP
                        transport address.";
                   }
+
+                  list hello-adjacencies {
+                    key "adjacent-address";
+                    description "List of hello adjacencies.";
+                
+                    leaf adjacent-address {
+                      type inet:ipv4-address;
+                      description "";
+                    }
+    
+                    uses adjacency-state-attributes;
+
+                    leaf peer {
+                      type leafref {
+                        path "../../../../../../../../peers/peer/"
+                          + "lsr-id";
+                      }
+                      description
+                        "LDP peer from this adjacency.";
+                    }
+                  } // hello-adjacencies
                 }
                 container ipv6 {
                   must "/if:interfaces/if:interface"
@@ -1425,34 +1728,56 @@ module ietf-mpls-ldp {
                     description
                       "Only if IPv6 is enabled on the interface.";
                   }
-                  description 
+                  description
                     "IPv6 address family.";
                   leaf transport-address {
                     type union {
                       type enumeration {
                         enum "use-interface-address" {
-                          description 
+                          description
                           "Use interface address as the transport
                            address.";
                         }
-                      }                      
+                      }
                       type inet:ipv4-address;
                     }
                     description
                       "IP address to be advertised as the LDP
                        transport address.";
                   }
+
+                  list hello-adjacencies {
+                    key "adjacent-address";
+                    description "List of hello adjacencies.";
+                
+                    leaf adjacent-address {
+                      type inet:ipv6-address;
+                      description "";
+                    }
+    
+                    uses adjacency-state-attributes;
+
+                    leaf peer {
+                      type leafref {
+                        path "../../../../../../../../peers/peer/"
+                          + "lsr-id";
+                      }
+                      description
+                        "LDP peer from this adjacency.";
+                    }
+                  } // hello-adjacencies
                 } // ipv6
               }
             } // address-family
           } // list interface
         } // interfaces
-        
+
         container targeted
         {
           description
             "A list of targeted neighbors for extended discovery.";
           container config {
+
             description
               "Configuration data.";
             uses extended-discovery-timers;
@@ -1465,12 +1790,93 @@ module ietf-mpls-ldp {
             uses extended-discovery-timers;
             uses extended-discovery-policy-attributes;
           }
-          
-          container address-family {
-            description 
-              "Per-vrf per-af params.";
+
+          list address-family {
+            key "af";
+            description
+              "Per-af params.";
+            leaf af {
+              type address-family-type;
+              description
+                "Address family type value.";
+            }
+
+            container state {
+              config false;
+              description
+                "Operational state data.";
+
+              container ipv4 {
+                when "../../af = 'ipv4'" {
+                  description
+                    "For IPv4.";
+                }
+                description
+                  "IPv4 address family.";
+                list hello-adjacencies {
+                  key "local-address adjacent-address";
+                  description "List of hello adjacencies.";
+              
+                  leaf local-address {
+                    type inet:ipv4-address;
+                    description "";
+                  }
+                  leaf adjacent-address {
+                    type inet:ipv4-address;
+                    description "";
+                  }
+                  
+                  uses adjacency-state-attributes;
+                  
+                  leaf peer {
+                    type leafref {
+                      path "../../../../../../../peers/peer/lsr-id";
+                    }
+                    description
+                      "LDP peer from this adjacency.";
+                  }
+                } // hello-adjacencies
+              } // ipv4
+
+              container ipv6 {
+                when "../../af = 'ipv6'" {
+                  description
+                    "For IPv6.";
+                }
+                description
+                  "IPv6 address family.";
+                list hello-adjacencies {
+                  key "local-address adjacent-address";
+                  description "List of hello adjacencies.";
+              
+                  leaf local-address {
+                    type inet:ipv6-address;
+                    description "";
+                  }
+                  leaf adjacent-address {
+                    type inet:ipv6-address;
+                    description "";
+                  }
+                  
+                  uses adjacency-state-attributes;
+                  
+                  leaf peer {
+                    type leafref {
+                      path "../../../../../../../peers/peer/lsr-id";
+                    }
+                    description
+                      "LDP peer from this adjacency.";
+                  }
+                } // hello-adjacencies
+              } // ipv6
+            } // state
+
             container ipv4 {
-              description 
+              when "../af = 'ipv4'" {
+                description
+                  "For IPv4.";
+              }
+              description
                 "IPv4 address family.";
               list target {
                 key "address";
@@ -1506,13 +1912,17 @@ module ietf-mpls-ldp {
               }
             } // ipv4
             container ipv6 {
-              description 
+              when "../af = 'ipv6'" {
+                description
+                  "For IPv6.";
+              }
+              description
                 "IPv6 address family.";
               list target {
                 key "address";
                 description
                   "Targeted discovery params.";
-                
+
                 leaf address {
                   type inet:ipv6-address;
                   description
@@ -1544,12 +1954,12 @@ module ietf-mpls-ldp {
           } // address-family
         } // targeted
       } // discovery
-        
+
       container forwarding-nexthop {
         if-feature forwarding-nexthop-config;
         description
           "Configuration for forwarding nexthop.";
-        
+
         container interfaces {
           description
             "A list of interfaces on which forwarding is disabled.";
@@ -1561,11 +1971,11 @@ module ietf-mpls-ldp {
             leaf interface {
               type if:interface-ref;
               description
-                "Interface.";            
+                "Interface.";
             }
             list address-family {
               key "af";
-              description 
+              description
                 "Per-vrf per-af params.";
               leaf af {
                 type address-family-type;
@@ -1598,6 +2008,7 @@ module ietf-mpls-ldp {
                 }
                 leaf mldp-disable {
                   if-feature mldp;
+
                   type boolean;
                   description
                     "Disable mLDP forwarding on the interface.";
@@ -1608,9 +2019,9 @@ module ietf-mpls-ldp {
         } // interfaces
       } // forwarding-nexthop
 
-      container neighbors {
+      container peers {
         description
-          "Neighbors configuration attributes.";
+          "Peers configuration attributes.";
 
         container config {
           description
@@ -1619,7 +2030,7 @@ module ietf-mpls-ldp {
             if-feature global-session-authentication;
           }
           uses neighbor-attributes;
-          
+
           container session-downstream-on-demand {
             if-feature session-downstream-on-demand-config;
             description
@@ -1635,7 +2046,7 @@ module ietf-mpls-ldp {
                 "The name of a peer ACL.";
             }
           }
-        
+
           uses session-protection-per-vrf;
         }
         container state {
@@ -1646,7 +2057,7 @@ module ietf-mpls-ldp {
             if-feature global-session-authentication;
           }
           uses neighbor-attributes;
-          
+
           container session-downstream-on-demand {
             if-feature session-downstream-on-demand-config;
             description
@@ -1662,15 +2073,15 @@ module ietf-mpls-ldp {
                 "The name of a peer ACL.";
             }
           }
-        
+
           uses session-protection-per-vrf;
         }
-        
-        list neighbor {
+
+        list peer {
           key "lsr-id";
           description
             "List of neighbors.";
-          
+
           leaf lsr-id {
             type union {
               type yang:dotted-quad;
@@ -1678,7 +2089,7 @@ module ietf-mpls-ldp {
             }
             description "LSR ID.";
           }
-          
+
           container config {
             description
               "Configuration data.";
@@ -1688,39 +2099,40 @@ module ietf-mpls-ldp {
               description
                 "'true' to disable the neighbor.";
             }
-            
+
             container capability {
               description
                 "Per neighbor capability";
               container mldp {
                 if-feature mldp;
                 description
+
                   "mLDP capabilities.";
                 uses mldp-capabilities;
               }
             }
 
             uses neighbor-authentication;
-            
+
             uses graceful-restart-attributes-per-neighbor {
               if-feature per-neighbor-graceful-restart-config;
             }
-            
+
             uses neighbor-attributes {
               if-feature per-neighbor-session-attributes-config;
             }
             uses session-protection-per-neighbor;
-            
+
             container address-family {
-              description 
+              description
                 "Per-vrf per-af params.";
               container ipv4 {
-                description 
+                description
                   "IPv4 address family.";
                 uses neighbor-af-policy-attributes;
               }
               container ipv6 {
-                description 
+                description
                   "IPv6 address family.";
                 uses neighbor-af-policy-attributes;
               } // ipv6
@@ -1736,46 +2148,91 @@ module ietf-mpls-ldp {
               description
                 "'true' to disable the neighbor.";
             }
-            
+
             container capability {
               description
                 "Per neighbor capability";
               container mldp {
                 if-feature mldp;
                 description
+
                   "mLDP capabilities.";
                 uses mldp-capabilities;
               }
             }
 
             uses neighbor-authentication;
-            
+
             uses graceful-restart-attributes-per-neighbor {
               if-feature per-neighbor-graceful-restart-config;
             }
-            
+
             uses neighbor-attributes {
               if-feature per-neighbor-session-attributes-config;
             }
             uses session-protection-per-neighbor;
-            
+
             container address-family {
-              description 
+              description
                 "Per-vrf per-af params.";
               container ipv4 {
-                description 
+                description
                   "IPv4 address family.";
                 uses neighbor-af-policy-attributes;
-              }
+
+                list hello-adjacencies {
+                  key "local-address adjacent-address";
+                  description "List of hello adjacencies.";
+                  
+                  leaf local-address {
+                    type inet:ipv4-address;
+                    description "";
+                  }
+                  leaf adjacent-address {
+                    type inet:ipv4-address;
+                    description "";
+                  }
+                  
+                  uses adjacency-state-attributes;
+                  
+                  leaf interface {
+                    type if:interface-ref;
+                    description "Interface for this adjacency.";
+                  }                  
+                } // hello-adjacencies                
+              } // ipv4
               container ipv6 {
-                description 
+                description
                   "IPv6 address family.";
                 uses neighbor-af-policy-attributes;
+
+                list hello-adjacencies {
+                  key "local-address adjacent-address";
+                  description "List of hello adjacencies.";
+                  
+                  leaf local-address {
+                    type inet:ipv6-address;
+                    description "";
+                  }
+                  leaf adjacent-address {
+                    type inet:ipv6-address;
+                    description "";
+                  }
+                  
+                  uses adjacency-state-attributes;
+                  
+                  leaf interface {
+                    type if:interface-ref;
+                    description "Interface for this adjacency.";
+                  }
+                } // hello-adjacencies                
               } // ipv6
             } // address-family
-          }
+
+            uses neighbor-state-derived;
+          } // state
         } // list neighbor
-      } // neighbors        
+      } // neighbors
     } // container mpls-ldp
   }
 
@@ -1783,20 +2240,21 @@ module ietf-mpls-ldp {
    * RPCs
    */
   rpc mpls-ldp-clear-neighbor {
-    description 
+    description
       "Clears the session to the neighbor.";
     input {
       uses ldp-instance-ref {
-        description 
+        description
           "VRF instance name. If this is not provided
            then all instances are cleared.";
       }
+
       leaf lsr-id {
         type union {
           type yang:dotted-quad;
           type uint32;
         }
-        description 
+        description
           "LSR ID of neighbor to be cleared. If this is not provided
            then all neighbors are cleared";
       }
@@ -1804,16 +2262,16 @@ module ietf-mpls-ldp {
   }
 
   rpc mpls-ldp-clear-adjacency {
-    description 
+    description
       "Clears the hello adjacency";
     input {
       uses ldp-instance-ref {
-        description 
+        description
           "VRF instance name. If this is not provided
            then all instances are cleared.";
       }
       container adjacency {
-        description 
+        description
           "Link adjacency or targettted adjacency. If this is not
            provided then all hello adjacencies are cleared";
         choice adjacency-type {
@@ -1825,7 +2283,7 @@ module ietf-mpls-ldp {
                 "Clear targeted adjacencies.";
               leaf target-address {
                 type inet:ip-address;
-                description 
+                description
                   "The target address. If this is not provided then
                    all targeted adjacencies are cleared";
               }
@@ -1838,17 +2296,18 @@ module ietf-mpls-ldp {
                 "Clear link adjacencies.";
               leaf next-hop-interface {
                 type if:interface-ref;
-                description 
+                description
+
                   "Interface connecting to next-hop. If this is not
                    provided then all link adjacencies are cleared.";
               }
               leaf next-hop-address {
                 type inet:ip-address;
                 must "../next-hop-interface" {
-                  description 
+                  description
                     "Applicable when interface is specified.";
                 }
-                description 
+                description
                   "IP address of next-hop. If this is not provided
                    then adjacencies to all next-hops on the given
                    interface are cleared.";
@@ -1859,14 +2318,14 @@ module ietf-mpls-ldp {
       }
     }
   }
-  
+
   rpc mpls-ldp-clear-neighbor-statistics {
-    description 
+    description
       "Clears protocol statistics (e.g. sent and received
        counters).";
     input {
       uses ldp-instance-ref {
-        description 
+        description
           "VRF instance name. If this is not provided
           then all instances are cleared.";
       }
@@ -1875,19 +2334,20 @@ module ietf-mpls-ldp {
           type yang:dotted-quad;
           type uint32;
         }
-        description 
+        description
           "LSR ID of neighbor whose statistic are to be cleared.
            If this is not provided then all neighbors statistics are
            cleared";
       }
     }
   }
-  
+
   /*
    * Notifications
    */
   notification mpls-ldp-neighbor-event {
-    description 
+
+    description
       "Notification event for a change of LDP neighbor operational
        status.";
     leaf event-type {
@@ -1898,7 +2358,7 @@ module ietf-mpls-ldp {
   }
 
   notification mpls-ldp-adjacency-event {
-    description 
+    description
       "Notification event for a change of LDP adjacency operational
        status.";
     leaf event-type {
@@ -1906,10 +2366,10 @@ module ietf-mpls-ldp {
       description "Event type.";
     }
     uses ldp-adjacency-ref;
-  }  
+  }
 
   notification mpls-ldp-fec-event {
-    description 
+    description
       "Notification event for a change of FEC status.";
     leaf event-type {
       type oper-status-event-type;
@@ -1919,7 +2379,7 @@ module ietf-mpls-ldp {
   }
 
   notification mpls-mldp-fec-event {
-    description 
+    description
       "Notification event for a change of FEC status.";
     leaf event-type {
       type oper-status-event-type;

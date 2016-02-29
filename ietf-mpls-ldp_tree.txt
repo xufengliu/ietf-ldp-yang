@@ -1,79 +1,78 @@
 module: ietf-mpls-ldp
-augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol:
-   +--rw mpls-ldp
-      +--rw config
-      |  +--rw capability
-      |  |  +--rw end-of-lib {capability-end-of-lib}?
-      |  |  |  +--rw enable?   boolean
-      |  |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec}?
-      |  |  |  +--rw enable?   boolean
-      |  |  +--rw upstream-label-assignment {capability-upstream-label-assignment}?
-      |  |  |  +--rw enable?   boolean
-      |  |  +--rw mldp {mldp}?
-      |  |     +--rw p2mp
-      |  |     |  +--rw enable?   boolean
-      |  |     +--rw mp2mp
-      |  |     |  +--rw enable?   boolean
-      |  |     +--rw make-before-break
-      |  |     |  +--rw enable?             boolean
-      |  |     |  +--rw switchover-delay?   uint16
-      |  |     |  +--rw timeout?            uint16
-      |  |     +--rw hub-and-spoke {capability-mldp-hsmp}?
-      |  |     |  +--rw enable?   boolean
-      |  |     +--rw node-protection {capability-mldp-node-protection}?
-      |  |        +--rw plr?           boolean
-      |  |        +--rw merge-point
-      |  |           +--rw enable?                            boolean
-      |  |           +--rw targeted-session-teardown-delay?   uint16
-      |  +--rw graceful-restart
-      |  |  +--rw enable?                boolean
-      |  |  +--rw helper-enable?         boolean {graceful-restart-helper-mode}?
-      |  |  +--rw reconnect-time?        uint16
-      |  |  +--rw recovery-time?         uint16
-      |  |  +--rw forwarding-holdtime?   uint16
-      |  +--rw igp-synchronization-delay?   uint16
-      |  +--rw lsr-id?                      yang:dotted-quad
-      |  +--rw nonstop-routing?             boolean
-      +--ro state
-      |  +--ro capability
-      |  |  +--ro end-of-lib {capability-end-of-lib}?
-      |  |  |  +--ro enable?   boolean
-      |  |  +--ro typed-wildcard-fec {capability-typed-wildcard-fec}?
-      |  |  |  +--ro enable?   boolean
-      |  |  +--ro upstream-label-assignment {capability-upstream-label-assignment}?
-      |  |  |  +--ro enable?   boolean
-      |  |  +--ro mldp {mldp}?
-      |  |     +--ro p2mp
-      |  |     |  +--ro enable?   boolean
-      |  |     +--ro mp2mp
-      |  |     |  +--ro enable?   boolean
-      |  |     +--ro make-before-break
-      |  |     |  +--ro enable?             boolean
-      |  |     |  +--ro switchover-delay?   uint16
-      |  |     |  +--ro timeout?            uint16
-      |  |     +--ro hub-and-spoke {capability-mldp-hsmp}?
-      |  |     |  +--ro enable?   boolean
-      |  |     +--ro node-protection {capability-mldp-node-protection}?
-      |  |        +--ro plr?           boolean
-      |  |        +--ro merge-point
-      |  |           +--ro enable?                            boolean
-      |  |           +--ro targeted-session-teardown-delay?   uint16
-      |  +--ro graceful-restart
-      |  |  +--ro enable?                boolean
-      |  |  +--ro helper-enable?         boolean {graceful-restart-helper-mode}?
-      |  |  +--ro reconnect-time?        uint16
-      |  |  +--ro recovery-time?         uint16
-      |  |  +--ro forwarding-holdtime?   uint16
-      |  +--ro igp-synchronization-delay?   uint16
-      |  +--ro lsr-id?                      yang:dotted-quad
-      |  +--ro nonstop-routing?             boolean
+augment /rt:routing/rt:routing-instance/mpls:mpls:
+   +--rw mpls-ldp!
+      +--rw global
+      |  +--rw config
+      |  |  +--rw capability
+      |  |  |  +--rw end-of-lib {capability-end-of-lib}?
+      |  |  |  |  +--rw enable?   boolean
+      |  |  |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec}?
+      |  |  |  |  +--rw enable?   boolean
+      |  |  |  +--rw upstream-label-assignment {capability-upstream-label-assignment}?
+      |  |  |  |  +--rw enable?   boolean
+      |  |  |  +--rw mldp {mldp}?
+      |  |  |     +--rw p2mp
+      |  |  |     |  +--rw enable?   boolean
+      |  |  |     +--rw mp2mp
+      |  |  |     |  +--rw enable?   boolean
+      |  |  |     +--rw make-before-break
+      |  |  |     |  +--rw enable?             boolean
+      |  |  |     |  +--rw switchover-delay?   uint16
+      |  |  |     |  +--rw timeout?            uint16
+      |  |  |     +--rw hub-and-spoke {capability-mldp-hsmp}?
+      |  |  |     |  +--rw enable?   boolean
+      |  |  |     +--rw node-protection {capability-mldp-node-protection}?
+      |  |  |        +--rw plr?           boolean
+      |  |  |        +--rw merge-point
+      |  |  |           +--rw enable?                            boolean
+      |  |  |           +--rw targeted-session-teardown-delay?   uint16
+      |  |  +--rw graceful-restart
+      |  |  |  +--rw enable?                boolean
+      |  |  |  +--rw helper-enable?         boolean {graceful-restart-helper-mode}?
+      |  |  |  +--rw reconnect-time?        uint16
+      |  |  |  +--rw recovery-time?         uint16
+      |  |  |  +--rw forwarding-holdtime?   uint16
+      |  |  +--rw igp-synchronization-delay?   uint16
+      |  |  +--rw lsr-id?                      yang:dotted-quad
+      |  +--ro state
+      |     +--ro capability
+      |     |  +--ro end-of-lib {capability-end-of-lib}?
+      |     |  |  +--ro enable?   boolean
+      |     |  +--ro typed-wildcard-fec {capability-typed-wildcard-fec}?
+      |     |  |  +--ro enable?   boolean
+      |     |  +--ro upstream-label-assignment {capability-upstream-label-assignment}?
+      |     |  |  +--ro enable?   boolean
+      |     |  +--ro mldp {mldp}?
+      |     |     +--ro p2mp
+      |     |     |  +--ro enable?   boolean
+      |     |     +--ro mp2mp
+      |     |     |  +--ro enable?   boolean
+      |     |     +--ro make-before-break
+      |     |     |  +--ro enable?             boolean
+      |     |     |  +--ro switchover-delay?   uint16
+      |     |     |  +--ro timeout?            uint16
+      |     |     +--ro hub-and-spoke {capability-mldp-hsmp}?
+      |     |     |  +--ro enable?   boolean
+      |     |     +--ro node-protection {capability-mldp-node-protection}?
+      |     |        +--ro plr?           boolean
+      |     |        +--ro merge-point
+      |     |           +--ro enable?                            boolean
+      |     |           +--ro targeted-session-teardown-delay?   uint16
+      |     +--ro graceful-restart
+      |     |  +--ro enable?                boolean
+      |     |  +--ro helper-enable?         boolean {graceful-restart-helper-mode}?
+      |     |  +--ro reconnect-time?        uint16
+      |     |  +--ro recovery-time?         uint16
+      |     |  +--ro forwarding-holdtime?   uint16
+      |     +--ro igp-synchronization-delay?   uint16
+      |     +--ro lsr-id?                      yang:dotted-quad
       +--rw mldp {mldp}?
       |  +--rw config
       |  |  +--rw enable?   boolean
       |  +--ro state
       |  |  +--ro enable?   boolean
       |  +--rw address-family* [af]
-      |     +--rw af                 address-family-type
+      |     +--rw af                      address-family-type
       |     +--rw config
       |     |  +--rw multicast-only-frr {mldp-mofrr}?
       |     |  |  +--rw prefix-list?   prefix-list-ref
@@ -84,7 +83,7 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |     |  |  +--ro prefix-list?   prefix-list-ref
       |     |  +--ro recursive-fec
       |     |     +--ro prefix-list?   prefix-list-ref
-      |     +--rw configured-lsps
+      |     +--rw configured-leaf-lsps
       |        +--rw p2mp
       |        |  +--rw roots-ipv4
       |        |  |  +--rw root* [root-addr]
@@ -189,6 +188,7 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |  |     |  +--ro hello-holdtime?              uint16
       |  |     |  +--ro hello-interval?              uint16
       |  |     |  +--ro igp-synchronization-delay?   uint16 {per-interface-timer-config}?
+      |  |     |  +--ro next-hello?                  uint16
       |  |     +--rw address-family* [af]
       |  |        +--rw af        address-family-type
       |  |        +--rw config
@@ -201,8 +201,24 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |  |           +--ro enable?   boolean
       |  |           +--ro ipv4
       |  |           |  +--ro transport-address?   union
+      |  |           |  +--ro hello-adjacencies* [adjacent-address]
+      |  |           |     +--ro adjacent-address    inet:ipv4-address
+      |  |           |     +--ro hello-holdtime
+      |  |           |     |  +--ro adjacent?     uint16
+      |  |           |     |  +--ro negotiated?   uint16
+      |  |           |     |  +--ro remaining?    uint16
+      |  |           |     +--ro next-hello?         uint16
+      |  |           |     +--ro peer?               leafref
       |  |           +--ro ipv6
       |  |              +--ro transport-address?   union
+      |  |              +--ro hello-adjacencies* [adjacent-address]
+      |  |                 +--ro adjacent-address    inet:ipv6-address
+      |  |                 +--ro hello-holdtime
+      |  |                 |  +--ro adjacent?     uint16
+      |  |                 |  +--ro negotiated?   uint16
+      |  |                 |  +--ro remaining?    uint16
+      |  |                 +--ro next-hello?         uint16
+      |  |                 +--ro peer?               leafref
       |  +--rw targeted
       |     +--rw config
       |     |  +--rw hello-holdtime?   uint16
@@ -216,7 +232,29 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |     |  +--ro hello-accept {policy-extended-discovery-config}?
       |     |     +--ro enable?      boolean
       |     |     +--ro peer-list?   peer-list-ref
-      |     +--rw address-family
+      |     +--rw address-family* [af]
+      |        +--rw af       address-family-type
+      |        +--ro state
+      |        |  +--ro ipv4
+      |        |  |  +--ro hello-adjacencies* [local-address adjacent-address]
+      |        |  |     +--ro local-address       inet:ipv4-address
+      |        |  |     +--ro adjacent-address    inet:ipv4-address
+      |        |  |     +--ro hello-holdtime
+      |        |  |     |  +--ro adjacent?     uint16
+      |        |  |     |  +--ro negotiated?   uint16
+      |        |  |     |  +--ro remaining?    uint16
+      |        |  |     +--ro next-hello?         uint16
+      |        |  |     +--ro peer?               leafref
+      |        |  +--ro ipv6
+      |        |     +--ro hello-adjacencies* [local-address adjacent-address]
+      |        |        +--ro local-address       inet:ipv6-address
+      |        |        +--ro adjacent-address    inet:ipv6-address
+      |        |        +--ro hello-holdtime
+      |        |        |  +--ro adjacent?     uint16
+      |        |        |  +--ro negotiated?   uint16
+      |        |        |  +--ro remaining?    uint16
+      |        |        +--ro next-hello?         uint16
+      |        |        +--ro peer?               leafref
       |        +--rw ipv4
       |        |  +--rw target* [address]
       |        |     +--rw address    inet:ipv4-address
@@ -243,7 +281,7 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
       |           +--ro state
       |              +--ro ldp-disable?    boolean
       |              +--ro mldp-disable?   boolean {mldp}?
-      +--rw neighbors
+      +--rw peers
          +--rw config
          |  +--rw md5-password?                   string
          |  +--rw session-ka-holdtime?            uint16
@@ -253,7 +291,7 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
          |  |  +--rw peer-list?   peer-list-ref
          |  +--rw session-protection {session-protection}?
          |     +--rw enable?      boolean
-         |     +--rw duration?    union
+         |     +--rw duration?    duration32-inf
          |     +--rw peer-list?   peer-list-ref
          +--ro state
          |  +--ro md5-password?                   string
@@ -264,9 +302,9 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
          |  |  +--ro peer-list?   peer-list-ref
          |  +--ro session-protection {session-protection}?
          |     +--ro enable?      boolean
-         |     +--ro duration?    union
+         |     +--ro duration?    duration32-inf
          |     +--ro peer-list?   peer-list-ref
-         +--rw neighbor* [lsr-id]
+         +--rw peer* [lsr-id]
             +--rw lsr-id    union
             +--rw config
             |  +--rw admin-down?            boolean
@@ -296,7 +334,7 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
             |  +--rw session-ka-interval?   uint16
             |  +--rw session-protection {session-protection}?
             |  |  +--rw enable?     boolean
-            |  |  +--rw duration?   union
+            |  |  +--rw duration?   duration32-inf
             |  +--rw address-family
             |     +--rw ipv4
             |     |  +--rw label-policy
@@ -311,7 +349,7 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
             |           +--rw accept
             |              +--rw prefix-list?   prefix-list-ref
             +--ro state
-               +--ro admin-down?            boolean
+               +--ro admin-down?                  boolean
                +--ro capability
                |  +--ro mldp {mldp}?
                |     +--ro p2mp
@@ -329,63 +367,133 @@ augment /rt:routing/rt:routing-instance/rt:routing-protocols/rt:routing-protocol
                |        +--ro merge-point
                |           +--ro enable?                            boolean
                |           +--ro targeted-session-teardown-delay?   uint16
-               +--ro md5-password?          string
+               +--ro md5-password?                string
                +--ro graceful-restart
                |  +--ro enable?           boolean
                |  +--ro reconnect-time?   uint16
                |  +--ro recovery-time?    uint16
-               +--ro session-ka-holdtime?   uint16
-               +--ro session-ka-interval?   uint16
+               +--ro session-ka-holdtime?         uint16
+               +--ro session-ka-interval?         uint16
                +--ro session-protection {session-protection}?
                |  +--ro enable?     boolean
-               |  +--ro duration?   union
+               |  +--ro duration?   duration32-inf
                +--ro address-family
-                  +--ro ipv4
-                  |  +--ro label-policy
-                  |     +--ro advertise
-                  |     |  +--ro prefix-list?   prefix-list-ref
-                  |     +--ro accept
-                  |        +--ro prefix-list?   prefix-list-ref
-                  +--ro ipv6
-                     +--ro label-policy
-                        +--ro advertise
-                        |  +--ro prefix-list?   prefix-list-ref
-                        +--ro accept
-                           +--ro prefix-list?   prefix-list-ref
+               |  +--ro ipv4
+               |  |  +--ro label-policy
+               |  |  |  +--ro advertise
+               |  |  |  |  +--ro prefix-list?   prefix-list-ref
+               |  |  |  +--ro accept
+               |  |  |     +--ro prefix-list?   prefix-list-ref
+               |  |  +--ro hello-adjacencies* [local-address adjacent-address]
+               |  |     +--ro local-address       inet:ipv4-address
+               |  |     +--ro adjacent-address    inet:ipv4-address
+               |  |     +--ro hello-holdtime
+               |  |     |  +--ro adjacent?     uint16
+               |  |     |  +--ro negotiated?   uint16
+               |  |     |  +--ro remaining?    uint16
+               |  |     +--ro next-hello?         uint16
+               |  |     +--ro interface?          if:interface-ref
+               |  +--ro ipv6
+               |     +--ro label-policy
+               |     |  +--ro advertise
+               |     |  |  +--ro prefix-list?   prefix-list-ref
+               |     |  +--ro accept
+               |     |     +--ro prefix-list?   prefix-list-ref
+               |     +--ro hello-adjacencies* [local-address adjacent-address]
+               |        +--ro local-address       inet:ipv6-address
+               |        +--ro adjacent-address    inet:ipv6-address
+               |        +--ro hello-holdtime
+               |        |  +--ro adjacent?     uint16
+               |        |  +--ro negotiated?   uint16
+               |        |  +--ro remaining?    uint16
+               |        +--ro next-hello?         uint16
+               |        +--ro interface?          if:interface-ref
+               +--ro label-advertisement-mode
+               |  +--ro local?        label-adv-mode
+               |  +--ro peer?         label-adv-mode
+               |  +--ro negotiated?   label-adv-mode
+               +--ro next-keep-alive?             uint16
+               +--ro oper-status?                 enumeration
+               +--ro peer-features
+               |  +--ro graceful-restart
+               |  |  +--ro enable?           boolean
+               |  |  +--ro reconnect-time?   uint16
+               |  |  +--ro recovery-time?    uint16
+               |  +--ro capability
+               |     +--ro end-of-lib {capability-end-of-lib}?
+               |     |  +--ro enable?   boolean
+               |     +--ro typed-wildcard-fec {capability-typed-wildcard-fec}?
+               |     |  +--ro enable?   boolean
+               |     +--ro upstream-label-assignment {capability-upstream-label-assignment}?
+               |     |  +--ro enable?   boolean
+               |     +--ro mldp {mldp}?
+               |        +--ro p2mp
+               |        |  +--ro enable?   boolean
+               |        +--ro mp2mp
+               |        |  +--ro enable?   boolean
+               |        +--ro make-before-break
+               |        |  +--ro enable?             boolean
+               |        |  +--ro switchover-delay?   uint16
+               |        |  +--ro timeout?            uint16
+               |        +--ro hub-and-spoke {capability-mldp-hsmp}?
+               |        |  +--ro enable?   boolean
+               |        +--ro node-protection {capability-mldp-node-protection}?
+               |           +--ro plr?           boolean
+               |           +--ro merge-point
+               |              +--ro enable?                            boolean
+               |              +--ro targeted-session-teardown-delay?   uint16
+               +--ro peer-ldp-id?                 yang:dotted-quad
+               +--ro session-holdtime
+               |  +--ro peer?         uint16
+               |  +--ro negotiated?   uint16
+               |  +--ro remaining?    uint16
+               +--ro session-protection-status
+               |  +--ro protection-status?   enumeration
+               |  +--ro remaining?           duration32-inf
+               +--ro tcp-connection
+               |  +--ro local-addr?    inet:ip-address
+               |  +--ro local-port?    uint16
+               |  +--ro remote-addr?   inet:ip-address
+               |  +--ro remote-port?   uint16
+               +--ro up-time?                     string
+               +--ro statistics
+                  +--ro discontinuity-time               yang:date-and-time
+                  +--ro in-octets?                       yang:counter64
+                  +--ro in-messages?                     yang:counter64
+                  +--ro out-octets?                      yang:counter64
+                  +--ro out-messages?                    yang:counter64
+                  +--ro total-addresses?                 uint32
+                  +--ro total-labels?                    uint32
+                  +--ro total-labels-address-bindings?   uint32
 rpcs:
-   +---x mpls-ldp-clear-neighbor               
-   |  +--ro input     
-   |     +--ro routing-instance-ref?   rt:routing-instance-ref
-   |     +--ro ldp-protocol-name?      leafref
-   |     +--ro lsr-id?                 union
-   +---x mpls-ldp-clear-adjacency              
-   |  +--ro input     
-   |     +--ro routing-instance-ref?   rt:routing-instance-ref
-   |     +--ro ldp-protocol-name?      leafref
-   |     +--ro adjacency
-   |        +--ro (adjacency-type)?
+   +---x mpls-ldp-clear-neighbor
+   |  +---w input
+   |     +---w routing-instance-ref?   rt:routing-instance-ref
+   |     +---w lsr-id?                 union
+   +---x mpls-ldp-clear-adjacency
+   |  +---w input
+   |     +---w routing-instance-ref?   rt:routing-instance-ref
+   |     +---w adjacency
+   |        +---w (adjacency-type)?
    |           +--:(targeted)
-   |           |  +--ro targeted!
-   |           |     +--ro target-address?   inet:ip-address
+   |           |  +---w targeted!
+   |           |     +---w target-address?   inet:ip-address
    |           +--:(link)
-   |              +--ro link!
-   |                 +--ro next-hop-interface?   if:interface-ref
-   |                 +--ro next-hop-address?     inet:ip-address
-   +---x mpls-ldp-clear-neighbor-statistics    
-      +--ro input     
-         +--ro routing-instance-ref?   rt:routing-instance-ref
-         +--ro ldp-protocol-name?      leafref
-         +--ro lsr-id?                 union
+   |              +---w link!
+   |                 +---w next-hop-interface?   if:interface-ref
+   |                 +---w next-hop-address?     inet:ip-address
+   +---x mpls-ldp-clear-neighbor-statistics
+      +---w input
+         +---w routing-instance-ref?   rt:routing-instance-ref
+         +---w lsr-id?                 union
 notifications:
-   +---n mpls-ldp-neighbor-event     
+   +---n mpls-ldp-neighbor-event
    |  +--ro event-type?             oper-status-event-type
    |  +--ro routing-instance-ref?   rt:routing-instance-ref
-   |  +--ro ldp-protocol-name?      leafref
    |  +--ro neighbor-ref?           leafref
-   +---n mpls-ldp-adjacency-event    
+   +---n mpls-ldp-adjacency-event
    |  +--ro event-type?             oper-status-event-type
    |  +--ro routing-instance-ref?   rt:routing-instance-ref
-   |  +--ro ldp-protocol-name?      leafref
    |  +--ro (adjacency-type)?
    |     +--:(targeted)
    |     |  +--ro targeted
@@ -394,15 +502,13 @@ notifications:
    |        +--ro link
    |           +--ro next-hop-interface?   if:interface-ref
    |           +--ro next-hop-address?     inet:ip-address
-   +---n mpls-ldp-fec-event          
+   +---n mpls-ldp-fec-event
    |  +--ro event-type?             oper-status-event-type
    |  +--ro routing-instance-ref?   rt:routing-instance-ref
-   |  +--ro ldp-protocol-name?      leafref
    |  +--ro prefix?                 inet:ip-prefix
-   +---n mpls-mldp-fec-event         
+   +---n mpls-mldp-fec-event
       +--ro event-type?             oper-status-event-type
       +--ro routing-instance-ref?   rt:routing-instance-ref
-      +--ro ldp-protocol-name?      leafref
       +--ro tree-type?              multipoint-type
       +--ro root?                   inet:ip-address
       +--ro (lsp-key-type)?
