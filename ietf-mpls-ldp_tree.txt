@@ -86,34 +86,34 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |     +--rw configured-leaf-lsps
       |        +--rw p2mp
       |        |  +--rw roots-ipv4
-      |        |  |  +--rw root* [root-addr]
-      |        |  |     +--rw root-addr    inet:ipv4-address
-      |        |  |     +--rw lsp* [lsp-id source-addr group-addr]
-      |        |  |        +--rw lsp-id         uint16
-      |        |  |        +--rw source-addr    inet:ipv4-address-no-zone
-      |        |  |        +--rw group-addr     inet:ipv4-address-no-zone
+      |        |  |  +--rw root* [root-address]
+      |        |  |     +--rw root-address    inet:ipv4-address
+      |        |  |     +--rw lsp* [lsp-id source-address group-address]
+      |        |  |        +--rw lsp-id            uint16
+      |        |  |        +--rw source-address    inet:ipv4-address-no-zone
+      |        |  |        +--rw group-address     inet:ipv4-address-no-zone
       |        |  +--rw roots-ipv6
-      |        |     +--rw root* [root-addr]
-      |        |        +--rw root-addr    inet:ipv6-address
-      |        |        +--rw lsp* [lsp-id source-addr group-addr]
-      |        |           +--rw lsp-id         uint16
-      |        |           +--rw source-addr    inet:ipv6-address-no-zone
-      |        |           +--rw group-addr     inet:ipv6-address-no-zone
+      |        |     +--rw root* [root-address]
+      |        |        +--rw root-address    inet:ipv6-address
+      |        |        +--rw lsp* [lsp-id source-address group-address]
+      |        |           +--rw lsp-id            uint16
+      |        |           +--rw source-address    inet:ipv6-address-no-zone
+      |        |           +--rw group-address     inet:ipv6-address-no-zone
       |        +--rw mp2mp
       |           +--rw roots-ipv4
-      |           |  +--rw root* [root-addr]
-      |           |     +--rw root-addr    inet:ipv4-address
-      |           |     +--rw lsp* [lsp-id source-addr group-addr]
-      |           |        +--rw lsp-id         uint16
-      |           |        +--rw source-addr    inet:ipv4-address-no-zone
-      |           |        +--rw group-addr     inet:ipv4-address-no-zone
+      |           |  +--rw root* [root-address]
+      |           |     +--rw root-address    inet:ipv4-address
+      |           |     +--rw lsp* [lsp-id source-address group-address]
+      |           |        +--rw lsp-id            uint16
+      |           |        +--rw source-address    inet:ipv4-address-no-zone
+      |           |        +--rw group-address     inet:ipv4-address-no-zone
       |           +--rw roots-ipv6
-      |              +--rw root* [root-addr]
-      |                 +--rw root-addr    inet:ipv6-address
-      |                 +--rw lsp* [lsp-id source-addr group-addr]
-      |                    +--rw lsp-id         uint16
-      |                    +--rw source-addr    inet:ipv6-address-no-zone
-      |                    +--rw group-addr     inet:ipv6-address-no-zone
+      |              +--rw root* [root-address]
+      |                 +--rw root-address    inet:ipv6-address
+      |                 +--rw lsp* [lsp-id source-address group-address]
+      |                    +--rw lsp-id            uint16
+      |                    +--rw source-address    inet:ipv6-address-no-zone
+      |                    +--rw group-address     inet:ipv6-address-no-zone
       +--rw address-family* [af]
       |  +--rw af        address-family-type
       |  +--rw config
@@ -168,8 +168,28 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |     |        +--ro prefix-list?   prefix-list-ref
       |     +--ro ipv4
       |     |  +--ro transport-address?   inet:ipv4-address
+      |     |  +--ro binding-address* [address]
+      |     |  |  +--ro address    inet:ipv4-address
+      |     |  |  +--ro in-out?    in-out
+      |     |  +--ro binding-label-fec* [fec]
+      |     |     +--ro fec     inet:ipv4-prefix
+      |     |     +--ro peer* [in-out address]
+      |     |        +--ro in-out                in-out
+      |     |        +--ro address               inet:ipv4-address
+      |     |        +--ro label?                uint32
+      |     |        +--ro used-in-forwarding?   boolean
       |     +--ro ipv6
       |        +--ro transport-address?   inet:ipv6-address
+      |        +--ro binding-address* [address]
+      |        |  +--ro address    inet:ipv6-address
+      |        |  +--ro in-out?    in-out
+      |        +--ro binding-label-fec* [fec]
+      |           +--ro fec     inet:ipv6-prefix
+      |           +--ro peer* [in-out address]
+      |              +--ro in-out                in-out
+      |              +--ro address               inet:ipv6-address
+      |              +--ro label?                uint32
+      |              +--ro used-in-forwarding?   boolean
       +--rw discovery
       |  +--rw interfaces
       |  |  +--rw config
@@ -461,20 +481,20 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
                |  +--ro protection-status?   enumeration
                |  +--ro remaining?           duration32-inf
                +--ro tcp-connection
-               |  +--ro local-addr?    inet:ip-address
-               |  +--ro local-port?    uint16
-               |  +--ro remote-addr?   inet:ip-address
-               |  +--ro remote-port?   uint16
+               |  +--ro local-address?    inet:ip-address
+               |  +--ro local-port?       uint16
+               |  +--ro remote-address?   inet:ip-address
+               |  +--ro remote-port?      uint16
                +--ro up-time?                     string
                +--ro statistics
-                  +--ro discontinuity-time               yang:date-and-time
-                  +--ro in-octets?                       yang:counter64
-                  +--ro in-messages?                     yang:counter64
-                  +--ro out-octets?                      yang:counter64
-                  +--ro out-messages?                    yang:counter64
-                  +--ro total-addresses?                 uint32
-                  +--ro total-labels?                    uint32
-                  +--ro total-labels-address-bindings?   uint32
+                  +--ro discontinuity-time              yang:date-and-time
+                  +--ro in-octets?                      yang:counter64
+                  +--ro in-messages?                    yang:counter64
+                  +--ro out-octets?                     yang:counter64
+                  +--ro out-messages?                   yang:counter64
+                  +--ro total-addresses?                uint32
+                  +--ro total-labels?                   uint32
+                  +--ro total-label-address-bindings?   uint32
 rpcs:
    +---x mpls-ldp-clear-neighbor
    |  +---w input
@@ -525,5 +545,5 @@ notifications:
          +--:(lsp-id-based)
          |  +--ro lsp-id?                 uint16
          +--:(source-group-based)
-            +--ro source-addr?            inet:ip-address
-            +--ro group-addr?             inet:ip-address
+            +--ro source-address?         inet:ip-address
+            +--ro group-address?          inet:ip-address

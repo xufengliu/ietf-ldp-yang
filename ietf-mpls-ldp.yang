@@ -36,7 +36,7 @@ module ietf-mpls-ldp {
   description
     "";
 
-  revision 2016-02-26 {
+  revision 2016-03-06 {
     description
       "Initial revision.";
     reference
@@ -193,6 +193,19 @@ module ietf-mpls-ldp {
       "Duration represented as 32 bit seconds with infinite.";
   }
 
+  typedef in-out {
+    type enumeration {
+      enum inbound {
+        description "Inbound.";
+      }
+      enum outbound {
+        description "Outbound.";
+      }
+    }
+    description
+      "Inbound or outbound.";
+  }
+
   typedef label-adv-mode {
     type enumeration {
       enum downstream-unsolicited {
@@ -338,6 +351,22 @@ module ietf-mpls-ldp {
          used in basic LDP discovery";
     }
   } // basic-discovery-timers
+
+  grouping binding-label-state-attributes {
+    description
+      "Label binding attributes";
+    leaf label {
+      type uint32;
+      description
+        "Advertised (outbound) or received (inbound)
+         label.";
+    }
+    leaf used-in-forwarding {
+      type boolean;
+      description
+        "'true' if the lable is used in forwarding.";
+    }
+  } // binding-label-state-attributes
 
   grouping extended-discovery-policy-attributes {
     description
@@ -714,38 +743,38 @@ module ietf-mpls-ldp {
       description
         "Configured IPv4 multicast LSPs.";
       list root {
-        key "root-addr";
+        key "root-address";
         description
           "List of roots for configured multicast LSPs.";
 
-        leaf root-addr {
+        leaf root-address {
           type inet:ipv4-address;
           description
             "Root address.";
         }
 
         list lsp {
-          must "(lsp-id = 0 and source-addr != '0.0.0.0' and "
-            + "group-addr != '0.0.0.0') or "
-            + "(lsp-id != 0 and source-addr = '0.0.0.0' and "
-            + "group-addr = '0.0.0.0')" {
+          must "(lsp-id = 0 and source-address != '0.0.0.0' and "
+            + "group-address != '0.0.0.0') or "
+            + "(lsp-id != 0 and source-address = '0.0.0.0' and "
+            + "group-address = '0.0.0.0')" {
             description
               "A LSP can be identified by either <lsp-id> or
-               <source-addr, group-addr>.";
+               <source-address, group-address>.";
           }
-          key "lsp-id source-addr group-addr";
+          key "lsp-id source-address group-address";
           description
             "List of LSPs.";
           leaf lsp-id {
             type uint16;
             description "ID to identify the LSP.";
           }
-          leaf source-addr {
+          leaf source-address {
             type inet:ipv4-address-no-zone;
             description
               "Source address.";
           }
-          leaf group-addr {
+          leaf group-address {
             type inet:ipv4-address-no-zone;
             description
               "Group address.";
@@ -764,38 +793,38 @@ module ietf-mpls-ldp {
         "Configured IPv6 multicast LSPs.";
 
       list root {
-        key "root-addr";
+        key "root-address";
         description
           "List of roots for configured multicast LSPs.";
 
-        leaf root-addr {
+        leaf root-address {
           type inet:ipv6-address;
           description
             "Root address.";
         }
 
         list lsp {
-          must "(lsp-id = 0 and source-addr != '::' and "
-            + "group-addr != '::') or "
-            + "(lsp-id != 0 and source-addr = '::' and "
-            + "group-addr = '::')" {
+          must "(lsp-id = 0 and source-address != '::' and "
+            + "group-address != '::') or "
+            + "(lsp-id != 0 and source-address = '::' and "
+            + "group-address = '::')" {
             description
               "A LSP can be identified by either <lsp-id> or
-               <source-addr, group-addr>.";
+               <source-address, group-address>.";
           }
-          key "lsp-id source-addr group-addr";
+          key "lsp-id source-address group-address";
           description
             "List of LSPs.";
           leaf lsp-id {
             type uint16;
             description "ID to identify the LSP.";
           }
-          leaf source-addr {
+          leaf source-address {
             type inet:ipv6-address-no-zone;
             description
               "Source address.";
           }
-          leaf group-addr {
+          leaf group-address {
             type inet:ipv6-address-no-zone;
             description
               "Group address.";
@@ -830,13 +859,13 @@ module ietf-mpls-ldp {
         }
       }
       case source-group-based {
-        leaf source-addr {
+        leaf source-address {
           type inet:ip-address;
           description
 
             "LSP source address.";
         }
-        leaf group-addr {
+        leaf group-address {
           type inet:ip-address;
           description
             "Multicast group address.";
@@ -1058,7 +1087,7 @@ module ietf-mpls-ldp {
 
     container tcp-connection {
       description "TCP connection state.";
-      leaf local-addr {
+      leaf local-address {
         type inet:ip-address;
         description "Local address.";
       }
@@ -1066,7 +1095,7 @@ module ietf-mpls-ldp {
         type uint16;
         description "Local port.";
       }
-      leaf remote-addr {
+      leaf remote-address {
         type inet:ip-address;
         description "Remote address.";
       }
@@ -1148,7 +1177,7 @@ module ietf-mpls-ldp {
         description
           "The number of learned labels.";
       }
-      leaf total-labels-address-bindings {
+      leaf total-label-address-bindings {
         type uint32;
         description
           "The number of learned label-address bindings.";
@@ -1522,6 +1551,49 @@ module ietf-mpls-ldp {
                 "The transport address advertised in LDP Hello
                  messages.";
             }
+
+            list binding-address {
+              key "address";
+              description
+                "List of address bindings.";
+              leaf address {
+                type inet:ipv4-address;
+                description
+                  "Binding address.";
+              }
+              leaf in-out {
+                type in-out;
+                description
+                  "Inbound or outbound.";
+              }
+            } // binding-address
+
+            list binding-label-fec {
+              key "fec";
+              description
+                "List of label bindings.";
+              leaf fec {
+                type inet:ipv4-prefix;
+                description
+                  "Prefix FEC.";
+              }
+              list peer {
+                key "in-out address";
+                description
+                  "List of outbound and inbound peers.";
+                leaf in-out {
+                  type in-out;
+                  description
+                    "Inbound or outbound.";
+                }
+                leaf address {
+                  type inet:ipv4-address;
+                  description
+                    "Peer address.";
+                }
+                uses binding-label-state-attributes;
+              } // peer
+            } // binding-label-fec
           } // ipv4
           container ipv6 {
             when "../../af = 'ipv6'" {
@@ -1536,6 +1608,49 @@ module ietf-mpls-ldp {
                 "The transport address advertised in LDP Hello
                  messages.";
             }
+
+            list binding-address {
+              key "address";
+              description
+                "List of address bindings.";
+              leaf address {
+                type inet:ipv6-address;
+                description
+                  "Binding address.";
+              }
+              leaf in-out {
+                type in-out;
+                description
+                  "Inbound or outbound.";
+              }
+            } // binding-address
+
+            list binding-label-fec {
+              key "fec";
+              description
+                "List of label bindings.";
+              leaf fec {
+                type inet:ipv6-prefix;
+                description
+                  "Prefix FEC.";
+              }
+              list peer {
+                key "in-out address";
+                description
+                  "List of outbound and inbound peers.";
+                leaf in-out {
+                  type in-out;
+                  description
+                    "Inbound or outbound.";
+                }
+                leaf address {
+                  type inet:ipv6-address;
+                  description
+                    "Peer address.";
+                }
+                uses binding-label-state-attributes;
+              } // peer
+            } // binding-label-fec
           } // ipv6
         }
       }
