@@ -169,27 +169,29 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |     +--ro ipv4
       |     |  +--ro transport-address?   inet:ipv4-address
       |     |  +--ro binding-address* [address]
-      |     |  |  +--ro address    inet:ipv4-address
-      |     |  |  +--ro in-out?    in-out
+      |     |  |  +--ro address                inet:ipv4-address
+      |     |  |  +--ro advertised-received?   advertised-received
+      |     |  |  +--ro peer?                  leafref
       |     |  +--ro binding-label-fec* [fec]
       |     |     +--ro fec     inet:ipv4-prefix
-      |     |     +--ro peer* [in-out address]
-      |     |        +--ro in-out                in-out
-      |     |        +--ro address               inet:ipv4-address
-      |     |        +--ro label?                uint32
-      |     |        +--ro used-in-forwarding?   boolean
+      |     |     +--ro peer* [advertised-received peer]
+      |     |        +--ro advertised-received    advertised-received
+      |     |        +--ro peer                   leafref
+      |     |        +--ro label?                 uint32
+      |     |        +--ro used-in-forwarding?    boolean
       |     +--ro ipv6
       |        +--ro transport-address?   inet:ipv6-address
       |        +--ro binding-address* [address]
-      |        |  +--ro address    inet:ipv6-address
-      |        |  +--ro in-out?    in-out
+      |        |  +--ro address                inet:ipv6-address
+      |        |  +--ro advertised-received?   advertised-received
+      |        |  +--ro peer?                  leafref
       |        +--ro binding-label-fec* [fec]
       |           +--ro fec     inet:ipv6-prefix
-      |           +--ro peer* [in-out address]
-      |              +--ro in-out                in-out
-      |              +--ro address               inet:ipv6-address
-      |              +--ro label?                uint32
-      |              +--ro used-in-forwarding?   boolean
+      |           +--ro peer* [advertised-received peer]
+      |              +--ro advertised-received    advertised-received
+      |              +--ro peer                   leafref
+      |              +--ro label?                 uint32
+      |              +--ro used-in-forwarding?    boolean
       +--rw discovery
       |  +--rw interfaces
       |  |  +--rw config
@@ -333,7 +335,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
          |     +--ro duration?    duration32-inf
          |     +--ro peer-list?   peer-list-ref
          +--rw peer* [lsr-id]
-            +--rw lsr-id    union
+            +--rw lsr-id    yang:dotted-quad
             +--rw config
             |  +--rw admin-down?            boolean
             |  +--rw capability

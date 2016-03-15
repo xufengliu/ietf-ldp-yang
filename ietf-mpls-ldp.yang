@@ -36,7 +36,7 @@ module ietf-mpls-ldp {
   description
     "";
 
-  revision 2016-03-06 {
+  revision 2016-03-14 {
     description
       "Initial revision.";
     reference
@@ -193,17 +193,17 @@ module ietf-mpls-ldp {
       "Duration represented as 32 bit seconds with infinite.";
   }
 
-  typedef in-out {
+  typedef advertised-received {
     type enumeration {
-      enum inbound {
-        description "Inbound.";
+      enum advertised {
+        description "Advertised information.";
       }
-      enum outbound {
-        description "Outbound.";
+      enum received {
+        description "Received information.";
       }
     }
     description
-      "Inbound or outbound.";
+      "Received or advertised.";
   }
 
   typedef label-adv-mode {
@@ -352,20 +352,59 @@ module ietf-mpls-ldp {
     }
   } // basic-discovery-timers
 
+  grouping binding-address-state-attributes {
+    description
+      "Address binding attributes";
+    leaf advertised-received {
+      type advertised-received;
+      description
+        "Received or advertised.";
+    }
+    leaf peer {
+      type leafref {
+        path "../../../../../peers/peer/lsr-id";
+      }
+      must "../advertised-received = 'received'" {
+        description
+          "Applicable for received address.";
+      }
+      description
+        "LDP peer from which this address is received.";
+    } // peer
+  } // binding-address-state-attributes
+
   grouping binding-label-state-attributes {
     description
       "Label binding attributes";
-    leaf label {
-      type uint32;
+    list peer {
+      key "advertised-received peer";
       description
-        "Advertised (outbound) or received (inbound)
-         label.";
-    }
-    leaf used-in-forwarding {
-      type boolean;
-      description
-        "'true' if the lable is used in forwarding.";
-    }
+        "List of advertised and received peers.";
+      leaf advertised-received {
+        type advertised-received;
+        description
+          "Received or advertised.";
+      }
+      leaf peer {
+        type leafref {
+          path "../../../../../../peers/peer/lsr-id";
+        }
+        description
+          "LDP peer from which this binding is received,
+           or to which this binding is advertised.";
+      }
+      leaf label {
+        type uint32;
+        description
+          "Advertised (outbound) or received (inbound)
+           label.";
+      }
+      leaf used-in-forwarding {
+        type boolean;
+        description
+          "'true' if the lable is used in forwarding.";
+      }
+    } // peer
   } // binding-label-state-attributes
 
   grouping extended-discovery-policy-attributes {
@@ -1561,11 +1600,7 @@ module ietf-mpls-ldp {
                 description
                   "Binding address.";
               }
-              leaf in-out {
-                type in-out;
-                description
-                  "Inbound or outbound.";
-              }
+              uses binding-address-state-attributes;
             } // binding-address
 
             list binding-label-fec {
@@ -1577,22 +1612,7 @@ module ietf-mpls-ldp {
                 description
                   "Prefix FEC.";
               }
-              list peer {
-                key "in-out address";
-                description
-                  "List of outbound and inbound peers.";
-                leaf in-out {
-                  type in-out;
-                  description
-                    "Inbound or outbound.";
-                }
-                leaf address {
-                  type inet:ipv4-address;
-                  description
-                    "Peer address.";
-                }
-                uses binding-label-state-attributes;
-              } // peer
+              uses binding-label-state-attributes;
             } // binding-label-fec
           } // ipv4
           container ipv6 {
@@ -1618,11 +1638,7 @@ module ietf-mpls-ldp {
                 description
                   "Binding address.";
               }
-              leaf in-out {
-                type in-out;
-                description
-                  "Inbound or outbound.";
-              }
+              uses binding-address-state-attributes;
             } // binding-address
 
             list binding-label-fec {
@@ -1634,22 +1650,7 @@ module ietf-mpls-ldp {
                 description
                   "Prefix FEC.";
               }
-              list peer {
-                key "in-out address";
-                description
-                  "List of outbound and inbound peers.";
-                leaf in-out {
-                  type in-out;
-                  description
-                    "Inbound or outbound.";
-                }
-                leaf address {
-                  type inet:ipv6-address;
-                  description
-                    "Peer address.";
-                }
-                uses binding-label-state-attributes;
-              } // peer
+              uses binding-label-state-attributes;
             } // binding-label-fec
           } // ipv6
         }
@@ -2239,10 +2240,7 @@ module ietf-mpls-ldp {
             "List of neighbors.";
 
           leaf lsr-id {
-            type union {
-              type yang:dotted-quad;
-              type uint32;
-            }
+            type yang:dotted-quad;
             description "LSR ID.";
           }
 
