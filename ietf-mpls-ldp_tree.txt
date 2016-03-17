@@ -488,18 +488,18 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
                |  +--ro peer?         label-adv-mode
                |  +--ro negotiated?   label-adv-mode
                +--ro next-keep-alive?                       uint16
-               +--ro oper-status?                           enumeration
-               +--ro peer-features
+               +--ro peer-ldp-id?                           yang:dotted-quad
+               +--ro received-peer-state
                |  +--ro graceful-restart
                |  |  +--ro enable?           boolean
                |  |  +--ro reconnect-time?   uint16
                |  |  +--ro recovery-time?    uint16
                |  +--ro capability
-               |     +--ro end-of-lib {capability-end-of-lib}?
+               |     +--ro end-of-lib
                |     |  +--ro enable?   boolean
-               |     +--ro typed-wildcard-fec {capability-typed-wildcard-fec}?
+               |     +--ro typed-wildcard-fec
                |     |  +--ro enable?   boolean
-               |     +--ro upstream-label-assignment {capability-upstream-label-assignment}?
+               |     +--ro upstream-label-assignment
                |     |  +--ro enable?   boolean
                |     +--ro mldp {mldp}?
                |        +--ro p2mp
@@ -507,21 +507,17 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
                |        +--ro mp2mp
                |        |  +--ro enable?   boolean
                |        +--ro make-before-break
-               |        |  +--ro enable?             boolean
-               |        |  +--ro switchover-delay?   uint16
-               |        |  +--ro timeout?            uint16
-               |        +--ro hub-and-spoke {capability-mldp-hsmp}?
                |        |  +--ro enable?   boolean
-               |        +--ro node-protection {capability-mldp-node-protection}?
+               |        +--ro hub-and-spoke
+               |        |  +--ro enable?   boolean
+               |        +--ro node-protection
                |           +--ro plr?           boolean
-               |           +--ro merge-point
-               |              +--ro enable?                            boolean
-               |              +--ro targeted-session-teardown-delay?   uint16
-               +--ro peer-ldp-id?                           yang:dotted-quad
+               |           +--ro merge-point?   boolean
                +--ro session-holdtime
                |  +--ro peer?         uint16
                |  +--ro negotiated?   uint16
                |  +--ro remaining?    uint16
+               +--ro session-state?                         enumeration
                +--ro tcp-connection
                |  +--ro local-address?    inet:ip-address
                |  +--ro local-port?       uint16

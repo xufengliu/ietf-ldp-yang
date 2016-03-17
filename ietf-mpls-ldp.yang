@@ -36,7 +36,7 @@ module ietf-mpls-ldp {
   description
     "";
 
-  revision 2016-03-15 {
+  revision 2016-03-16 {
     description
       "Initial revision.";
     reference
@@ -762,7 +762,6 @@ module ietf-mpls-ldp {
       }
     }
     container hub-and-spoke {
-
       if-feature capability-mldp-hsmp;
       description
         "Configure hub-and-spoke-multipoint capability.";
@@ -780,8 +779,7 @@ module ietf-mpls-ldp {
       description
         "Configure node-protection capability.";
       reference
-        "draft-ietf-mpls-mldp-node-protection: mLDP Node
-         Protection.";
+        "RFC7715: mLDP Node Protection.";
       leaf plr {
         type boolean;
         description
@@ -1044,7 +1042,131 @@ module ietf-mpls-ldp {
       units seconds;
       description "Time to send the next KeepAlive message.";
     }
-    leaf oper-status {
+
+    leaf peer-ldp-id {
+      type yang:dotted-quad;
+      description "Peer LDP ID.";
+    }
+
+    container received-peer-state {
+      description "Peer features.";
+
+      uses graceful-restart-attributes-per-peer;
+
+      container capability {
+        description "Configure capability.";
+        container end-of-lib {
+          description
+            "Configure end-of-lib capability.";
+          leaf enable {
+            type boolean;
+            description
+              "Enable end-of-lib capability.";
+          }
+        }
+        container typed-wildcard-fec {
+          description
+            "Configure typed-wildcard-fec capability.";
+          leaf enable {
+            type boolean;
+            description
+              "Enable typed-wildcard-fec capability.";
+          }
+        }
+        container upstream-label-assignment {
+          description
+            "Configure upstream label assignment capability.";
+          leaf enable {
+            type boolean;
+            description
+              "Enable upstream label assignment.";
+          }
+        }
+        container mldp {
+          if-feature mldp;          
+          description
+            "Multipoint capabilities.";
+
+          container p2mp {
+            description
+              "Configure point-to-multipoint capability.";
+            leaf enable {
+              type boolean;
+              description
+                "Enable point-to-multipoint.";
+            }
+          }
+          container mp2mp {
+            description
+              "Configure multipoint-to-multipoint capability.";
+            leaf enable {
+              type boolean;
+              description
+                "Enable multipoint-to-multipoint.";
+            }
+          }
+          container make-before-break {
+            description
+              "Configure make-before-break capability.";
+            leaf enable {
+              type boolean;
+              description
+                "Enable make-before-break.";
+            }
+          }
+          container hub-and-spoke {
+            description
+              "Configure hub-and-spoke-multipoint capability.";
+            reference
+              "RFC7140: LDP Extensions for Hub and Spoke Multipoint
+               Label Switched Path";
+            leaf enable {
+              type boolean;
+              description
+                "Enable hub-and-spoke-multipoint.";
+            }
+          }
+          container node-protection {
+            description
+              "Configure node-protection capability.";
+            reference
+              "RFC7715: mLDP Node Protection.";
+            leaf plr {
+              type boolean;
+              description
+                "Point of Local Repair capable for MP LSP node
+                 protection.";
+            }
+            leaf merge-point {
+              type boolean;
+              description
+                "Merge Point capable for MP LSP node protection.";
+            } // merge-point
+          } // node-protection
+        } // mldp
+      } // capability
+    } // received-peer-state
+      
+    container session-holdtime {
+      description "Session holdtime state.";
+      leaf peer {
+        type uint16;
+        units seconds;
+        description "Peer holdtime.";
+      }
+      leaf negotiated {
+        type uint16;
+        units seconds;
+        description "Negotiated holdtime.";
+      }
+      leaf remaining {
+        type uint16;
+        units seconds;
+        description "Remaining holdtime.";
+      }
+    } // session-holdtime
+
+    leaf session-state {
       type enumeration {
         enum non-existent {
           description "NON EXISTENT state. Transport disconnected.";
@@ -1065,76 +1187,6 @@ module ietf-mpls-ldp {
       description
         "Representing the operational status.";
     }
-
-    container peer-features {
-      description "Peer features.";
-
-      uses graceful-restart-attributes-per-peer;
-
-      container capability {
-        description "Configure capability.";
-        container end-of-lib {
-          if-feature capability-end-of-lib;
-          description
-            "Configure end-of-lib capability.";
-          leaf enable {
-            type boolean;
-            description
-              "Enable end-of-lib capability.";
-          }
-        }
-        container typed-wildcard-fec {
-          if-feature capability-typed-wildcard-fec;
-          description
-            "Configure typed-wildcard-fec capability.";
-          leaf enable {
-            type boolean;
-            description
-              "Enable typed-wildcard-fec capability.";
-          }
-        }
-        container upstream-label-assignment {
-          if-feature capability-upstream-label-assignment;
-          description
-            "Configure upstream label assignment capability.";
-          leaf enable {
-            type boolean;
-            description
-              "Enable upstream label assignment.";
-          }
-        }
-        container mldp {
-          if-feature mldp;          
-          description
-            "Multipoint capabilities.";
-          uses mldp-capabilities;
-        }
-      } // capability
-    } // peer-features
-      
-    leaf peer-ldp-id {
-      type yang:dotted-quad;
-      description "Peer LDP ID.";
-    }
-
-    container session-holdtime {
-      description "Session holdtime state.";
-      leaf peer {
-        type uint16;
-        units seconds;
-        description "Peer holdtime.";
-      }
-      leaf negotiated {
-        type uint16;
-        units seconds;
-        description "Negotiated holdtime.";
-      }
-      leaf remaining {
-        type uint16;
-        units seconds;
-        description "Remaining holdtime.";
-      }
-    } // session-holdtime
 
     container tcp-connection {
       description "TCP connection state.";
@@ -2271,7 +2323,6 @@ module ietf-mpls-ldp {
               container mldp {
                 if-feature mldp;
                 description
-
                   "mLDP capabilities.";
                 uses mldp-capabilities;
               }
@@ -2323,7 +2374,6 @@ module ietf-mpls-ldp {
               container mldp {
                 if-feature mldp;
                 description
-
                   "mLDP capabilities.";
                 uses mldp-capabilities;
               }
