@@ -1,5 +1,5 @@
 module: ietf-mpls-ldp
-augment /rt:routing/rt:routing-instance/mpls:mpls:
+augment /rt:routing/rt:routing-protocols:
    +--rw mpls-ldp!
       +--rw global
       |  +--rw config
@@ -7,8 +7,6 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |  |  +--rw end-of-lib {capability-end-of-lib}?
       |  |  |  |  +--rw enable?   boolean
       |  |  |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec}?
-      |  |  |  |  +--rw enable?   boolean
-      |  |  |  +--rw upstream-label-assignment {capability-upstream-label-assignment}?
       |  |  |  |  +--rw enable?   boolean
       |  |  |  +--rw mldp {mldp}?
       |  |  |     +--rw p2mp
@@ -40,8 +38,6 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |  |  |  +--ro enable?   boolean
       |  |  |  +--ro typed-wildcard-fec {capability-typed-wildcard-fec}?
       |  |  |  |  +--ro enable?   boolean
-      |  |  |  +--ro upstream-label-assignment {capability-upstream-label-assignment}?
-      |  |  |  |  +--ro enable?   boolean
       |  |  |  +--ro mldp {mldp}?
       |  |  |     +--ro p2mp
       |  |  |     |  +--ro enable?   boolean
@@ -72,7 +68,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |  +--ro state
       |  |  |  +--ro enable?   boolean
       |  |  +--rw address-family* [afi]
-      |  |     +--rw afi                     address-family
+      |  |     +--rw afi                     ldp-address-family
       |  |     +--rw config
       |  |     |  +--rw multicast-only-frr {mldp-mofrr}?
       |  |     |  |  +--rw prefix-list?   prefix-list-ref
@@ -82,7 +78,55 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |     |  +--ro multicast-only-frr {mldp-mofrr}?
       |  |     |  |  +--ro prefix-list?   prefix-list-ref
       |  |     |  +--ro recursive-fec
-      |  |     |     +--ro prefix-list?   prefix-list-ref
+      |  |     |  |  +--ro prefix-list?   prefix-list-ref
+      |  |     |  +--ro roots-ipv4
+      |  |     |  |  +--ro root* [root-address]
+      |  |     |  |     +--ro root-address    inet:ipv4-address
+      |  |     |  |     +--ro is-self?        boolean
+      |  |     |  |     +--ro reachability* [address interface]
+      |  |     |  |     |  +--ro address      inet:ipv4-address
+      |  |     |  |     |  +--ro interface    mpls-interface-ref
+      |  |     |  |     |  +--ro peer?        leafref
+      |  |     |  |     +--ro lsp* [lsp-id source-address group-address]
+      |  |     |  |        +--ro lsp-id            uint16
+      |  |     |  |        +--ro source-address    inet:ipv4-address-no-zone
+      |  |     |  |        +--ro group-address     inet:ipv4-address-no-zone
+      |  |     |  |        +--ro peer* [direction peer]
+      |  |     |  |        |  +--ro direction           downstream-upstream
+      |  |     |  |        |  +--ro peer                leafref
+      |  |     |  |        |  +--ro label-advertised?   mpls:mpls-label
+      |  |     |  |        |  +--ro label-received?     mpls:mpls-label
+      |  |     |  |        |  +--ro mbb-status?         enumeration
+      |  |     |  |        |  +--ro mofrr-status?       enumeration
+      |  |     |  |        |  +--ro next-hop* [address interface]
+      |  |     |  |        |     +--ro address      inet:ipv4-address
+      |  |     |  |        |     +--ro interface    mpls-interface-ref
+      |  |     |  |        +--ro bud-node
+      |  |     |  |           +--ro egress-interface*   mpls-interface-ref
+      |  |     |  +--ro roots-ipv6
+      |  |     |     +--ro root* [root-address]
+      |  |     |        +--ro root-address    inet:ipv6-address
+      |  |     |        +--ro is-self?        boolean
+      |  |     |        +--ro reachability* [address interface]
+      |  |     |        |  +--ro address      inet:ipv6-address
+      |  |     |        |  +--ro interface    mpls-interface-ref
+      |  |     |        |  +--ro peer?        leafref
+      |  |     |        +--ro lsp* [lsp-id source-address group-address]
+      |  |     |           +--ro lsp-id            uint16
+      |  |     |           +--ro source-address    inet:ipv6-address-no-zone
+      |  |     |           +--ro group-address     inet:ipv6-address-no-zone
+      |  |     |           +--ro peer* [direction peer]
+      |  |     |           |  +--ro direction           downstream-upstream
+      |  |     |           |  +--ro peer                leafref
+      |  |     |           |  +--ro label-advertised?   mpls:mpls-label
+      |  |     |           |  +--ro label-received?     mpls:mpls-label
+      |  |     |           |  +--ro mbb-status?         enumeration
+      |  |     |           |  +--ro mofrr-status?       enumeration
+      |  |     |           |  +--ro next-hop* [address interface]
+      |  |     |           |     +--ro address      inet:ipv6-address
+      |  |     |           |     +--ro interface    mpls-interface-ref
+      |  |     |           +--ro bud-node
+      |  |     |              +--ro egress-interface*   mpls-interface-ref
       |  |     +--rw configured-leaf-lsps
       |  |        +--rw p2mp
       |  |        |  +--rw roots-ipv4
@@ -115,7 +159,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |                    +--rw source-address    inet:ipv6-address-no-zone
       |  |                    +--rw group-address     inet:ipv6-address-no-zone
       |  +--rw address-family* [afi]
-      |  |  +--rw afi       address-family
+      |  |  +--rw afi       ldp-address-family
       |  |  +--rw config
       |  |  |  +--rw enable?         boolean
       |  |  |  +--rw label-policy
@@ -127,7 +171,8 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |  |  |  |  |     +--:(host-routes-only)
       |  |  |  |  |  |        +--rw host-routes-only?   boolean
       |  |  |  |  |  +--rw advertise
-      |  |  |  |  |  |  +--rw explicit-null!
+      |  |  |  |  |  |  +--rw explicit-null
+      |  |  |  |  |  |  |  +--rw enable?        boolean
       |  |  |  |  |  |  |  +--rw prefix-list?   prefix-list-ref
       |  |  |  |  |  |  +--rw prefix-list?     prefix-list-ref
       |  |  |  |  |  +--rw accept
@@ -154,7 +199,8 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |     |  |  |     +--:(host-routes-only)
       |  |     |  |  |        +--ro host-routes-only?   boolean
       |  |     |  |  +--ro advertise
-      |  |     |  |  |  +--ro explicit-null!
+      |  |     |  |  |  +--ro explicit-null
+      |  |     |  |  |  |  +--ro enable?        boolean
       |  |     |  |  |  |  +--ro prefix-list?   prefix-list-ref
       |  |     |  |  |  +--ro prefix-list?     prefix-list-ref
       |  |     |  |  +--ro accept
@@ -178,7 +224,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |     |        +--ro peer* [direction peer]
       |  |     |           +--ro direction             advertised-received
       |  |     |           +--ro peer                  leafref
-      |  |     |           +--ro label?                uint32
+      |  |     |           +--ro label?                mpls:mpls-label
       |  |     |           +--ro used-in-forwarding?   boolean
       |  |     +--ro ipv6
       |  |        +--ro transport-address?   inet:ipv6-address
@@ -192,7 +238,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |              +--ro peer* [direction peer]
       |  |                 +--ro direction             advertised-received
       |  |                 +--ro peer                  leafref
-      |  |                 +--ro label?                uint32
+      |  |                 +--ro label?                mpls:mpls-label
       |  |                 +--ro used-in-forwarding?   boolean
       |  +--rw discovery
       |  |  +--rw interfaces
@@ -203,7 +249,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |  |  |  +--ro hello-holdtime?   uint16
       |  |  |  |  +--ro hello-interval?   uint16
       |  |  |  +--rw interface* [interface]
-      |  |  |     +--rw interface         if:interface-ref
+      |  |  |     +--rw interface         mpls-interface-ref
       |  |  |     +--rw config
       |  |  |     |  +--rw hello-holdtime?              uint16
       |  |  |     |  +--rw hello-interval?              uint16
@@ -214,7 +260,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |  |     |  +--ro igp-synchronization-delay?   uint16 {per-interface-timer-config}?
       |  |  |     |  +--ro next-hello?                  uint16
       |  |  |     +--rw address-family* [afi]
-      |  |  |        +--rw afi       address-family
+      |  |  |        +--rw afi       ldp-address-family
       |  |  |        +--rw config
       |  |  |        |  +--rw enable?   boolean
       |  |  |        |  +--rw ipv4
@@ -267,7 +313,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  |     |     +--ro enable?          boolean
       |  |     |     +--ro neighbor-list?   neighbor-list-ref
       |  |     +--rw address-family* [afi]
-      |  |        +--rw afi      address-family
+      |  |        +--rw afi      ldp-address-family
       |  |        +--ro state
       |  |        |  +--ro ipv4
       |  |        |  |  +--ro hello-adjacencies* [local-address adjacent-address]
@@ -320,9 +366,9 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |  +--rw forwarding-nexthop {forwarding-nexthop-config}?
       |  |  +--rw interfaces
       |  |     +--rw interface* [interface]
-      |  |        +--rw interface         if:interface-ref
+      |  |        +--rw interface         mpls-interface-ref
       |  |        +--rw address-family* [afi]
-      |  |           +--rw afi       address-family
+      |  |           +--rw afi       ldp-address-family
       |  |           +--rw config
       |  |           |  +--rw ldp-disable?    boolean
       |  |           |  +--rw mldp-disable?   boolean {mldp}?
@@ -338,7 +384,8 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
       |     |  |     +--:(host-routes-only)
       |     |  |        +--rw host-routes-only?   boolean
       |     |  +--rw advertise
-      |     |  |  +--rw explicit-null!
+      |     |  |  +--rw explicit-null
+      |     |  |  |  +--rw enable?        boolean
       |     |  |  |  +--rw prefix-list?   prefix-list-ref
       |     |  |  +--rw prefix-list?     prefix-list-ref
       |     |  +--rw accept
@@ -462,7 +509,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
                |  |     |  +--ro discontinuity-time    yang:date-and-time
                |  |     |  +--ro hello-received?       yang:counter64
                |  |     |  +--ro hello-dropped?        yang:counter64
-               |  |     +--ro interface?          if:interface-ref
+               |  |     +--ro interface?          mpls-interface-ref
                |  +--ro ipv6
                |     +--ro label-policy
                |     |  +--ro advertise
@@ -482,7 +529,7 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
                |        |  +--ro discontinuity-time    yang:date-and-time
                |        |  +--ro hello-received?       yang:counter64
                |        |  +--ro hello-dropped?        yang:counter64
-               |        +--ro interface?          if:interface-ref
+               |        +--ro interface?          mpls-interface-ref
                +--ro label-advertisement-mode
                |  +--ro local?        label-adv-mode
                |  +--ro peer?         label-adv-mode
@@ -498,8 +545,6 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
                |     +--ro end-of-lib
                |     |  +--ro enable?   boolean
                |     +--ro typed-wildcard-fec
-               |     |  +--ro enable?   boolean
-               |     +--ro upstream-label-assignment
                |     |  +--ro enable?   boolean
                |     +--ro mldp {mldp}?
                |        +--ro p2mp
@@ -520,9 +565,9 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
                +--ro session-state?                         enumeration
                +--ro tcp-connection
                |  +--ro local-address?    inet:ip-address
-               |  +--ro local-port?       uint16
+               |  +--ro local-port?       inet:port-number
                |  +--ro remote-address?   inet:ip-address
-               |  +--ro remote-port?      uint16
+               |  +--ro remote-port?      inet:port-number
                +--ro up-time?                               string
                +--ro statistics
                   +--ro discontinuity-time          yang:date-and-time
@@ -558,11 +603,9 @@ augment /rt:routing/rt:routing-instance/mpls:mpls:
 rpcs:
    +---x mpls-ldp-clear-peer
    |  +---w input
-   |     +---w routing-instance-ref?   rt:routing-instance-ref
-   |     +---w lsr-id?                 union
+   |     +---w lsr-id?   union
    +---x mpls-ldp-clear-hello-adjacency
    |  +---w input
-   |     +---w routing-instance-ref?   rt:routing-instance-ref
    |     +---w hello-adjacency
    |        +---w (hello-adjacency-type)?
    |           +--:(targeted)
@@ -570,40 +613,35 @@ rpcs:
    |           |     +---w target-address?   inet:ip-address
    |           +--:(link)
    |              +---w link!
-   |                 +---w next-hop-interface?   if:interface-ref
+   |                 +---w next-hop-interface?   mpls-interface-ref
    |                 +---w next-hop-address?     inet:ip-address
    +---x mpls-ldp-clear-peer-statistics
       +---w input
-         +---w routing-instance-ref?   rt:routing-instance-ref
-         +---w lsr-id?                 union
+         +---w lsr-id?   union
 notifications:
    +---n mpls-ldp-peer-event
-   |  +--ro event-type?             oper-status-event-type
-   |  +--ro routing-instance-ref?   rt:routing-instance-ref
-   |  +--ro peer-ref?               leafref
+   |  +--ro event-type?   oper-status-event-type
+   |  +--ro peer-ref?     leafref
    +---n mpls-ldp-hello-adjacency-event
-   |  +--ro event-type?             oper-status-event-type
-   |  +--ro routing-instance-ref?   rt:routing-instance-ref
+   |  +--ro event-type?   oper-status-event-type
    |  +--ro (hello-adjacency-type)?
    |     +--:(targeted)
    |     |  +--ro targeted
    |     |     +--ro target-address?   inet:ip-address
    |     +--:(link)
    |        +--ro link
-   |           +--ro next-hop-interface?   if:interface-ref
+   |           +--ro next-hop-interface?   mpls-interface-ref
    |           +--ro next-hop-address?     inet:ip-address
    +---n mpls-ldp-fec-event
-   |  +--ro event-type?             oper-status-event-type
-   |  +--ro routing-instance-ref?   rt:routing-instance-ref
-   |  +--ro prefix?                 inet:ip-prefix
+   |  +--ro event-type?   oper-status-event-type
+   |  +--ro prefix?       inet:ip-prefix
    +---n mpls-mldp-fec-event
-      +--ro event-type?             oper-status-event-type
-      +--ro routing-instance-ref?   rt:routing-instance-ref
-      +--ro tree-type?              multipoint-type
-      +--ro root?                   inet:ip-address
+      +--ro event-type?       oper-status-event-type
+      +--ro tree-type?        multipoint-type
+      +--ro root?             inet:ip-address
       +--ro (lsp-key-type)?
          +--:(lsp-id-based)
-         |  +--ro lsp-id?                 uint16
+         |  +--ro lsp-id?           uint16
          +--:(source-group-based)
-            +--ro source-address?         inet:ip-address
-            +--ro group-address?          inet:ip-address
+            +--ro source-address?   inet:ip-address
+            +--ro group-address?    inet:ip-address
