@@ -69,7 +69,7 @@ module ietf-mpls-ldp {
      management of Multi-Protocol Label Switching (MPLS) Label
      Distribution Protocol (LDP) and Multipoint LDP (mLDP).";
 
-  revision 2016-06-27 {
+  revision 2016-07-04 {
     description
       "Initial revision.";
     reference
@@ -114,6 +114,12 @@ module ietf-mpls-ldp {
     description
       "This feature indicates that the system allows to configure
        LDP typed-wildcard-fec capability.";
+  }
+
+  feature capability-upstream-label-assignment {
+    description
+      "This feature indicates that the system allows to configure
+       LDP upstream label assignment capability.";
   }
 
   feature forwarding-nexthop-config {
@@ -650,6 +656,16 @@ module ietf-mpls-ldp {
             "Enable typed-wildcard-fec capability.";
         }
       }
+      container upstream-label-assignment {
+        if-feature capability-upstream-label-assignment;
+        description
+          "Configure upstream label assignment capability.";
+        leaf enable {
+          type boolean;
+          description
+            "Enable upstream label assignment.";
+        }
+      }
       container mldp {
         if-feature mldp;
 
@@ -1145,6 +1161,15 @@ module ietf-mpls-ldp {
             type boolean;
             description
               "Enable typed-wildcard-fec capability.";
+          }
+        }
+        container upstream-label-assignment {
+          description
+            "Configure upstream label assignment capability.";
+          leaf enable {
+            type boolean;
+            description
+              "Enable upstream label assignment.";
           }
         }
         container mldp {
