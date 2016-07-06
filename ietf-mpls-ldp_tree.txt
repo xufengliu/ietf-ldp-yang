@@ -97,7 +97,7 @@ augment /rt:routing/rt:routing-protocols:
       |  |     |  |     |  +--ro fec-label* [root-address lsp-id recur-root-address recur-rd]
       |  |     |  |     |     +--ro root-address          inet:ipv4-address
       |  |     |  |     |     +--ro lsp-id                uint32
-      |  |     |  |     |     +--ro recur-root-address    route-distinguisher
+      |  |     |  |     |     +--ro recur-root-address    inet:ipv4-address
       |  |     |  |     |     +--ro recur-rd              route-distinguisher
       |  |     |  |     |     +--ro multipoint-type?      multipoint-type
       |  |     |  |     |     +--ro peer* [direction peer advertisement-type]
@@ -110,10 +110,10 @@ augment /rt:routing/rt:routing-protocols:
       |  |     |  |     +--ro opaque-type-transit
       |  |     |  |     |  +--ro fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
       |  |     |  |     |     +--ro root-address          inet:ipv4-address
-      |  |     |  |     |     +--ro source-address        inet:ipv4-address-no-zone
+      |  |     |  |     |     +--ro source-address        inet:ipv4-address
       |  |     |  |     |     +--ro group-address         inet:ipv4-address-no-zone
       |  |     |  |     |     +--ro rd                    route-distinguisher
-      |  |     |  |     |     +--ro recur-root-address    route-distinguisher
+      |  |     |  |     |     +--ro recur-root-address    inet:ipv4-address
       |  |     |  |     |     +--ro recur-rd              route-distinguisher
       |  |     |  |     |     +--ro multipoint-type?      multipoint-type
       |  |     |  |     |     +--ro peer* [direction peer advertisement-type]
@@ -126,10 +126,10 @@ augment /rt:routing/rt:routing-protocols:
       |  |     |  |     +--ro opaque-type-bidir
       |  |     |  |        +--ro fec-label* [root-address rp group-address rd recur-root-address recur-rd]
       |  |     |  |           +--ro root-address          inet:ipv4-address
-      |  |     |  |           +--ro rp                    inet:ipv4-address-no-zone
+      |  |     |  |           +--ro rp                    inet:ipv4-address
       |  |     |  |           +--ro group-address         inet:ipv4-address-no-zone
       |  |     |  |           +--ro rd                    route-distinguisher
-      |  |     |  |           +--ro recur-root-address    route-distinguisher
+      |  |     |  |           +--ro recur-root-address    inet:ipv4-address
       |  |     |  |           +--ro recur-rd              route-distinguisher
       |  |     |  |           +--ro multipoint-type?      multipoint-type
       |  |     |  |           +--ro peer* [direction peer advertisement-type]
@@ -153,7 +153,7 @@ augment /rt:routing/rt:routing-protocols:
       |  |     |        |  +--ro fec-label* [root-address lsp-id recur-root-address recur-rd]
       |  |     |        |     +--ro root-address          inet:ipv6-address
       |  |     |        |     +--ro lsp-id                uint32
-      |  |     |        |     +--ro recur-root-address    route-distinguisher
+      |  |     |        |     +--ro recur-root-address    inet:ipv6-address
       |  |     |        |     +--ro recur-rd              route-distinguisher
       |  |     |        |     +--ro multipoint-type?      multipoint-type
       |  |     |        |     +--ro peer* [direction peer advertisement-type]
@@ -166,10 +166,10 @@ augment /rt:routing/rt:routing-protocols:
       |  |     |        +--ro opaque-type-transit
       |  |     |        |  +--ro fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
       |  |     |        |     +--ro root-address          inet:ipv6-address
-      |  |     |        |     +--ro source-address        inet:ipv6-address-no-zone
+      |  |     |        |     +--ro source-address        inet:ipv6-address
       |  |     |        |     +--ro group-address         inet:ipv6-address-no-zone
       |  |     |        |     +--ro rd                    route-distinguisher
-      |  |     |        |     +--ro recur-root-address    route-distinguisher
+      |  |     |        |     +--ro recur-root-address    inet:ipv6-address
       |  |     |        |     +--ro recur-rd              route-distinguisher
       |  |     |        |     +--ro multipoint-type?      multipoint-type
       |  |     |        |     +--ro peer* [direction peer advertisement-type]
@@ -182,10 +182,10 @@ augment /rt:routing/rt:routing-protocols:
       |  |     |        +--ro opaque-type-bidir
       |  |     |           +--ro fec-label* [root-address rp group-address rd recur-root-address recur-rd]
       |  |     |              +--ro root-address          inet:ipv6-address
-      |  |     |              +--ro rp                    inet:ipv6-address-no-zone
+      |  |     |              +--ro rp                    inet:ipv6-address
       |  |     |              +--ro group-address         inet:ipv6-address-no-zone
       |  |     |              +--ro rd                    route-distinguisher
-      |  |     |              +--ro recur-root-address    route-distinguisher
+      |  |     |              +--ro recur-root-address    inet:ipv6-address
       |  |     |              +--ro recur-rd              route-distinguisher
       |  |     |              +--ro multipoint-type?      multipoint-type
       |  |     |              +--ro peer* [direction peer advertisement-type]
@@ -202,14 +202,14 @@ augment /rt:routing/rt:routing-protocols:
       |  |        |  |     +--rw root-address    inet:ipv4-address
       |  |        |  |     +--rw lsp* [lsp-id source-address group-address]
       |  |        |  |        +--rw lsp-id            uint16
-      |  |        |  |        +--rw source-address    inet:ipv4-address-no-zone
+      |  |        |  |        +--rw source-address    inet:ipv4-address
       |  |        |  |        +--rw group-address     inet:ipv4-address-no-zone
       |  |        |  +--rw roots-ipv6
       |  |        |     +--rw root* [root-address]
       |  |        |        +--rw root-address    inet:ipv6-address
       |  |        |        +--rw lsp* [lsp-id source-address group-address]
       |  |        |           +--rw lsp-id            uint16
-      |  |        |           +--rw source-address    inet:ipv6-address-no-zone
+      |  |        |           +--rw source-address    inet:ipv6-address
       |  |        |           +--rw group-address     inet:ipv6-address-no-zone
       |  |        +--rw mp2mp
       |  |           +--rw roots-ipv4
@@ -217,14 +217,14 @@ augment /rt:routing/rt:routing-protocols:
       |  |           |     +--rw root-address    inet:ipv4-address
       |  |           |     +--rw lsp* [lsp-id source-address group-address]
       |  |           |        +--rw lsp-id            uint16
-      |  |           |        +--rw source-address    inet:ipv4-address-no-zone
+      |  |           |        +--rw source-address    inet:ipv4-address
       |  |           |        +--rw group-address     inet:ipv4-address-no-zone
       |  |           +--rw roots-ipv6
       |  |              +--rw root* [root-address]
       |  |                 +--rw root-address    inet:ipv6-address
       |  |                 +--rw lsp* [lsp-id source-address group-address]
       |  |                    +--rw lsp-id            uint16
-      |  |                    +--rw source-address    inet:ipv6-address-no-zone
+      |  |                    +--rw source-address    inet:ipv6-address
       |  |                    +--rw group-address     inet:ipv6-address-no-zone
       |  +--rw address-family* [afi]
       |  |  +--rw afi       ldp-address-family

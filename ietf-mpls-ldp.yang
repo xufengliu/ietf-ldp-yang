@@ -890,7 +890,7 @@ module ietf-mpls-ldp {
             description "ID to identify the LSP.";
           }
           leaf source-address {
-            type inet:ipv4-address-no-zone;
+            type inet:ipv4-address;
             description
               "Source address.";
           }
@@ -940,7 +940,7 @@ module ietf-mpls-ldp {
             description "ID to identify the LSP.";
           }
           leaf source-address {
-            type inet:ipv6-address-no-zone;
+            type inet:ipv6-address;
             description
               "Source address.";
           }
@@ -1759,7 +1759,7 @@ module ietf-mpls-ldp {
                         description "ID to identify the LSP.";
                       }
                       leaf recur-root-address {
-                        type route-distinguisher;
+                        type inet:ipv4-address;
                         description
                           "Recursive root address.";
                         reference
@@ -1800,7 +1800,7 @@ module ietf-mpls-ldp {
                           "Root address.";
                       }
                       leaf source-address {
-                        type inet:ipv4-address-no-zone;
+                        type inet:ipv4-address;
                         description
                           "Source address.";
                       }
@@ -1812,10 +1812,15 @@ module ietf-mpls-ldp {
                       leaf rd {
                         type route-distinguisher;
                         description
-                          "Group address.";
+                          "Route Distinguisher.";
+                        reference
+                          "RFC7246: Multipoint Label Distribution
+                           Protocol In-Band Signaling in a Virtual
+                           Routing and Forwarding (VRF) Table
+                           Context.";
                       }
                       leaf recur-root-address {
-                        type route-distinguisher;
+                        type inet:ipv4-address;
                         description
                           "Recursive root address.";
                         reference
@@ -1856,7 +1861,7 @@ module ietf-mpls-ldp {
                           "Root address.";
                       }
                       leaf rp {
-                        type inet:ipv4-address-no-zone;
+                        type inet:ipv4-address;
                         description
                           "RP address.";
                       }
@@ -1868,10 +1873,15 @@ module ietf-mpls-ldp {
                       leaf rd {
                         type route-distinguisher;
                         description
-                          "Group address.";
-                      }
+                          "Route Distinguisher.";
+                        reference
+                          "RFC7246: Multipoint Label Distribution
+                           Protocol In-Band Signaling in a Virtual
+                           Routing and Forwarding (VRF) Table
+                           Context.";
+                     }
                       leaf recur-root-address {
-                        type route-distinguisher;
+                        type inet:ipv4-address;
                         description
                           "Recursive root address.";
                         reference
@@ -1977,7 +1987,7 @@ module ietf-mpls-ldp {
                         description "ID to identify the LSP.";
                       }
                       leaf recur-root-address {
-                        type route-distinguisher;
+                        type inet:ipv6-address;
                         description
                           "Recursive root address.";
                         reference
@@ -2018,7 +2028,7 @@ module ietf-mpls-ldp {
                           "Root address.";
                       }
                       leaf source-address {
-                        type inet:ipv6-address-no-zone;
+                        type inet:ipv6-address;
                         description
                           "Source address.";
                       }
@@ -2030,10 +2040,15 @@ module ietf-mpls-ldp {
                       leaf rd {
                         type route-distinguisher;
                         description
-                          "Group address.";
+                          "Route Distinguisher.";
+                        reference
+                          "RFC7246: Multipoint Label Distribution
+                           Protocol In-Band Signaling in a Virtual
+                           Routing and Forwarding (VRF) Table
+                           Context.";
                       }
                       leaf recur-root-address {
-                        type route-distinguisher;
+                        type inet:ipv6-address;
                         description
                           "Recursive root address.";
                         reference
@@ -2074,7 +2089,7 @@ module ietf-mpls-ldp {
                           "Root address.";
                       }
                       leaf rp {
-                        type inet:ipv6-address-no-zone;
+                        type inet:ipv6-address;
                         description
                           "RP address.";
                       }
@@ -2086,10 +2101,15 @@ module ietf-mpls-ldp {
                       leaf rd {
                         type route-distinguisher;
                         description
-                          "Group address.";
+                          "Route Distinguisher.";
+                        reference
+                          "RFC7246: Multipoint Label Distribution
+                           Protocol In-Band Signaling in a Virtual
+                           Routing and Forwarding (VRF) Table
+                           Context.";
                       }
                       leaf recur-root-address {
-                        type route-distinguisher;
+                        type inet:ipv6-address;
                         description
                           "Recursive root address.";
                         reference
