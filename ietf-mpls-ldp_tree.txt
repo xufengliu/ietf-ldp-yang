@@ -83,54 +83,118 @@ augment /rt:routing/rt:routing-protocols:
       |  |     |  |  +--ro prefix-list?   prefix-list-ref
       |  |     |  +--ro recursive-fec
       |  |     |  |  +--ro prefix-list?   prefix-list-ref
-      |  |     |  +--ro roots-ipv4
-      |  |     |  |  +--ro root* [root-address]
-      |  |     |  |     +--ro root-address    inet:ipv4-address
-      |  |     |  |     +--ro is-self?        boolean
-      |  |     |  |     +--ro reachability* [address interface]
-      |  |     |  |     |  +--ro address      inet:ipv4-address
-      |  |     |  |     |  +--ro interface    mpls-interface-ref
-      |  |     |  |     |  +--ro peer?        leafref
-      |  |     |  |     +--ro lsp* [lsp-id source-address group-address]
-      |  |     |  |        +--ro lsp-id            uint16
-      |  |     |  |        +--ro source-address    inet:ipv4-address-no-zone
-      |  |     |  |        +--ro group-address     inet:ipv4-address-no-zone
-      |  |     |  |        +--ro peer* [direction peer]
-      |  |     |  |        |  +--ro direction           downstream-upstream
-      |  |     |  |        |  +--ro peer                leafref
-      |  |     |  |        |  +--ro label-advertised?   mpls:mpls-label
-      |  |     |  |        |  +--ro label-received?     mpls:mpls-label
-      |  |     |  |        |  +--ro mbb-status?         enumeration
-      |  |     |  |        |  +--ro mofrr-status?       enumeration
-      |  |     |  |        |  +--ro next-hop* [address interface]
-      |  |     |  |        |     +--ro address      inet:ipv4-address
-      |  |     |  |        |     +--ro interface    mpls-interface-ref
-      |  |     |  |        +--ro bud-node
-      |  |     |  |           +--ro egress-interface*   mpls-interface-ref
-      |  |     |  +--ro roots-ipv6
-      |  |     |     +--ro root* [root-address]
-      |  |     |        +--ro root-address    inet:ipv6-address
-      |  |     |        +--ro is-self?        boolean
-      |  |     |        +--ro reachability* [address interface]
-      |  |     |        |  +--ro address      inet:ipv6-address
-      |  |     |        |  +--ro interface    mpls-interface-ref
-      |  |     |        |  +--ro peer?        leafref
-      |  |     |        +--ro lsp* [lsp-id source-address group-address]
-      |  |     |           +--ro lsp-id            uint16
-      |  |     |           +--ro source-address    inet:ipv6-address-no-zone
-      |  |     |           +--ro group-address     inet:ipv6-address-no-zone
-      |  |     |           +--ro peer* [direction peer]
-      |  |     |           |  +--ro direction           downstream-upstream
-      |  |     |           |  +--ro peer                leafref
-      |  |     |           |  +--ro label-advertised?   mpls:mpls-label
-      |  |     |           |  +--ro label-received?     mpls:mpls-label
-      |  |     |           |  +--ro mbb-status?         enumeration
-      |  |     |           |  +--ro mofrr-status?       enumeration
-      |  |     |           |  +--ro next-hop* [address interface]
-      |  |     |           |     +--ro address      inet:ipv6-address
-      |  |     |           |     +--ro interface    mpls-interface-ref
-      |  |     |           +--ro bud-node
-      |  |     |              +--ro egress-interface*   mpls-interface-ref
+      |  |     |  +--ro ipv4
+      |  |     |  |  +--ro roots
+      |  |     |  |  |  +--ro root* [root-address]
+      |  |     |  |  |     +--ro root-address    inet:ipv4-address
+      |  |     |  |  |     +--ro is-self?        boolean
+      |  |     |  |  |     +--ro reachability* [address interface]
+      |  |     |  |  |        +--ro address      inet:ipv4-address
+      |  |     |  |  |        +--ro interface    mpls-interface-ref
+      |  |     |  |  |        +--ro peer?        leafref
+      |  |     |  |  +--ro bindings
+      |  |     |  |     +--ro opaque-type-lspid
+      |  |     |  |     |  +--ro fec-label* [root-address lsp-id recur-root-address recur-rd]
+      |  |     |  |     |     +--ro root-address          inet:ipv4-address
+      |  |     |  |     |     +--ro lsp-id                uint32
+      |  |     |  |     |     +--ro recur-root-address    route-distinguisher
+      |  |     |  |     |     +--ro recur-rd              route-distinguisher
+      |  |     |  |     |     +--ro multipoint-type?      multipoint-type
+      |  |     |  |     |     +--ro peer* [direction peer advertisement-type]
+      |  |     |  |     |        +--ro direction             downstream-upstream
+      |  |     |  |     |        +--ro peer                  leafref
+      |  |     |  |     |        +--ro advertisement-type    advertised-received
+      |  |     |  |     |        +--ro label?                mpls:mpls-label
+      |  |     |  |     |        +--ro mbb-role?             enumeration
+      |  |     |  |     |        +--ro mofrr-role?           enumeration
+      |  |     |  |     +--ro opaque-type-transit
+      |  |     |  |     |  +--ro fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
+      |  |     |  |     |     +--ro root-address          inet:ipv4-address
+      |  |     |  |     |     +--ro source-address        inet:ipv4-address-no-zone
+      |  |     |  |     |     +--ro group-address         inet:ipv4-address-no-zone
+      |  |     |  |     |     +--ro rd                    route-distinguisher
+      |  |     |  |     |     +--ro recur-root-address    route-distinguisher
+      |  |     |  |     |     +--ro recur-rd              route-distinguisher
+      |  |     |  |     |     +--ro multipoint-type?      multipoint-type
+      |  |     |  |     |     +--ro peer* [direction peer advertisement-type]
+      |  |     |  |     |        +--ro direction             downstream-upstream
+      |  |     |  |     |        +--ro peer                  leafref
+      |  |     |  |     |        +--ro advertisement-type    advertised-received
+      |  |     |  |     |        +--ro label?                mpls:mpls-label
+      |  |     |  |     |        +--ro mbb-role?             enumeration
+      |  |     |  |     |        +--ro mofrr-role?           enumeration
+      |  |     |  |     +--ro opaque-type-bidir
+      |  |     |  |        +--ro fec-label* [root-address rp group-address rd recur-root-address recur-rd]
+      |  |     |  |           +--ro root-address          inet:ipv4-address
+      |  |     |  |           +--ro rp                    inet:ipv4-address-no-zone
+      |  |     |  |           +--ro group-address         inet:ipv4-address-no-zone
+      |  |     |  |           +--ro rd                    route-distinguisher
+      |  |     |  |           +--ro recur-root-address    route-distinguisher
+      |  |     |  |           +--ro recur-rd              route-distinguisher
+      |  |     |  |           +--ro multipoint-type?      multipoint-type
+      |  |     |  |           +--ro peer* [direction peer advertisement-type]
+      |  |     |  |              +--ro direction             downstream-upstream
+      |  |     |  |              +--ro peer                  leafref
+      |  |     |  |              +--ro advertisement-type    advertised-received
+      |  |     |  |              +--ro label?                mpls:mpls-label
+      |  |     |  |              +--ro mbb-role?             enumeration
+      |  |     |  |              +--ro mofrr-role?           enumeration
+      |  |     |  +--ro ipv6
+      |  |     |     +--ro roots
+      |  |     |     |  +--ro root* [root-address]
+      |  |     |     |     +--ro root-address    inet:ipv6-address
+      |  |     |     |     +--ro is-self?        boolean
+      |  |     |     |     +--ro reachability* [address interface]
+      |  |     |     |        +--ro address      inet:ipv6-address
+      |  |     |     |        +--ro interface    mpls-interface-ref
+      |  |     |     |        +--ro peer?        leafref
+      |  |     |     +--ro bindings
+      |  |     |        +--ro opaque-type-lspid
+      |  |     |        |  +--ro fec-label* [root-address lsp-id recur-root-address recur-rd]
+      |  |     |        |     +--ro root-address          inet:ipv6-address
+      |  |     |        |     +--ro lsp-id                uint32
+      |  |     |        |     +--ro recur-root-address    route-distinguisher
+      |  |     |        |     +--ro recur-rd              route-distinguisher
+      |  |     |        |     +--ro multipoint-type?      multipoint-type
+      |  |     |        |     +--ro peer* [direction peer advertisement-type]
+      |  |     |        |        +--ro direction             downstream-upstream
+      |  |     |        |        +--ro peer                  leafref
+      |  |     |        |        +--ro advertisement-type    advertised-received
+      |  |     |        |        +--ro label?                mpls:mpls-label
+      |  |     |        |        +--ro mbb-role?             enumeration
+      |  |     |        |        +--ro mofrr-role?           enumeration
+      |  |     |        +--ro opaque-type-transit
+      |  |     |        |  +--ro fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
+      |  |     |        |     +--ro root-address          inet:ipv6-address
+      |  |     |        |     +--ro source-address        inet:ipv6-address-no-zone
+      |  |     |        |     +--ro group-address         inet:ipv6-address-no-zone
+      |  |     |        |     +--ro rd                    route-distinguisher
+      |  |     |        |     +--ro recur-root-address    route-distinguisher
+      |  |     |        |     +--ro recur-rd              route-distinguisher
+      |  |     |        |     +--ro multipoint-type?      multipoint-type
+      |  |     |        |     +--ro peer* [direction peer advertisement-type]
+      |  |     |        |        +--ro direction             downstream-upstream
+      |  |     |        |        +--ro peer                  leafref
+      |  |     |        |        +--ro advertisement-type    advertised-received
+      |  |     |        |        +--ro label?                mpls:mpls-label
+      |  |     |        |        +--ro mbb-role?             enumeration
+      |  |     |        |        +--ro mofrr-role?           enumeration
+      |  |     |        +--ro opaque-type-bidir
+      |  |     |           +--ro fec-label* [root-address rp group-address rd recur-root-address recur-rd]
+      |  |     |              +--ro root-address          inet:ipv6-address
+      |  |     |              +--ro rp                    inet:ipv6-address-no-zone
+      |  |     |              +--ro group-address         inet:ipv6-address-no-zone
+      |  |     |              +--ro rd                    route-distinguisher
+      |  |     |              +--ro recur-root-address    route-distinguisher
+      |  |     |              +--ro recur-rd              route-distinguisher
+      |  |     |              +--ro multipoint-type?      multipoint-type
+      |  |     |              +--ro peer* [direction peer advertisement-type]
+      |  |     |                 +--ro direction             downstream-upstream
+      |  |     |                 +--ro peer                  leafref
+      |  |     |                 +--ro advertisement-type    advertised-received
+      |  |     |                 +--ro label?                mpls:mpls-label
+      |  |     |                 +--ro mbb-role?             enumeration
+      |  |     |                 +--ro mofrr-role?           enumeration
       |  |     +--rw configured-leaf-lsps
       |  |        +--rw p2mp
       |  |        |  +--rw roots-ipv4
@@ -225,9 +289,9 @@ augment /rt:routing/rt:routing-protocols:
       |  |     |     |  +--ro peer?        leafref
       |  |     |     +--ro fec-label* [fec]
       |  |     |        +--ro fec     inet:ipv4-prefix
-      |  |     |        +--ro peer* [direction peer]
-      |  |     |           +--ro direction             advertised-received
+      |  |     |        +--ro peer* [peer advertisement-type]
       |  |     |           +--ro peer                  leafref
+      |  |     |           +--ro advertisement-type    advertised-received
       |  |     |           +--ro label?                mpls:mpls-label
       |  |     |           +--ro used-in-forwarding?   boolean
       |  |     +--ro ipv6
@@ -239,9 +303,9 @@ augment /rt:routing/rt:routing-protocols:
       |  |           |  +--ro peer?        leafref
       |  |           +--ro fec-label* [fec]
       |  |              +--ro fec     inet:ipv6-prefix
-      |  |              +--ro peer* [direction peer]
-      |  |                 +--ro direction             advertised-received
+      |  |              +--ro peer* [peer advertisement-type]
       |  |                 +--ro peer                  leafref
+      |  |                 +--ro advertisement-type    advertised-received
       |  |                 +--ro label?                mpls:mpls-label
       |  |                 +--ro used-in-forwarding?   boolean
       |  +--rw discovery
