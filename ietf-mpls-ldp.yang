@@ -23,10 +23,6 @@ module ietf-mpls-ldp {
     prefix "rt";
   }
 
-  import routing-policy {
-    prefix "rpl";
-  }
-
   import ietf-mpls {
     prefix "mpls";
   }
@@ -69,7 +65,7 @@ module ietf-mpls-ldp {
      management of Multi-Protocol Label Switching (MPLS) Label
      Distribution Protocol (LDP) and Multipoint LDP (mLDP).";
 
-  revision 2016-07-05 {
+  revision 2016-07-06 {
     description
       "Initial revision.";
     reference
@@ -282,30 +278,19 @@ module ietf-mpls-ldp {
   }
 
   typedef neighbor-list-ref {
-
-    type leafref {
-      path "/rpl:routing-policy/rpl:defined-sets/rpl:neighbor-sets/"
-        + "rpl:neighbor-set/rpl:neighbor-set-name";
-    }
+    type string;
     description
       "A type for a reference to a neighbor list.";
   }
 
   typedef peer-list-ref {
-
-    type leafref {
-      path "/rpl:routing-policy/rpl:defined-sets/rpl:neighbor-sets/"
-        + "rpl:neighbor-set/rpl:neighbor-set-name";
-    }
+    type string;
     description
       "A type for a reference to a peer list.";
   }
 
   typedef prefix-list-ref {
-    type leafref {
-      path "/rpl:routing-policy/rpl:defined-sets/rpl:prefix-sets/"
-        + "rpl:prefix-set/rpl:prefix-set-name";
-    }
+    type string;
     description
       "A type for a reference to a prefix list.";
   }
@@ -757,7 +742,7 @@ module ietf-mpls-ldp {
       "An absolute reference to an LDP peer.";
     leaf peer-ref {
       type leafref {
-        path "/rt:routing/rt:routing-protocols/mpls-ldp/"
+        path "/rt:routing/rt:control-plane-protocols/mpls-ldp/"
           + "peers/peer/lsr-id";
       }
       description
@@ -849,110 +834,6 @@ module ietf-mpls-ldp {
       } // merge-point
     }
   } // mldp-capabilities
-
-  grouping  mldp-configured-lsp-roots {
-    description
-      "mLDP roots containers.";
-
-    container roots-ipv4 {
-
-      when "../../../af = 'ipv4'" {
-        description
-          "Only for IPv4.";
-      }
-      description
-        "Configured IPv4 multicast LSPs.";
-      list root {
-        key "root-address";
-        description
-          "List of roots for configured multicast LSPs.";
-
-        leaf root-address {
-          type inet:ipv4-address;
-          description
-            "Root address.";
-        }
-
-        list lsp {
-          must "(lsp-id = 0 and source-address != '0.0.0.0' and "
-            + "group-address != '0.0.0.0') or "
-            + "(lsp-id != 0 and source-address = '0.0.0.0' and "
-            + "group-address = '0.0.0.0')" {
-            description
-              "A LSP can be identified by either <lsp-id> or
-               <source-address, group-address>.";
-          }
-          key "lsp-id source-address group-address";
-          description
-            "List of LSPs.";
-          leaf lsp-id {
-            type uint16;
-            description "ID to identify the LSP.";
-          }
-          leaf source-address {
-            type inet:ipv4-address;
-            description
-              "Source address.";
-          }
-          leaf group-address {
-            type inet:ipv4-address-no-zone;
-            description
-              "Group address.";
-          }
-        } // list lsp
-      } // list root
-    } // roots-ipv4
-
-    container roots-ipv6 {
-
-      when "../../../af = 'ipv6'" {
-        description
-          "Only for IPv6.";
-      }
-      description
-        "Configured IPv6 multicast LSPs.";
-
-      list root {
-        key "root-address";
-        description
-          "List of roots for configured multicast LSPs.";
-
-        leaf root-address {
-          type inet:ipv6-address;
-          description
-            "Root address.";
-        }
-
-        list lsp {
-          must "(lsp-id = 0 and source-address != '::' and "
-            + "group-address != '::') or "
-            + "(lsp-id != 0 and source-address = '::' and "
-            + "group-address = '::')" {
-            description
-              "A LSP can be identified by either <lsp-id> or
-               <source-address, group-address>.";
-          }
-          key "lsp-id source-address group-address";
-          description
-            "List of LSPs.";
-          leaf lsp-id {
-            type uint16;
-            description "ID to identify the LSP.";
-          }
-          leaf source-address {
-            type inet:ipv6-address;
-            description
-              "Source address.";
-          }
-          leaf group-address {
-            type inet:ipv6-address-no-zone;
-            description
-              "Group address.";
-          }
-        } // list lsp
-      } // list root
-    } // roots-ipv6
-  } // mldp-configured-lsp-roots
 
   grouping mldp-fec-event {
     description
@@ -1563,7 +1444,7 @@ module ietf-mpls-ldp {
    * Configuration data nodes
    */
 
-  augment "/rt:routing/rt:routing-protocols" {
+  augment "/rt:routing/rt:control-plane-protocols" {
     description "LDP augmentation.";
 
     container mpls-ldp {
@@ -2130,23 +2011,7 @@ module ietf-mpls-ldp {
                   } // opaque-type-bidir
                 } // bindings
               } // ipv6
-            }
-            
-            container configured-leaf-lsps {
-              description
-                "Configured multicast LSPs.";
-              
-              container p2mp {
-                description
-                  "Configured point-to-multipoint LSPs.";
-                uses mldp-configured-lsp-roots;
-              }
-              container mp2mp {
-                description
-                  "Configured multipoint-to-multipoint LSPs.";
-                uses mldp-configured-lsp-roots;
-              }
-            } // configured-leaf-lsps
+            } // state
           } // list address-family
         } // mldp
 
