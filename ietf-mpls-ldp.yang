@@ -434,7 +434,7 @@ module ietf-mpls-ldp {
   grouping binding-address-state-attributes {
     description
       "Address binding attributes";
-    leaf direction {
+    leaf advertisement-type {
       type advertised-received;
       description
         "Received or advertised.";
@@ -443,7 +443,7 @@ module ietf-mpls-ldp {
       type leafref {
         path "../../../../../../../peers/peer/lsr-id";
       }
-      must "../advertised-received = 'received'" {
+      must "../advertisement-type = 'received'" {
         description
           "Applicable for received address.";
       }
@@ -2036,7 +2036,7 @@ module ietf-mpls-ldp {
             uses policy-container;
             
             container ipv4 {
-              when "../../af = 'ipv4'" {
+              when "../../afi = 'ipv4'" {
                 description
                   "Only for IPv4.";
               }
@@ -2050,7 +2050,7 @@ module ietf-mpls-ldp {
               }
             } // ipv4
             container ipv6 {
-              when "../../af = 'ipv6'" {
+              when "../../afi = 'ipv6'" {
                 description
                   "Only for IPv6.";
               }
@@ -2077,7 +2077,7 @@ module ietf-mpls-ldp {
             uses policy-container;
             
             container ipv4 {
-              when "../../af = 'ipv4'" {
+              when "../../afi = 'ipv4'" {
                 description
                   "Only for IPv4.";
               }
@@ -2119,7 +2119,7 @@ module ietf-mpls-ldp {
               } // binding
             } // ipv4
             container ipv6 {
-              when "../../af = 'ipv6'" {
+              when "../../afi = 'ipv6'" {
                 description
                   "Only for IPv6.";
               }
@@ -2454,7 +2454,7 @@ module ietf-mpls-ldp {
                   "Operational state data.";
                 
                 container ipv4 {
-                  when "../../af = 'ipv4'" {
+                  when "../../afi = 'ipv4'" {
                     description
                       "For IPv4.";
                   }
@@ -2489,7 +2489,7 @@ module ietf-mpls-ldp {
                 } // ipv4
                 
                 container ipv6 {
-                  when "../../af = 'ipv6'" {
+                  when "../../afi = 'ipv6'" {
                     description
                       "For IPv6.";
                   }
@@ -2525,7 +2525,7 @@ module ietf-mpls-ldp {
               } // state
               
               container ipv4 {
-                when "../af = 'ipv4'" {
+                when "../afi = 'ipv4'" {
                   description
                     "For IPv4.";
                 }
@@ -2575,7 +2575,7 @@ module ietf-mpls-ldp {
                 }
               } // ipv4
               container ipv6 {
-                when "../af = 'ipv6'" {
+                when "../afi = 'ipv6'" {
                   description
                     "For IPv6.";
                 }

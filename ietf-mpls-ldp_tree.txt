@@ -253,9 +253,9 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |     |  +--ro transport-address?   inet:ipv4-address
       |  |     |  +--ro bindings
       |  |     |     +--ro address* [address]
-      |  |     |     |  +--ro address      inet:ipv4-address
-      |  |     |     |  +--ro direction?   advertised-received
-      |  |     |     |  +--ro peer?        leafref
+      |  |     |     |  +--ro address               inet:ipv4-address
+      |  |     |     |  +--ro advertisement-type?   advertised-received
+      |  |     |     |  +--ro peer?                 leafref
       |  |     |     +--ro fec-label* [fec]
       |  |     |        +--ro fec     inet:ipv4-prefix
       |  |     |        +--ro peer* [peer advertisement-type]
@@ -267,9 +267,9 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |        +--ro transport-address?   inet:ipv6-address
       |  |        +--ro binding
       |  |           +--ro address* [address]
-      |  |           |  +--ro address      inet:ipv6-address
-      |  |           |  +--ro direction?   advertised-received
-      |  |           |  +--ro peer?        leafref
+      |  |           |  +--ro address               inet:ipv6-address
+      |  |           |  +--ro advertisement-type?   advertised-received
+      |  |           |  +--ro peer?                 leafref
       |  |           +--ro fec-label* [fec]
       |  |              +--ro fec     inet:ipv6-prefix
       |  |              +--ro peer* [peer advertisement-type]
