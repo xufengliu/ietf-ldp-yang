@@ -65,7 +65,7 @@ module ietf-mpls-ldp {
      management of Multi-Protocol Label Switching (MPLS) Label
      Distribution Protocol (LDP) and Multipoint LDP (mLDP).";
 
-  revision 2016-07-06 {
+  revision 2016-07-08 {
     description
       "Initial revision.";
     reference
@@ -835,6 +835,110 @@ module ietf-mpls-ldp {
     }
   } // mldp-capabilities
 
+  grouping  mldp-configured-lsp-roots {
+    description
+      "mLDP roots containers.";
+
+    container roots-ipv4 {
+
+      when "../../../af = 'ipv4'" {
+        description
+          "Only for IPv4.";
+      }
+      description
+        "Configured IPv4 multicast LSPs.";
+      list root {
+        key "root-address";
+        description
+          "List of roots for configured multicast LSPs.";
+
+        leaf root-address {
+          type inet:ipv4-address;
+          description
+            "Root address.";
+        }
+
+        list lsp {
+          must "(lsp-id = 0 and source-address != '0.0.0.0' and "
+            + "group-address != '0.0.0.0') or "
+            + "(lsp-id != 0 and source-address = '0.0.0.0' and "
+            + "group-address = '0.0.0.0')" {
+            description
+              "A LSP can be identified by either <lsp-id> or
+               <source-address, group-address>.";
+          }
+          key "lsp-id source-address group-address";
+          description
+            "List of LSPs.";
+          leaf lsp-id {
+            type uint16;
+            description "ID to identify the LSP.";
+          }
+          leaf source-address {
+            type inet:ipv4-address;
+            description
+              "Source address.";
+          }
+          leaf group-address {
+            type inet:ipv4-address-no-zone;
+            description
+              "Group address.";
+          }
+        } // list lsp
+      } // list root
+    } // roots-ipv4
+
+    container roots-ipv6 {
+
+      when "../../../af = 'ipv6'" {
+        description
+          "Only for IPv6.";
+      }
+      description
+        "Configured IPv6 multicast LSPs.";
+
+      list root {
+        key "root-address";
+        description
+          "List of roots for configured multicast LSPs.";
+
+        leaf root-address {
+          type inet:ipv6-address;
+          description
+            "Root address.";
+        }
+
+        list lsp {
+          must "(lsp-id = 0 and source-address != '::' and "
+            + "group-address != '::') or "
+            + "(lsp-id != 0 and source-address = '::' and "
+            + "group-address = '::')" {
+            description
+              "A LSP can be identified by either <lsp-id> or
+               <source-address, group-address>.";
+          }
+          key "lsp-id source-address group-address";
+          description
+            "List of LSPs.";
+          leaf lsp-id {
+            type uint16;
+            description "ID to identify the LSP.";
+          }
+          leaf source-address {
+            type inet:ipv6-address;
+            description
+              "Source address.";
+          }
+          leaf group-address {
+            type inet:ipv6-address-no-zone;
+            description
+              "Group address.";
+          }
+        } // list lsp
+      } // list root
+    } // roots-ipv6
+  } // mldp-configured-lsp-roots
+
   grouping mldp-fec-event {
     description
       "A mLDP FEC event.";
@@ -1376,7 +1480,7 @@ module ietf-mpls-ldp {
 
   grouping statistics-peer-received-sent {
     description
-      "Inboud and outbound statistic counters.";
+      "Inbound and outbound statistic counters.";
     leaf total-octets {
       type yang:counter64;
       description
@@ -1640,7 +1744,7 @@ module ietf-mpls-ldp {
                         description "ID to identify the LSP.";
                       }
                       leaf recur-root-address {
-                        type inet:ipv4-address;
+                        type inet:ip-address;
                         description
                           "Recursive root address.";
                         reference
@@ -1701,7 +1805,7 @@ module ietf-mpls-ldp {
                            Context.";
                       }
                       leaf recur-root-address {
-                        type inet:ipv4-address;
+                        type inet:ip-address;
                         description
                           "Recursive root address.";
                         reference
@@ -1760,9 +1864,9 @@ module ietf-mpls-ldp {
                            Protocol In-Band Signaling in a Virtual
                            Routing and Forwarding (VRF) Table
                            Context.";
-                     }
+                      }
                       leaf recur-root-address {
-                        type inet:ipv4-address;
+                        type inet:ip-address;
                         description
                           "Recursive root address.";
                         reference
@@ -1868,7 +1972,7 @@ module ietf-mpls-ldp {
                         description "ID to identify the LSP.";
                       }
                       leaf recur-root-address {
-                        type inet:ipv6-address;
+                        type inet:ip-address;
                         description
                           "Recursive root address.";
                         reference
@@ -1929,7 +2033,7 @@ module ietf-mpls-ldp {
                            Context.";
                       }
                       leaf recur-root-address {
-                        type inet:ipv6-address;
+                        type inet:ip-address;
                         description
                           "Recursive root address.";
                         reference
@@ -1990,7 +2094,7 @@ module ietf-mpls-ldp {
                            Context.";
                       }
                       leaf recur-root-address {
-                        type inet:ipv6-address;
+                        type inet:ip-address;
                         description
                           "Recursive root address.";
                         reference
@@ -2012,6 +2116,22 @@ module ietf-mpls-ldp {
                 } // bindings
               } // ipv6
             } // state
+
+            container configured-leaf-lsps {
+              description
+                "Configured multicast LSPs.";
+              
+              container p2mp {
+                description
+                  "Configured point-to-multipoint LSPs.";
+                uses mldp-configured-lsp-roots;
+              }
+              container mp2mp {
+                description
+                  "Configured multipoint-to-multipoint LSPs.";
+                uses mldp-configured-lsp-roots;
+              }
+            } // configured-leaf-lsps
           } // list address-family
         } // mldp
 
