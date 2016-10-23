@@ -65,7 +65,7 @@ module ietf-mpls-ldp {
      management of Multi-Protocol Label Switching (MPLS) Label
      Distribution Protocol (LDP) and Multipoint LDP (mLDP).";
 
-  revision 2016-08-29 {
+  revision 2016-10-20 {
     description
       "Initial revision.";
     reference
@@ -1387,21 +1387,18 @@ module ietf-mpls-ldp {
           if-feature policy-ordered-label-config;
           description
             "Ordered label policy attributes.";
-          container egress-fec {
+          leaf egress-prefix-list {
+            type prefix-list-ref;
             description
-              "Egress LSR label assignment policies";
-            leaf prefix-list {
-              type prefix-list-ref;
-              description
-                "Assign labels according to certain prefixes.";
-            }
+              "Assign labels according to certain prefixes for 
+               egress LSR.";
           }
         } // ordered-mode
       } // assign
       container advertise {
         description
           "Label advertising policies.";
-        container explicit-null {
+        container egress-explicit-null {
           description
             "Enables an egress router to advertise an
              explicit null label (value 0) in place of an
@@ -1411,16 +1408,6 @@ module ietf-mpls-ldp {
             type boolean;
             description
               "'true' to enable explicit null.";
-          }
-          leaf prefix-list {
-            type prefix-list-ref;
-            description
-              "Prefix list name. Applies the filters in the
-               specified prefix list to label
-               advertisements.
-               If the prefix list is not specified, explicit
-               null label advertisement is enabled for all
-               directly connected prefixes.";
           }
         }
         leaf prefix-list {
