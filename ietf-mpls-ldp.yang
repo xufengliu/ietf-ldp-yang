@@ -65,7 +65,7 @@ module ietf-mpls-ldp {
      management of Multi-Protocol Label Switching (MPLS) Label
      Distribution Protocol (LDP) and Multipoint LDP (mLDP).";
 
-  revision 2016-07-08 {
+  revision 2016-08-29 {
     description
       "Initial revision.";
     reference
@@ -1370,111 +1370,76 @@ module ietf-mpls-ldp {
     container label-policy {
       description
         "Label policy attributes.";
-      container independent-mode {
+      container assign {
+        if-feature policy-label-assignment-config;
         description
-          "Independent label policy attributes.";
-        container assign {
-
-          if-feature policy-label-assignment-config;
+          "Label assignment policies";
+        container independent-mode {
           description
-            "Label assignment policies";
-          choice prefix-option {
-            description
-              "Use either prefix-list or host-routes-only.";
-            case prefix-list {
-              leaf prefix-list {
-                type prefix-list-ref;
-                description
-                  "Assign labels according to certain prefixes.";
-              }
-            }
-            case host-routes-only {
-              leaf host-routes-only {
-                type boolean;
-                description
-                  "'true' to apply host routes only.";
-              }
-            }
-          } // prefix-option
-        }
-        container advertise {
-          description
-            "Label advertising policies.";
-          container explicit-null {
-            description
-              "Enables an egress router to advertise an
-               explicit null label (value 0) in place of an
-               implicit null label (value 3) to the
-               penultimate hop router.";
-            leaf enable {
-              type boolean;
-              description
-                "'true' to enable explicit null.";
-            }
-            leaf prefix-list {
-              type prefix-list-ref;
-              description
-                "Prefix list name. Applies the filters in the
-                 specified prefix list to label
-                 advertisements.
-                 If the prefix list is not specified, explicit
-                 null label advertisement is enabled for all
-                 directly connected prefixes.";
-            }
-          }
-          leaf prefix-list {
-            type prefix-list-ref;
-            description
-              "Applies the prefix list to outgoing label
-               advertisements.";
-
-          }
-        }
-        container accept {
-          description
-            "Label advertisement acceptance policies.";
-          leaf prefix-list {
-            type prefix-list-ref;
-            description
-              "Applies the prefix list to incoming label
-               advertisements.";
-          }
-        }
-      } // independent-mode
-      container ordered-mode {
-        if-feature policy-ordered-label-config;
-        description
-          "Ordered label policy attributes.";
-        container egress-lsr {
-          description
-            "Egress LSR label assignment policies";
+            "Independent label policy attributes.";
           leaf prefix-list {
             type prefix-list-ref;
             description
               "Assign labels according to certain prefixes.";
           }
-        }
-        container advertise {
+        } // independent-mode
+        container ordered-mode {
+          if-feature policy-ordered-label-config;
           description
-            "Label advertising policies.";
+            "Ordered label policy attributes.";
+          container egress-fec {
+            description
+              "Egress LSR label assignment policies";
+            leaf prefix-list {
+              type prefix-list-ref;
+              description
+                "Assign labels according to certain prefixes.";
+            }
+          }
+        } // ordered-mode
+      } // assign
+      container advertise {
+        description
+          "Label advertising policies.";
+        container explicit-null {
+          description
+            "Enables an egress router to advertise an
+             explicit null label (value 0) in place of an
+             implicit null label (value 3) to the
+             penultimate hop router.";
+          leaf enable {
+            type boolean;
+            description
+              "'true' to enable explicit null.";
+          }
           leaf prefix-list {
             type prefix-list-ref;
             description
-              "Applies the prefix list to outgoing label
-               advertisements.";
+              "Prefix list name. Applies the filters in the
+               specified prefix list to label
+               advertisements.
+               If the prefix list is not specified, explicit
+               null label advertisement is enabled for all
+               directly connected prefixes.";
           }
         }
-        container accept {
+        leaf prefix-list {
+          type prefix-list-ref;
           description
-            "Label advertisement acceptance policies.";
-          leaf prefix-list {
-            type prefix-list-ref;
-            description
-              "Applies the prefix list to incoming label
-               advertisements.";
-          }
+            "Applies the prefix list to outgoing label
+             advertisements.";          
         }
-      } // ordered-mode
+      } // advertise
+      container accept {
+        description
+          "Label advertisement acceptance policies.";
+        leaf prefix-list {
+          type prefix-list-ref;
+          description
+            "Applies the prefix list to incoming label
+             advertisements.";
+        }
+      } // accept
     } // label-policy
   } // policy-container
 
