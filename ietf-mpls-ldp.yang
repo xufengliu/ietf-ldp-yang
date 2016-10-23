@@ -1715,8 +1715,7 @@ module ietf-mpls-ldp {
                     }
                   } // list root
                 } // roots
-                container bindings
-                {
+                container bindings {
                   description 
                     "mLDP FEC to label bindings.";
                   container opaque-type-lspid {
@@ -1785,12 +1784,12 @@ module ietf-mpls-ldp {
                           "Root address.";
                       }
                       leaf source-address {
-                        type inet:ipv4-address;
+                        type inet:ip-address;
                         description
                           "Source address.";
                       }
                       leaf group-address {
-                        type inet:ipv4-address-no-zone;
+                        type inet:ip-address-no-zone;
                         description
                           "Group address.";
                       }
@@ -1846,12 +1845,12 @@ module ietf-mpls-ldp {
                           "Root address.";
                       }
                       leaf rp {
-                        type inet:ipv4-address;
+                        type inet:ip-address;
                         description
                           "RP address.";
                       }
                       leaf group-address {
-                        type inet:ipv4-address-no-zone;
+                        type inet:ip-address-no-zone;
                         description
                           "Group address.";
                       }
@@ -1943,8 +1942,7 @@ module ietf-mpls-ldp {
                     }
                   } // list root
                 } // roots
-                container bindings
-                {
+                container bindings {
                   description 
                     "mLDP FEC to label bindings.";
                   container opaque-type-lspid {
@@ -2013,12 +2011,12 @@ module ietf-mpls-ldp {
                           "Root address.";
                       }
                       leaf source-address {
-                        type inet:ipv6-address;
+                        type inet:ip-address;
                         description
                           "Source address.";
                       }
                       leaf group-address {
-                        type inet:ipv6-address-no-zone;
+                        type inet:ip-address-no-zone;
                         description
                           "Group address.";
                       }
@@ -2074,12 +2072,12 @@ module ietf-mpls-ldp {
                           "Root address.";
                       }
                       leaf rp {
-                        type inet:ipv6-address;
+                        type inet:ip-address;
                         description
                           "RP address.";
                       }
                       leaf group-address {
-                        type inet:ipv6-address-no-zone;
+                        type inet:ip-address-no-zone;
                         description
                           "Group address.";
                       }

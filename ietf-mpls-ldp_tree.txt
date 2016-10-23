@@ -110,8 +110,8 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |     |  |     +--ro opaque-type-transit
       |  |     |  |     |  +--ro fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
       |  |     |  |     |     +--ro root-address          inet:ipv4-address
-      |  |     |  |     |     +--ro source-address        inet:ipv4-address
-      |  |     |  |     |     +--ro group-address         inet:ipv4-address-no-zone
+      |  |     |  |     |     +--ro source-address        inet:ip-address
+      |  |     |  |     |     +--ro group-address         inet:ip-address-no-zone
       |  |     |  |     |     +--ro rd                    route-distinguisher
       |  |     |  |     |     +--ro recur-root-address    inet:ip-address
       |  |     |  |     |     +--ro recur-rd              route-distinguisher
@@ -126,8 +126,8 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |     |  |     +--ro opaque-type-bidir
       |  |     |  |        +--ro fec-label* [root-address rp group-address rd recur-root-address recur-rd]
       |  |     |  |           +--ro root-address          inet:ipv4-address
-      |  |     |  |           +--ro rp                    inet:ipv4-address
-      |  |     |  |           +--ro group-address         inet:ipv4-address-no-zone
+      |  |     |  |           +--ro rp                    inet:ip-address
+      |  |     |  |           +--ro group-address         inet:ip-address-no-zone
       |  |     |  |           +--ro rd                    route-distinguisher
       |  |     |  |           +--ro recur-root-address    inet:ip-address
       |  |     |  |           +--ro recur-rd              route-distinguisher
@@ -166,8 +166,8 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |     |        +--ro opaque-type-transit
       |  |     |        |  +--ro fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
       |  |     |        |     +--ro root-address          inet:ipv6-address
-      |  |     |        |     +--ro source-address        inet:ipv6-address
-      |  |     |        |     +--ro group-address         inet:ipv6-address-no-zone
+      |  |     |        |     +--ro source-address        inet:ip-address
+      |  |     |        |     +--ro group-address         inet:ip-address-no-zone
       |  |     |        |     +--ro rd                    route-distinguisher
       |  |     |        |     +--ro recur-root-address    inet:ip-address
       |  |     |        |     +--ro recur-rd              route-distinguisher
@@ -182,8 +182,8 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |     |        +--ro opaque-type-bidir
       |  |     |           +--ro fec-label* [root-address rp group-address rd recur-root-address recur-rd]
       |  |     |              +--ro root-address          inet:ipv6-address
-      |  |     |              +--ro rp                    inet:ipv6-address
-      |  |     |              +--ro group-address         inet:ipv6-address-no-zone
+      |  |     |              +--ro rp                    inet:ip-address
+      |  |     |              +--ro group-address         inet:ip-address-no-zone
       |  |     |              +--ro rd                    route-distinguisher
       |  |     |              +--ro recur-root-address    inet:ip-address
       |  |     |              +--ro recur-rd              route-distinguisher
