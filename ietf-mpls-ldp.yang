@@ -65,7 +65,7 @@ module ietf-mpls-ldp {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2016-10-27 {
+  revision 2016-11-01 {
     description
       "Initial revision.";
     reference

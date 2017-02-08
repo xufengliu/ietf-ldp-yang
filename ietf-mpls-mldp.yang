@@ -56,7 +56,7 @@ module ietf-mpls-mldp {
      management of Multi-Protocol Label Switching (MPLS) Multipoint
      LDP (mLDP).";
 
-  revision 2016-10-27 {
+  revision 2016-11-01 {
     description
       "Initial revision.";
     reference
