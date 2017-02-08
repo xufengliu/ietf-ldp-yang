@@ -26,6 +26,10 @@ module ietf-mpls-ldp {
     prefix "mpls";
   }
 
+  import ietf-key-chain {
+    prefix "key-chain";
+  }
+
   organization
     "IETF MPLS Working Group";
   contact
@@ -65,7 +69,7 @@ module ietf-mpls-ldp {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2016-11-01 {
+  revision 2016-12-19 {
     description
       "Initial revision.";
     reference
@@ -754,7 +758,8 @@ module ietf-mpls-ldp {
 
   grouping peer-authentication {
     description
-      "Peer authentication attributes.";
+      "Peer authentication container.";
+/*
     leaf session-authentication-md5-password {
       type string {
         length "1..80";
@@ -763,6 +768,33 @@ module ietf-mpls-ldp {
         "Assigns an encrypted MD5 password to an LDP
          peer";
     } // md5-password
+*/
+    container authentication {
+      description "Containing authentication information.";
+      choice auth-type-selection {
+        description
+          "Options for expressing authentication setting.";
+        case auth-key-chain {
+          leaf key-chain {
+            type key-chain:key-chain-ref;
+             description
+              "key-chain name.";
+            }
+          }
+        case auth-key {
+          leaf key {
+            type string;
+            description
+              "Key string in ASCII format.";
+          }
+          container crypto-algorithm {
+            uses key-chain:crypto-algorithm-types;
+            description
+              "Cryptographic algorithm associated with key.";
+          }
+        }
+      }
+    } // authentication
   } // peer-authentication
 
   grouping peer-state-derived {
@@ -1159,6 +1191,22 @@ module ietf-mpls-ldp {
               type boolean;
               description
                 "'true' to enable the address family.";
+            }
+            leaf label-distribution-controlmode {
+              type enumeration {
+                enum independent {
+                  description 
+                    "Independent label distribution control.";
+                }
+                enum Ordered {
+                  description
+                    "Ordered Label Distribution Control.";
+                }
+              }
+              description
+                "Label distribution control mode.";
+              reference
+                "RFC5036: LDP Specification. Sec 2.6.";
             }
 
             uses policy-container;

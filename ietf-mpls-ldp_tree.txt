@@ -55,7 +55,8 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |  |  +--rw ipv6
       |  |  |     +--rw transport-address?   inet:ipv6-address
       |  |  +--ro state
-      |  |     +--ro enable?         boolean
+      |  |     +--ro enable?                           boolean
+      |  |     +--ro label-distribution-controlmode?   enumeration
       |  |     +--ro label-policy
       |  |     |  +--ro assign {policy-label-assignment-config}?
       |  |     |  |  +--ro independent-mode
@@ -243,36 +244,99 @@ augment /rt:routing/rt:control-plane-protocols:
       |        +--rw prefix-list?   prefix-list-ref
       +--rw peers
          +--rw config
-         |  +--rw session-authentication-md5-password?   string
-         |  +--rw session-ka-holdtime?                   uint16
-         |  +--rw session-ka-interval?                   uint16
+         |  +--rw authentication
+         |  |  +--rw (auth-type-selection)?
+         |  |     +--:(auth-key-chain)
+         |  |     |  +--rw key-chain?          key-chain:key-chain-ref
+         |  |     +--:(auth-key)
+         |  |        +--rw key?                string
+         |  |        +--rw crypto-algorithm
+         |  |           +--rw (algorithm)?
+         |  |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
+         |  |              |  +--rw hmac-sha1-12?   empty
+         |  |              +--:(md5)
+         |  |              |  +--rw md5?            empty
+         |  |              +--:(sha-1)
+         |  |              |  +--rw sha-1?          empty
+         |  |              +--:(hmac-sha-1)
+         |  |              |  +--rw hmac-sha-1?     empty
+         |  |              +--:(hmac-sha-256)
+         |  |              |  +--rw hmac-sha-256?   empty
+         |  |              +--:(hmac-sha-384)
+         |  |              |  +--rw hmac-sha-384?   empty
+         |  |              +--:(hmac-sha-512)
+         |  |                 +--rw hmac-sha-512?   empty
+         |  +--rw session-ka-holdtime?            uint16
+         |  +--rw session-ka-interval?            uint16
          |  +--rw session-downstream-on-demand {session-downstream-on-demand-config}?
          |     +--rw enable?      boolean
          |     +--rw peer-list?   peer-list-ref
          +--ro state
-         |  +--ro session-authentication-md5-password?   string
-         |  +--ro session-ka-holdtime?                   uint16
-         |  +--ro session-ka-interval?                   uint16
+         |  +--ro authentication
+         |  |  +--ro (auth-type-selection)?
+         |  |     +--:(auth-key-chain)
+         |  |     |  +--ro key-chain?          key-chain:key-chain-ref
+         |  |     +--:(auth-key)
+         |  |        +--ro key?                string
+         |  |        +--ro crypto-algorithm
+         |  |           +--ro (algorithm)?
+         |  |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
+         |  |              |  +--ro hmac-sha1-12?   empty
+         |  |              +--:(md5)
+         |  |              |  +--ro md5?            empty
+         |  |              +--:(sha-1)
+         |  |              |  +--ro sha-1?          empty
+         |  |              +--:(hmac-sha-1)
+         |  |              |  +--ro hmac-sha-1?     empty
+         |  |              +--:(hmac-sha-256)
+         |  |              |  +--ro hmac-sha-256?   empty
+         |  |              +--:(hmac-sha-384)
+         |  |              |  +--ro hmac-sha-384?   empty
+         |  |              +--:(hmac-sha-512)
+         |  |                 +--ro hmac-sha-512?   empty
+         |  +--ro session-ka-holdtime?            uint16
+         |  +--ro session-ka-interval?            uint16
          |  +--ro session-downstream-on-demand {session-downstream-on-demand-config}?
          |     +--ro enable?      boolean
          |     +--ro peer-list?   peer-list-ref
          +--rw peer* [lsr-id]
             +--rw lsr-id    yang:dotted-quad
             +--rw config
-            |  +--rw admin-down?                            boolean
+            |  +--rw admin-down?            boolean
             |  +--rw capability
             |  +--rw label-policy
             |  |  +--rw advertise
             |  |  |  +--rw prefix-list?   prefix-list-ref
             |  |  +--rw accept
             |  |     +--rw prefix-list?   prefix-list-ref
-            |  +--rw session-authentication-md5-password?   string
+            |  +--rw authentication
+            |  |  +--rw (auth-type-selection)?
+            |  |     +--:(auth-key-chain)
+            |  |     |  +--rw key-chain?          key-chain:key-chain-ref
+            |  |     +--:(auth-key)
+            |  |        +--rw key?                string
+            |  |        +--rw crypto-algorithm
+            |  |           +--rw (algorithm)?
+            |  |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
+            |  |              |  +--rw hmac-sha1-12?   empty
+            |  |              +--:(md5)
+            |  |              |  +--rw md5?            empty
+            |  |              +--:(sha-1)
+            |  |              |  +--rw sha-1?          empty
+            |  |              +--:(hmac-sha-1)
+            |  |              |  +--rw hmac-sha-1?     empty
+            |  |              +--:(hmac-sha-256)
+            |  |              |  +--rw hmac-sha-256?   empty
+            |  |              +--:(hmac-sha-384)
+            |  |              |  +--rw hmac-sha-384?   empty
+            |  |              +--:(hmac-sha-512)
+            |  |                 +--rw hmac-sha-512?   empty
             |  +--rw graceful-restart
             |  |  +--rw enable?           boolean
             |  |  +--rw reconnect-time?   uint16
             |  |  +--rw recovery-time?    uint16
-            |  +--rw session-ka-holdtime?                   uint16
-            |  +--rw session-ka-interval?                   uint16
+            |  +--rw session-ka-holdtime?   uint16
+            |  +--rw session-ka-interval?   uint16
             |  +--rw address-family
             |     +--rw ipv4
             |     |  +--rw label-policy
@@ -287,20 +351,41 @@ augment /rt:routing/rt:control-plane-protocols:
             |           +--rw accept
             |              +--rw prefix-list?   prefix-list-ref
             +--ro state
-               +--ro admin-down?                            boolean
+               +--ro admin-down?                 boolean
                +--ro capability
                +--ro label-policy
                |  +--ro advertise
                |  |  +--ro prefix-list?   prefix-list-ref
                |  +--ro accept
                |     +--ro prefix-list?   prefix-list-ref
-               +--ro session-authentication-md5-password?   string
+               +--ro authentication
+               |  +--ro (auth-type-selection)?
+               |     +--:(auth-key-chain)
+               |     |  +--ro key-chain?          key-chain:key-chain-ref
+               |     +--:(auth-key)
+               |        +--ro key?                string
+               |        +--ro crypto-algorithm
+               |           +--ro (algorithm)?
+               |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
+               |              |  +--ro hmac-sha1-12?   empty
+               |              +--:(md5)
+               |              |  +--ro md5?            empty
+               |              +--:(sha-1)
+               |              |  +--ro sha-1?          empty
+               |              +--:(hmac-sha-1)
+               |              |  +--ro hmac-sha-1?     empty
+               |              +--:(hmac-sha-256)
+               |              |  +--ro hmac-sha-256?   empty
+               |              +--:(hmac-sha-384)
+               |              |  +--ro hmac-sha-384?   empty
+               |              +--:(hmac-sha-512)
+               |                 +--ro hmac-sha-512?   empty
                +--ro graceful-restart
                |  +--ro enable?           boolean
                |  +--ro reconnect-time?   uint16
                |  +--ro recovery-time?    uint16
-               +--ro session-ka-holdtime?                   uint16
-               +--ro session-ka-interval?                   uint16
+               +--ro session-ka-holdtime?        uint16
+               +--ro session-ka-interval?        uint16
                +--ro address-family
                |  +--ro ipv4
                |  |  +--ro label-policy
@@ -346,8 +431,8 @@ augment /rt:routing/rt:control-plane-protocols:
                |  +--ro local?        label-adv-mode
                |  +--ro peer?         label-adv-mode
                |  +--ro negotiated?   label-adv-mode
-               +--ro next-keep-alive?                       uint16
-               +--ro peer-ldp-id?                           yang:dotted-quad
+               +--ro next-keep-alive?            uint16
+               +--ro peer-ldp-id?                yang:dotted-quad
                +--ro received-peer-state
                |  +--ro graceful-restart
                |  |  +--ro enable?           boolean
@@ -364,13 +449,13 @@ augment /rt:routing/rt:control-plane-protocols:
                |  +--ro peer?         uint16
                |  +--ro negotiated?   uint16
                |  +--ro remaining?    uint16
-               +--ro session-state?                         enumeration
+               +--ro session-state?              enumeration
                +--ro tcp-connection
                |  +--ro local-address?    inet:ip-address
                |  +--ro local-port?       inet:port-number
                |  +--ro remote-address?   inet:ip-address
                |  +--ro remote-port?      inet:port-number
-               +--ro up-time?                               string
+               +--ro up-time?                    string
                +--ro statistics
                   +--ro discontinuity-time          yang:date-and-time
                   +--ro received
