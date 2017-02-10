@@ -1,0 +1,15 @@
+module: ietf-mpls-ldp-extended
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:config/ldp:capability:
+   +--rw end-of-lib {capability-end-of-lib}?
+   |  +--rw enable?   boolean
+   +--rw typed-wildcard-fec {capability-typed-wildcard-fec}?
+   |  +--rw enable?   boolean
+   +--rw upstream-label-assignment {capability-upstream-label-assignment}?
+      +--rw enable?   boolean
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:state/ldp:capability:
+   +--ro end-of-lib {capability-end-of-lib}?
+   |  +--ro enable?   boolean
+   +--ro typed-wildcard-fec {capability-typed-wildcard-fec}?
+   |  +--ro enable?   boolean
+   +--ro upstream-label-assignment {capability-upstream-label-assignment}?
+      +--ro enable?   boolean
