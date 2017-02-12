@@ -58,7 +58,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-02-08 {
+  revision 2017-02-10 {
     description
       "Initial revision.";
     reference
@@ -531,26 +531,41 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-family/ldp:config/ldp:label-policy" {
+    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:config/"
+    + "ldp:label-policy" {
     description "Label policy augmentation.";
     uses label-policy-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-family/ldp:config/ldp:label-policy/"
-    + "ldp:advertise" {
+    + "ldp:global/ldp:address-families/ldp:ipv6/ldp:config/"
+    + "ldp:label-policy" {
+    description "Label policy augmentation.";
+    uses label-policy-augment;
+  }
+
+  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
+    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:config/"
+    + "ldp:label-policy/ldp:advertise" {
     description "Label policy advertise augmentation.";
     uses label-policy-advertise-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-family/ldp:config/ldp:ipv4" {
+    + "ldp:global/ldp:address-families/ldp:ipv6/ldp:config/"
+    + "ldp:label-policy/ldp:advertise" {
+    description "Label policy advertise augmentation.";
+    uses label-policy-advertise-augment;
+  }
+
+  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
+    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:config" {
     description "Address family IPv4 augmentation.";
     uses address-family-ipv4-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-family/ldp:config/ldp:ipv6" {
+    + "ldp:global/ldp:address-families/ldp:ipv6/ldp:config" {
     description "Address family IPv4 augmentation.";
     uses address-family-ipv6-augment;
   }
@@ -567,14 +582,14 @@ module ietf-mpls-ldp-extended {
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
-    + "ldp:address-family/ldp:config/ldp:ipv4" {
+    + "ldp:address-families/ldp:ipv4/ldp:config" {
     description "Interface address family IPv4 augmentation.";
     uses interface-address-family-ipv4-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
-    + "ldp:address-family/ldp:config/ldp:ipv6" {
+    + "ldp:address-families/ldp:ipv6/ldp:config" {
     description "Interface address family IPv6 augmentation.";
     uses interface-address-family-ipv6-augment;
   }
@@ -651,27 +666,42 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-family/ldp:state/ldp:label-policy" {
+    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:state/"
+    + "ldp:label-policy" {
     description "Label policy augmentation.";
     uses label-policy-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-family/ldp:state/ldp:label-policy/"
-    + "ldp:advertise" {
+    + "ldp:global/ldp:address-families/ldp:ipv6/ldp:state/"
+    + "ldp:label-policy" {
+    description "Label policy augmentation.";
+    uses label-policy-augment;
+  }
+
+  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
+    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:state/"
+    + "ldp:label-policy/ldp:advertise" {
     description "Label policy advertise augmentation.";
     uses label-policy-advertise-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-family/ldp:state/ldp:ipv4" {
+    + "ldp:global/ldp:address-families/ldp:ipv6/ldp:state/"
+    + "ldp:label-policy/ldp:advertise" {
+    description "Label policy advertise augmentation.";
+    uses label-policy-advertise-augment;
+  }
+
+  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
+    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:state" {
     description "Address family IPv4 augmentation.";
     uses address-family-ipv4-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-family/ldp:state/ldp:ipv6" {
-    description "Address family IPv4 augmentation.";
+    + "ldp:global/ldp:address-families/ldp:ipv6/ldp:state" {
+    description "Address family IPv6 augmentation.";
     uses address-family-ipv6-augment;
   }
 
@@ -684,14 +714,14 @@ module ietf-mpls-ldp-extended {
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
-    + "ldp:address-family/ldp:state/ldp:ipv4" {
+    + "ldp:address-families/ldp:ipv4/ldp:state" {
     description "Interface address family IPv4 augmentation.";
     uses interface-address-family-ipv4-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
-    + "ldp:address-family/ldp:state/ldp:ipv6" {
+    + "ldp:address-families/ldp:ipv6/ldp:state" {
     description "Interface address family IPv6 augmentation.";
     uses interface-address-family-ipv6-augment;
   }
@@ -727,14 +757,14 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:state/ldp:address-family/ldp:ipv4" {
+    + "ldp:peers/ldp:peer/ldp:state/ldp:address-families/ldp:ipv4" {
     description 
       "Peer list entry IPv4 augmentation.";
     uses peer-af-policy-container;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:state/ldp:address-family/ldp:ipv6" {
+    + "ldp:peers/ldp:peer/ldp:state/ldp:address-families/ldp:ipv6" {
     description 
       "Peer list entry IPv6 augmentation.";
     uses peer-af-policy-container;

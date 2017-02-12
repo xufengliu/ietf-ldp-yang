@@ -18,38 +18,48 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |  |  +--ro recovery-time?         uint16
       |  |  |  +--ro forwarding-holdtime?   uint16
       |  |  +--ro lsr-id?             yang:dotted-quad
-      |  +--rw address-family* [afi]
-      |  |  +--rw afi       ldp-address-family
-      |  |  +--rw config
-      |  |  |  +--rw enable?         boolean
-      |  |  |  +--rw label-policy
-      |  |  |  |  +--rw advertise
-      |  |  |  |     +--rw egress-explicit-null
-      |  |  |  |        +--rw enable?   boolean
-      |  |  |  +--rw ipv4
-      |  |  |  +--rw ipv6
-      |  |  +--ro state
-      |  |     +--ro enable?                           boolean
-      |  |     +--ro label-distribution-controlmode?   enumeration
-      |  |     +--ro label-policy
-      |  |     |  +--ro advertise
-      |  |     |     +--ro egress-explicit-null
-      |  |     |        +--ro enable?   boolean
-      |  |     +--ro ipv4
-      |  |     |  +--ro bindings
-      |  |     |     +--ro address* [address]
-      |  |     |     |  +--ro address               inet:ipv4-address
-      |  |     |     |  +--ro advertisement-type?   advertised-received
-      |  |     |     |  +--ro peer?                 leafref
-      |  |     |     +--ro fec-label* [fec]
-      |  |     |        +--ro fec     inet:ipv4-prefix
-      |  |     |        +--ro peer* [peer advertisement-type]
-      |  |     |           +--ro peer                  leafref
-      |  |     |           +--ro advertisement-type    advertised-received
-      |  |     |           +--ro label?                mpls:mpls-label
-      |  |     |           +--ro used-in-forwarding?   boolean
-      |  |     +--ro ipv6
-      |  |        +--ro binding
+      |  +--rw address-families
+      |  |  +--rw ipv4
+      |  |  |  +--rw config
+      |  |  |  |  +--rw enable?         boolean
+      |  |  |  |  +--rw label-policy
+      |  |  |  |     +--rw advertise
+      |  |  |  |        +--rw egress-explicit-null
+      |  |  |  |           +--rw enable?   boolean
+      |  |  |  +--ro state
+      |  |  |     +--ro enable?                           boolean
+      |  |  |     +--ro label-distribution-controlmode?   enumeration
+      |  |  |     +--ro label-policy
+      |  |  |     |  +--ro advertise
+      |  |  |     |     +--ro egress-explicit-null
+      |  |  |     |        +--ro enable?   boolean
+      |  |  |     +--ro bindings
+      |  |  |        +--ro address* [address]
+      |  |  |        |  +--ro address               inet:ipv4-address
+      |  |  |        |  +--ro advertisement-type?   advertised-received
+      |  |  |        |  +--ro peer?                 leafref
+      |  |  |        +--ro fec-label* [fec]
+      |  |  |           +--ro fec     inet:ipv4-prefix
+      |  |  |           +--ro peer* [peer advertisement-type]
+      |  |  |              +--ro peer                  leafref
+      |  |  |              +--ro advertisement-type    advertised-received
+      |  |  |              +--ro label?                mpls:mpls-label
+      |  |  |              +--ro used-in-forwarding?   boolean
+      |  |  +--rw ipv6
+      |  |     +--rw config
+      |  |     |  +--rw enable?         boolean
+      |  |     |  +--rw label-policy
+      |  |     |     +--rw advertise
+      |  |     |        +--rw egress-explicit-null
+      |  |     |           +--rw enable?   boolean
+      |  |     +--ro state
+      |  |        +--ro enable?                           boolean
+      |  |        +--ro label-distribution-controlmode?   enumeration
+      |  |        +--ro label-policy
+      |  |        |  +--ro advertise
+      |  |        |     +--ro egress-explicit-null
+      |  |        |        +--ro enable?   boolean
+      |  |        +--ro bindings
       |  |           +--ro address* [address]
       |  |           |  +--ro address               inet:ipv6-address
       |  |           |  +--ro advertisement-type?   advertised-received
@@ -70,32 +80,33 @@ augment /rt:routing/rt:control-plane-protocols:
       |     |  |  +--ro hello-holdtime?   uint16
       |     |  |  +--ro hello-interval?   uint16
       |     |  +--rw interface* [interface]
-      |     |     +--rw interface         mpls-interface-ref
+      |     |     +--rw interface           mpls-interface-ref
       |     |     +--ro state
       |     |     |  +--ro next-hello?   uint16
-      |     |     +--rw address-family* [afi]
-      |     |        +--rw afi       ldp-address-family
-      |     |        +--rw config
-      |     |        |  +--rw enable?   boolean
-      |     |        |  +--rw ipv4
-      |     |        |  +--rw ipv6
-      |     |        +--ro state
-      |     |           +--ro enable?   boolean
-      |     |           +--ro ipv4
-      |     |           |  +--ro hello-adjacencies* [adjacent-address]
-      |     |           |     +--ro adjacent-address    inet:ipv4-address
-      |     |           |     +--ro flag*               identityref
-      |     |           |     +--ro hello-holdtime
-      |     |           |     |  +--ro adjacent?     uint16
-      |     |           |     |  +--ro negotiated?   uint16
-      |     |           |     |  +--ro remaining?    uint16
-      |     |           |     +--ro next-hello?         uint16
-      |     |           |     +--ro statistics
-      |     |           |     |  +--ro discontinuity-time    yang:date-and-time
-      |     |           |     |  +--ro hello-received?       yang:counter64
-      |     |           |     |  +--ro hello-dropped?        yang:counter64
-      |     |           |     +--ro peer?               leafref
-      |     |           +--ro ipv6
+      |     |     +--rw address-families
+      |     |        +--rw ipv4
+      |     |        |  +--rw config
+      |     |        |  |  +--rw enable?   boolean
+      |     |        |  +--ro state
+      |     |        |     +--ro enable?              boolean
+      |     |        |     +--ro hello-adjacencies* [adjacent-address]
+      |     |        |        +--ro adjacent-address    inet:ipv4-address
+      |     |        |        +--ro flag*               identityref
+      |     |        |        +--ro hello-holdtime
+      |     |        |        |  +--ro adjacent?     uint16
+      |     |        |        |  +--ro negotiated?   uint16
+      |     |        |        |  +--ro remaining?    uint16
+      |     |        |        +--ro next-hello?         uint16
+      |     |        |        +--ro statistics
+      |     |        |        |  +--ro discontinuity-time    yang:date-and-time
+      |     |        |        |  +--ro hello-received?       yang:counter64
+      |     |        |        |  +--ro hello-dropped?        yang:counter64
+      |     |        |        +--ro peer?               leafref
+      |     |        +--rw ipv6
+      |     |           +--rw config
+      |     |           |  +--rw enable?   boolean
+      |     |           +--ro state
+      |     |              +--ro enable?              boolean
       |     |              +--ro hello-adjacencies* [adjacent-address]
       |     |                 +--ro adjacent-address    inet:ipv6-address
       |     |                 +--ro flag*               identityref
@@ -122,10 +133,9 @@ augment /rt:routing/rt:control-plane-protocols:
       |        |  +--ro hello-accept {policy-extended-discovery-config}?
       |        |     +--ro enable?          boolean
       |        |     +--ro neighbor-list?   neighbor-list-ref
-      |        +--rw address-family* [afi]
-      |           +--rw afi      ldp-address-family
-      |           +--ro state
-      |           |  +--ro ipv4
+      |        +--rw address-families
+      |           +--rw ipv4
+      |           |  +--ro state
       |           |  |  +--ro hello-adjacencies* [local-address adjacent-address]
       |           |  |     +--ro local-address       inet:ipv4-address
       |           |  |     +--ro adjacent-address    inet:ipv4-address
@@ -140,22 +150,6 @@ augment /rt:routing/rt:control-plane-protocols:
       |           |  |     |  +--ro hello-received?       yang:counter64
       |           |  |     |  +--ro hello-dropped?        yang:counter64
       |           |  |     +--ro peer?               leafref
-      |           |  +--ro ipv6
-      |           |     +--ro hello-adjacencies* [local-address adjacent-address]
-      |           |        +--ro local-address       inet:ipv6-address
-      |           |        +--ro adjacent-address    inet:ipv6-address
-      |           |        +--ro flag*               identityref
-      |           |        +--ro hello-holdtime
-      |           |        |  +--ro adjacent?     uint16
-      |           |        |  +--ro negotiated?   uint16
-      |           |        |  +--ro remaining?    uint16
-      |           |        +--ro next-hello?         uint16
-      |           |        +--ro statistics
-      |           |        |  +--ro discontinuity-time    yang:date-and-time
-      |           |        |  +--ro hello-received?       yang:counter64
-      |           |        |  +--ro hello-dropped?        yang:counter64
-      |           |        +--ro peer?               leafref
-      |           +--rw ipv4
       |           |  +--rw target* [adjacent-address]
       |           |     +--rw adjacent-address    inet:ipv4-address
       |           |     +--rw config
@@ -165,6 +159,21 @@ augment /rt:routing/rt:control-plane-protocols:
       |           |        +--ro enable?          boolean
       |           |        +--ro local-address?   inet:ipv4-address
       |           +--rw ipv6
+      |              +--ro state
+      |              |  +--ro hello-adjacencies* [local-address adjacent-address]
+      |              |     +--ro local-address       inet:ipv6-address
+      |              |     +--ro adjacent-address    inet:ipv6-address
+      |              |     +--ro flag*               identityref
+      |              |     +--ro hello-holdtime
+      |              |     |  +--ro adjacent?     uint16
+      |              |     |  +--ro negotiated?   uint16
+      |              |     |  +--ro remaining?    uint16
+      |              |     +--ro next-hello?         uint16
+      |              |     +--ro statistics
+      |              |     |  +--ro discontinuity-time    yang:date-and-time
+      |              |     |  +--ro hello-received?       yang:counter64
+      |              |     |  +--ro hello-dropped?        yang:counter64
+      |              |     +--ro peer?               leafref
       |              +--rw target* [adjacent-address]
       |                 +--rw adjacent-address    inet:ipv6-address
       |                 +--rw config
@@ -288,7 +297,7 @@ augment /rt:routing/rt:control-plane-protocols:
                |              |  +--ro clear-text?               empty
                |              +--:(replay-protection-only) {replay-protection-only}?
                |                 +--ro replay-protection-only?   empty
-               +--ro address-family
+               +--ro address-families
                |  +--ro ipv4
                |  |  +--ro hello-adjacencies* [local-address adjacent-address]
                |  |     +--ro local-address       inet:ipv4-address
