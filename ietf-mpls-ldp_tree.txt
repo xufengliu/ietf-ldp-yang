@@ -4,73 +4,38 @@ augment /rt:routing/rt:control-plane-protocols:
       +--rw global
       |  +--rw config
       |  |  +--rw capability
-      |  |  |  +--rw end-of-lib {capability-end-of-lib}?
-      |  |  |  |  +--rw enable?   boolean
-      |  |  |  +--rw typed-wildcard-fec {capability-typed-wildcard-fec}?
-      |  |  |  |  +--rw enable?   boolean
-      |  |  |  +--rw upstream-label-assignment {capability-upstream-label-assignment}?
-      |  |  |     +--rw enable?   boolean
       |  |  +--rw graceful-restart
       |  |  |  +--rw enable?                boolean
-      |  |  |  +--rw helper-enable?         boolean {graceful-restart-helper-mode}?
       |  |  |  +--rw reconnect-time?        uint16
       |  |  |  +--rw recovery-time?         uint16
       |  |  |  +--rw forwarding-holdtime?   uint16
-      |  |  +--rw igp-synchronization-delay?   uint16
-      |  |  +--rw lsr-id?                      yang:dotted-quad
+      |  |  +--rw lsr-id?             yang:dotted-quad
       |  +--ro state
       |  |  +--ro capability
-      |  |  |  +--ro end-of-lib {capability-end-of-lib}?
-      |  |  |  |  +--ro enable?   boolean
-      |  |  |  +--ro typed-wildcard-fec {capability-typed-wildcard-fec}?
-      |  |  |  |  +--ro enable?   boolean
-      |  |  |  +--ro upstream-label-assignment {capability-upstream-label-assignment}?
-      |  |  |     +--ro enable?   boolean
       |  |  +--ro graceful-restart
       |  |  |  +--ro enable?                boolean
-      |  |  |  +--ro helper-enable?         boolean {graceful-restart-helper-mode}?
       |  |  |  +--ro reconnect-time?        uint16
       |  |  |  +--ro recovery-time?         uint16
       |  |  |  +--ro forwarding-holdtime?   uint16
-      |  |  +--ro igp-synchronization-delay?   uint16
-      |  |  +--ro lsr-id?                      yang:dotted-quad
+      |  |  +--ro lsr-id?             yang:dotted-quad
       |  +--rw address-family* [afi]
       |  |  +--rw afi       ldp-address-family
       |  |  +--rw config
       |  |  |  +--rw enable?         boolean
       |  |  |  +--rw label-policy
-      |  |  |  |  +--rw assign {policy-label-assignment-config}?
-      |  |  |  |  |  +--rw independent-mode
-      |  |  |  |  |  |  +--rw prefix-list?   prefix-list-ref
-      |  |  |  |  |  +--rw ordered-mode {policy-ordered-label-config}?
-      |  |  |  |  |     +--rw egress-prefix-list?   prefix-list-ref
       |  |  |  |  +--rw advertise
-      |  |  |  |  |  +--rw egress-explicit-null
-      |  |  |  |  |  |  +--rw enable?   boolean
-      |  |  |  |  |  +--rw prefix-list?            prefix-list-ref
-      |  |  |  |  +--rw accept
-      |  |  |  |     +--rw prefix-list?   prefix-list-ref
+      |  |  |  |     +--rw egress-explicit-null
+      |  |  |  |        +--rw enable?   boolean
       |  |  |  +--rw ipv4
-      |  |  |  |  +--rw transport-address?   inet:ipv4-address
       |  |  |  +--rw ipv6
-      |  |  |     +--rw transport-address?   inet:ipv6-address
       |  |  +--ro state
       |  |     +--ro enable?                           boolean
       |  |     +--ro label-distribution-controlmode?   enumeration
       |  |     +--ro label-policy
-      |  |     |  +--ro assign {policy-label-assignment-config}?
-      |  |     |  |  +--ro independent-mode
-      |  |     |  |  |  +--ro prefix-list?   prefix-list-ref
-      |  |     |  |  +--ro ordered-mode {policy-ordered-label-config}?
-      |  |     |  |     +--ro egress-prefix-list?   prefix-list-ref
       |  |     |  +--ro advertise
-      |  |     |  |  +--ro egress-explicit-null
-      |  |     |  |  |  +--ro enable?   boolean
-      |  |     |  |  +--ro prefix-list?            prefix-list-ref
-      |  |     |  +--ro accept
-      |  |     |     +--ro prefix-list?   prefix-list-ref
+      |  |     |     +--ro egress-explicit-null
+      |  |     |        +--ro enable?   boolean
       |  |     +--ro ipv4
-      |  |     |  +--ro transport-address?   inet:ipv4-address
       |  |     |  +--ro bindings
       |  |     |     +--ro address* [address]
       |  |     |     |  +--ro address               inet:ipv4-address
@@ -84,7 +49,6 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |     |           +--ro label?                mpls:mpls-label
       |  |     |           +--ro used-in-forwarding?   boolean
       |  |     +--ro ipv6
-      |  |        +--ro transport-address?   inet:ipv6-address
       |  |        +--ro binding
       |  |           +--ro address* [address]
       |  |           |  +--ro address               inet:ipv6-address
@@ -98,301 +62,234 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |                 +--ro label?                mpls:mpls-label
       |  |                 +--ro used-in-forwarding?   boolean
       |  +--rw discovery
-      |  |  +--rw interfaces
-      |  |  |  +--rw config
-      |  |  |  |  +--rw hello-holdtime?   uint16
-      |  |  |  |  +--rw hello-interval?   uint16
-      |  |  |  +--ro state
-      |  |  |  |  +--ro hello-holdtime?   uint16
-      |  |  |  |  +--ro hello-interval?   uint16
-      |  |  |  +--rw interface* [interface]
-      |  |  |     +--rw interface         mpls-interface-ref
-      |  |  |     +--rw config
-      |  |  |     |  +--rw hello-holdtime?              uint16
-      |  |  |     |  +--rw hello-interval?              uint16
-      |  |  |     |  +--rw igp-synchronization-delay?   uint16 {per-interface-timer-config}?
-      |  |  |     +--ro state
-      |  |  |     |  +--ro hello-holdtime?              uint16
-      |  |  |     |  +--ro hello-interval?              uint16
-      |  |  |     |  +--ro igp-synchronization-delay?   uint16 {per-interface-timer-config}?
-      |  |  |     |  +--ro next-hello?                  uint16
-      |  |  |     +--rw address-family* [afi]
-      |  |  |        +--rw afi       ldp-address-family
-      |  |  |        +--rw config
-      |  |  |        |  +--rw enable?   boolean
-      |  |  |        |  +--rw ipv4
-      |  |  |        |  |  +--rw transport-address?   union
-      |  |  |        |  +--rw ipv6
-      |  |  |        |     +--rw transport-address?   union
-      |  |  |        +--ro state
-      |  |  |           +--ro enable?   boolean
-      |  |  |           +--ro ipv4
-      |  |  |           |  +--ro transport-address?   union
-      |  |  |           |  +--ro hello-adjacencies* [adjacent-address]
-      |  |  |           |     +--ro adjacent-address    inet:ipv4-address
-      |  |  |           |     +--ro flag*               identityref
-      |  |  |           |     +--ro hello-holdtime
-      |  |  |           |     |  +--ro adjacent?     uint16
-      |  |  |           |     |  +--ro negotiated?   uint16
-      |  |  |           |     |  +--ro remaining?    uint16
-      |  |  |           |     +--ro next-hello?         uint16
-      |  |  |           |     +--ro statistics
-      |  |  |           |     |  +--ro discontinuity-time    yang:date-and-time
-      |  |  |           |     |  +--ro hello-received?       yang:counter64
-      |  |  |           |     |  +--ro hello-dropped?        yang:counter64
-      |  |  |           |     +--ro peer?               leafref
-      |  |  |           +--ro ipv6
-      |  |  |              +--ro transport-address?   union
-      |  |  |              +--ro hello-adjacencies* [adjacent-address]
-      |  |  |                 +--ro adjacent-address    inet:ipv6-address
-      |  |  |                 +--ro flag*               identityref
-      |  |  |                 +--ro hello-holdtime
-      |  |  |                 |  +--ro adjacent?     uint16
-      |  |  |                 |  +--ro negotiated?   uint16
-      |  |  |                 |  +--ro remaining?    uint16
-      |  |  |                 +--ro next-hello?         uint16
-      |  |  |                 +--ro statistics
-      |  |  |                 |  +--ro discontinuity-time    yang:date-and-time
-      |  |  |                 |  +--ro hello-received?       yang:counter64
-      |  |  |                 |  +--ro hello-dropped?        yang:counter64
-      |  |  |                 +--ro peer?               leafref
-      |  |  +--rw targeted
-      |  |     +--rw config
-      |  |     |  +--rw hello-holdtime?   uint16
-      |  |     |  +--rw hello-interval?   uint16
-      |  |     |  +--rw hello-accept {policy-extended-discovery-config}?
-      |  |     |     +--rw enable?          boolean
-      |  |     |     +--rw neighbor-list?   neighbor-list-ref
-      |  |     +--ro state
-      |  |     |  +--ro hello-holdtime?   uint16
-      |  |     |  +--ro hello-interval?   uint16
-      |  |     |  +--ro hello-accept {policy-extended-discovery-config}?
-      |  |     |     +--ro enable?          boolean
-      |  |     |     +--ro neighbor-list?   neighbor-list-ref
-      |  |     +--rw address-family* [afi]
-      |  |        +--rw afi      ldp-address-family
-      |  |        +--ro state
-      |  |        |  +--ro ipv4
-      |  |        |  |  +--ro hello-adjacencies* [local-address adjacent-address]
-      |  |        |  |     +--ro local-address       inet:ipv4-address
-      |  |        |  |     +--ro adjacent-address    inet:ipv4-address
-      |  |        |  |     +--ro flag*               identityref
-      |  |        |  |     +--ro hello-holdtime
-      |  |        |  |     |  +--ro adjacent?     uint16
-      |  |        |  |     |  +--ro negotiated?   uint16
-      |  |        |  |     |  +--ro remaining?    uint16
-      |  |        |  |     +--ro next-hello?         uint16
-      |  |        |  |     +--ro statistics
-      |  |        |  |     |  +--ro discontinuity-time    yang:date-and-time
-      |  |        |  |     |  +--ro hello-received?       yang:counter64
-      |  |        |  |     |  +--ro hello-dropped?        yang:counter64
-      |  |        |  |     +--ro peer?               leafref
-      |  |        |  +--ro ipv6
-      |  |        |     +--ro hello-adjacencies* [local-address adjacent-address]
-      |  |        |        +--ro local-address       inet:ipv6-address
-      |  |        |        +--ro adjacent-address    inet:ipv6-address
-      |  |        |        +--ro flag*               identityref
-      |  |        |        +--ro hello-holdtime
-      |  |        |        |  +--ro adjacent?     uint16
-      |  |        |        |  +--ro negotiated?   uint16
-      |  |        |        |  +--ro remaining?    uint16
-      |  |        |        +--ro next-hello?         uint16
-      |  |        |        +--ro statistics
-      |  |        |        |  +--ro discontinuity-time    yang:date-and-time
-      |  |        |        |  +--ro hello-received?       yang:counter64
-      |  |        |        |  +--ro hello-dropped?        yang:counter64
-      |  |        |        +--ro peer?               leafref
-      |  |        +--rw ipv4
-      |  |        |  +--rw target* [adjacent-address]
-      |  |        |     +--rw adjacent-address    inet:ipv4-address
-      |  |        |     +--rw config
-      |  |        |     |  +--rw enable?          boolean
-      |  |        |     |  +--rw local-address?   inet:ipv4-address
-      |  |        |     +--ro state
-      |  |        |        +--ro enable?          boolean
-      |  |        |        +--ro local-address?   inet:ipv4-address
-      |  |        +--rw ipv6
-      |  |           +--rw target* [adjacent-address]
-      |  |              +--rw adjacent-address    inet:ipv6-address
-      |  |              +--rw config
-      |  |              |  +--rw enable?          boolean
-      |  |              |  +--rw local-address?   inet:ipv6-address
-      |  |              +--ro state
-      |  |                 +--ro enable?          boolean
-      |  |                 +--ro local-address?   inet:ipv6-address
-      |  +--rw forwarding-nexthop {forwarding-nexthop-config}?
-      |  |  +--rw interfaces
-      |  |     +--rw interface* [interface]
-      |  |        +--rw interface         mpls-interface-ref
-      |  |        +--rw address-family* [afi]
-      |  |           +--rw afi       ldp-address-family
-      |  |           +--rw config
-      |  |           |  +--rw ldp-disable?   boolean
-      |  |           +--ro state
-      |  |              +--ro ldp-disable?   boolean
-      |  +--rw label-policy
-      |     +--rw assign {policy-label-assignment-config}?
-      |     |  +--rw independent-mode
-      |     |  |  +--rw prefix-list?   prefix-list-ref
-      |     |  +--rw ordered-mode {policy-ordered-label-config}?
-      |     |     +--rw egress-prefix-list?   prefix-list-ref
-      |     +--rw advertise
-      |     |  +--rw egress-explicit-null
-      |     |  |  +--rw enable?   boolean
-      |     |  +--rw prefix-list?            prefix-list-ref
-      |     +--rw accept
-      |        +--rw prefix-list?   prefix-list-ref
+      |     +--rw interfaces
+      |     |  +--rw config
+      |     |  |  +--rw hello-holdtime?   uint16
+      |     |  |  +--rw hello-interval?   uint16
+      |     |  +--ro state
+      |     |  |  +--ro hello-holdtime?   uint16
+      |     |  |  +--ro hello-interval?   uint16
+      |     |  +--rw interface* [interface]
+      |     |     +--rw interface         mpls-interface-ref
+      |     |     +--ro state
+      |     |     |  +--ro next-hello?   uint16
+      |     |     +--rw address-family* [afi]
+      |     |        +--rw afi       ldp-address-family
+      |     |        +--rw config
+      |     |        |  +--rw enable?   boolean
+      |     |        |  +--rw ipv4
+      |     |        |  +--rw ipv6
+      |     |        +--ro state
+      |     |           +--ro enable?   boolean
+      |     |           +--ro ipv4
+      |     |           |  +--ro hello-adjacencies* [adjacent-address]
+      |     |           |     +--ro adjacent-address    inet:ipv4-address
+      |     |           |     +--ro flag*               identityref
+      |     |           |     +--ro hello-holdtime
+      |     |           |     |  +--ro adjacent?     uint16
+      |     |           |     |  +--ro negotiated?   uint16
+      |     |           |     |  +--ro remaining?    uint16
+      |     |           |     +--ro next-hello?         uint16
+      |     |           |     +--ro statistics
+      |     |           |     |  +--ro discontinuity-time    yang:date-and-time
+      |     |           |     |  +--ro hello-received?       yang:counter64
+      |     |           |     |  +--ro hello-dropped?        yang:counter64
+      |     |           |     +--ro peer?               leafref
+      |     |           +--ro ipv6
+      |     |              +--ro hello-adjacencies* [adjacent-address]
+      |     |                 +--ro adjacent-address    inet:ipv6-address
+      |     |                 +--ro flag*               identityref
+      |     |                 +--ro hello-holdtime
+      |     |                 |  +--ro adjacent?     uint16
+      |     |                 |  +--ro negotiated?   uint16
+      |     |                 |  +--ro remaining?    uint16
+      |     |                 +--ro next-hello?         uint16
+      |     |                 +--ro statistics
+      |     |                 |  +--ro discontinuity-time    yang:date-and-time
+      |     |                 |  +--ro hello-received?       yang:counter64
+      |     |                 |  +--ro hello-dropped?        yang:counter64
+      |     |                 +--ro peer?               leafref
+      |     +--rw targeted
+      |        +--rw config
+      |        |  +--rw hello-holdtime?   uint16
+      |        |  +--rw hello-interval?   uint16
+      |        |  +--rw hello-accept {policy-extended-discovery-config}?
+      |        |     +--rw enable?          boolean
+      |        |     +--rw neighbor-list?   neighbor-list-ref
+      |        +--ro state
+      |        |  +--ro hello-holdtime?   uint16
+      |        |  +--ro hello-interval?   uint16
+      |        |  +--ro hello-accept {policy-extended-discovery-config}?
+      |        |     +--ro enable?          boolean
+      |        |     +--ro neighbor-list?   neighbor-list-ref
+      |        +--rw address-family* [afi]
+      |           +--rw afi      ldp-address-family
+      |           +--ro state
+      |           |  +--ro ipv4
+      |           |  |  +--ro hello-adjacencies* [local-address adjacent-address]
+      |           |  |     +--ro local-address       inet:ipv4-address
+      |           |  |     +--ro adjacent-address    inet:ipv4-address
+      |           |  |     +--ro flag*               identityref
+      |           |  |     +--ro hello-holdtime
+      |           |  |     |  +--ro adjacent?     uint16
+      |           |  |     |  +--ro negotiated?   uint16
+      |           |  |     |  +--ro remaining?    uint16
+      |           |  |     +--ro next-hello?         uint16
+      |           |  |     +--ro statistics
+      |           |  |     |  +--ro discontinuity-time    yang:date-and-time
+      |           |  |     |  +--ro hello-received?       yang:counter64
+      |           |  |     |  +--ro hello-dropped?        yang:counter64
+      |           |  |     +--ro peer?               leafref
+      |           |  +--ro ipv6
+      |           |     +--ro hello-adjacencies* [local-address adjacent-address]
+      |           |        +--ro local-address       inet:ipv6-address
+      |           |        +--ro adjacent-address    inet:ipv6-address
+      |           |        +--ro flag*               identityref
+      |           |        +--ro hello-holdtime
+      |           |        |  +--ro adjacent?     uint16
+      |           |        |  +--ro negotiated?   uint16
+      |           |        |  +--ro remaining?    uint16
+      |           |        +--ro next-hello?         uint16
+      |           |        +--ro statistics
+      |           |        |  +--ro discontinuity-time    yang:date-and-time
+      |           |        |  +--ro hello-received?       yang:counter64
+      |           |        |  +--ro hello-dropped?        yang:counter64
+      |           |        +--ro peer?               leafref
+      |           +--rw ipv4
+      |           |  +--rw target* [adjacent-address]
+      |           |     +--rw adjacent-address    inet:ipv4-address
+      |           |     +--rw config
+      |           |     |  +--rw enable?          boolean
+      |           |     |  +--rw local-address?   inet:ipv4-address
+      |           |     +--ro state
+      |           |        +--ro enable?          boolean
+      |           |        +--ro local-address?   inet:ipv4-address
+      |           +--rw ipv6
+      |              +--rw target* [adjacent-address]
+      |                 +--rw adjacent-address    inet:ipv6-address
+      |                 +--rw config
+      |                 |  +--rw enable?          boolean
+      |                 |  +--rw local-address?   inet:ipv6-address
+      |                 +--ro state
+      |                    +--ro enable?          boolean
+      |                    +--ro local-address?   inet:ipv6-address
       +--rw peers
          +--rw config
          |  +--rw authentication
          |  |  +--rw (auth-type-selection)?
-         |  |     +--:(auth-key-chain)
-         |  |     |  +--rw key-chain?          key-chain:key-chain-ref
          |  |     +--:(auth-key)
          |  |        +--rw key?                string
          |  |        +--rw crypto-algorithm
          |  |           +--rw (algorithm)?
          |  |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
-         |  |              |  +--rw hmac-sha1-12?   empty
+         |  |              |  +--rw hmac-sha1-12?             empty
+         |  |              +--:(aes-cmac-prf-128) {aes-cmac-prf-128}?
+         |  |              |  +--rw aes-cmac-prf-128?         empty
          |  |              +--:(md5)
-         |  |              |  +--rw md5?            empty
+         |  |              |  +--rw md5?                      empty
          |  |              +--:(sha-1)
-         |  |              |  +--rw sha-1?          empty
+         |  |              |  +--rw sha-1?                    empty
          |  |              +--:(hmac-sha-1)
-         |  |              |  +--rw hmac-sha-1?     empty
+         |  |              |  +--rw hmac-sha-1?               empty
          |  |              +--:(hmac-sha-256)
-         |  |              |  +--rw hmac-sha-256?   empty
+         |  |              |  +--rw hmac-sha-256?             empty
          |  |              +--:(hmac-sha-384)
-         |  |              |  +--rw hmac-sha-384?   empty
+         |  |              |  +--rw hmac-sha-384?             empty
          |  |              +--:(hmac-sha-512)
-         |  |                 +--rw hmac-sha-512?   empty
-         |  +--rw session-ka-holdtime?            uint16
-         |  +--rw session-ka-interval?            uint16
-         |  +--rw session-downstream-on-demand {session-downstream-on-demand-config}?
-         |     +--rw enable?      boolean
-         |     +--rw peer-list?   peer-list-ref
+         |  |              |  +--rw hmac-sha-512?             empty
+         |  |              +--:(clear-text) {clear-text}?
+         |  |              |  +--rw clear-text?               empty
+         |  |              +--:(replay-protection-only) {replay-protection-only}?
+         |  |                 +--rw replay-protection-only?   empty
+         |  +--rw session-ka-holdtime?   uint16
+         |  +--rw session-ka-interval?   uint16
          +--ro state
          |  +--ro authentication
          |  |  +--ro (auth-type-selection)?
-         |  |     +--:(auth-key-chain)
-         |  |     |  +--ro key-chain?          key-chain:key-chain-ref
          |  |     +--:(auth-key)
          |  |        +--ro key?                string
          |  |        +--ro crypto-algorithm
          |  |           +--ro (algorithm)?
          |  |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
-         |  |              |  +--ro hmac-sha1-12?   empty
+         |  |              |  +--ro hmac-sha1-12?             empty
+         |  |              +--:(aes-cmac-prf-128) {aes-cmac-prf-128}?
+         |  |              |  +--ro aes-cmac-prf-128?         empty
          |  |              +--:(md5)
-         |  |              |  +--ro md5?            empty
+         |  |              |  +--ro md5?                      empty
          |  |              +--:(sha-1)
-         |  |              |  +--ro sha-1?          empty
+         |  |              |  +--ro sha-1?                    empty
          |  |              +--:(hmac-sha-1)
-         |  |              |  +--ro hmac-sha-1?     empty
+         |  |              |  +--ro hmac-sha-1?               empty
          |  |              +--:(hmac-sha-256)
-         |  |              |  +--ro hmac-sha-256?   empty
+         |  |              |  +--ro hmac-sha-256?             empty
          |  |              +--:(hmac-sha-384)
-         |  |              |  +--ro hmac-sha-384?   empty
+         |  |              |  +--ro hmac-sha-384?             empty
          |  |              +--:(hmac-sha-512)
-         |  |                 +--ro hmac-sha-512?   empty
-         |  +--ro session-ka-holdtime?            uint16
-         |  +--ro session-ka-interval?            uint16
-         |  +--ro session-downstream-on-demand {session-downstream-on-demand-config}?
-         |     +--ro enable?      boolean
-         |     +--ro peer-list?   peer-list-ref
+         |  |              |  +--ro hmac-sha-512?             empty
+         |  |              +--:(clear-text) {clear-text}?
+         |  |              |  +--ro clear-text?               empty
+         |  |              +--:(replay-protection-only) {replay-protection-only}?
+         |  |                 +--ro replay-protection-only?   empty
+         |  +--ro session-ka-holdtime?   uint16
+         |  +--ro session-ka-interval?   uint16
          +--rw peer* [lsr-id]
             +--rw lsr-id    yang:dotted-quad
             +--rw config
-            |  +--rw admin-down?            boolean
-            |  +--rw capability
-            |  +--rw label-policy
-            |  |  +--rw advertise
-            |  |  |  +--rw prefix-list?   prefix-list-ref
-            |  |  +--rw accept
-            |  |     +--rw prefix-list?   prefix-list-ref
             |  +--rw authentication
-            |  |  +--rw (auth-type-selection)?
-            |  |     +--:(auth-key-chain)
-            |  |     |  +--rw key-chain?          key-chain:key-chain-ref
-            |  |     +--:(auth-key)
-            |  |        +--rw key?                string
-            |  |        +--rw crypto-algorithm
-            |  |           +--rw (algorithm)?
-            |  |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
-            |  |              |  +--rw hmac-sha1-12?   empty
-            |  |              +--:(md5)
-            |  |              |  +--rw md5?            empty
-            |  |              +--:(sha-1)
-            |  |              |  +--rw sha-1?          empty
-            |  |              +--:(hmac-sha-1)
-            |  |              |  +--rw hmac-sha-1?     empty
-            |  |              +--:(hmac-sha-256)
-            |  |              |  +--rw hmac-sha-256?   empty
-            |  |              +--:(hmac-sha-384)
-            |  |              |  +--rw hmac-sha-384?   empty
-            |  |              +--:(hmac-sha-512)
-            |  |                 +--rw hmac-sha-512?   empty
-            |  +--rw graceful-restart
-            |  |  +--rw enable?           boolean
-            |  |  +--rw reconnect-time?   uint16
-            |  |  +--rw recovery-time?    uint16
-            |  +--rw session-ka-holdtime?   uint16
-            |  +--rw session-ka-interval?   uint16
-            |  +--rw address-family
-            |     +--rw ipv4
-            |     |  +--rw label-policy
-            |     |     +--rw advertise
-            |     |     |  +--rw prefix-list?   prefix-list-ref
-            |     |     +--rw accept
-            |     |        +--rw prefix-list?   prefix-list-ref
-            |     +--rw ipv6
-            |        +--rw label-policy
-            |           +--rw advertise
-            |           |  +--rw prefix-list?   prefix-list-ref
-            |           +--rw accept
-            |              +--rw prefix-list?   prefix-list-ref
+            |     +--rw (auth-type-selection)?
+            |        +--:(auth-key)
+            |           +--rw key?                string
+            |           +--rw crypto-algorithm
+            |              +--rw (algorithm)?
+            |                 +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
+            |                 |  +--rw hmac-sha1-12?             empty
+            |                 +--:(aes-cmac-prf-128) {aes-cmac-prf-128}?
+            |                 |  +--rw aes-cmac-prf-128?         empty
+            |                 +--:(md5)
+            |                 |  +--rw md5?                      empty
+            |                 +--:(sha-1)
+            |                 |  +--rw sha-1?                    empty
+            |                 +--:(hmac-sha-1)
+            |                 |  +--rw hmac-sha-1?               empty
+            |                 +--:(hmac-sha-256)
+            |                 |  +--rw hmac-sha-256?             empty
+            |                 +--:(hmac-sha-384)
+            |                 |  +--rw hmac-sha-384?             empty
+            |                 +--:(hmac-sha-512)
+            |                 |  +--rw hmac-sha-512?             empty
+            |                 +--:(clear-text) {clear-text}?
+            |                 |  +--rw clear-text?               empty
+            |                 +--:(replay-protection-only) {replay-protection-only}?
+            |                    +--rw replay-protection-only?   empty
             +--ro state
-               +--ro admin-down?                 boolean
-               +--ro capability
-               +--ro label-policy
-               |  +--ro advertise
-               |  |  +--ro prefix-list?   prefix-list-ref
-               |  +--ro accept
-               |     +--ro prefix-list?   prefix-list-ref
                +--ro authentication
                |  +--ro (auth-type-selection)?
-               |     +--:(auth-key-chain)
-               |     |  +--ro key-chain?          key-chain:key-chain-ref
                |     +--:(auth-key)
                |        +--ro key?                string
                |        +--ro crypto-algorithm
                |           +--ro (algorithm)?
                |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
-               |              |  +--ro hmac-sha1-12?   empty
+               |              |  +--ro hmac-sha1-12?             empty
+               |              +--:(aes-cmac-prf-128) {aes-cmac-prf-128}?
+               |              |  +--ro aes-cmac-prf-128?         empty
                |              +--:(md5)
-               |              |  +--ro md5?            empty
+               |              |  +--ro md5?                      empty
                |              +--:(sha-1)
-               |              |  +--ro sha-1?          empty
+               |              |  +--ro sha-1?                    empty
                |              +--:(hmac-sha-1)
-               |              |  +--ro hmac-sha-1?     empty
+               |              |  +--ro hmac-sha-1?               empty
                |              +--:(hmac-sha-256)
-               |              |  +--ro hmac-sha-256?   empty
+               |              |  +--ro hmac-sha-256?             empty
                |              +--:(hmac-sha-384)
-               |              |  +--ro hmac-sha-384?   empty
+               |              |  +--ro hmac-sha-384?             empty
                |              +--:(hmac-sha-512)
-               |                 +--ro hmac-sha-512?   empty
-               +--ro graceful-restart
-               |  +--ro enable?           boolean
-               |  +--ro reconnect-time?   uint16
-               |  +--ro recovery-time?    uint16
-               +--ro session-ka-holdtime?        uint16
-               +--ro session-ka-interval?        uint16
+               |              |  +--ro hmac-sha-512?             empty
+               |              +--:(clear-text) {clear-text}?
+               |              |  +--ro clear-text?               empty
+               |              +--:(replay-protection-only) {replay-protection-only}?
+               |                 +--ro replay-protection-only?   empty
                +--ro address-family
                |  +--ro ipv4
-               |  |  +--ro label-policy
-               |  |  |  +--ro advertise
-               |  |  |  |  +--ro prefix-list?   prefix-list-ref
-               |  |  |  +--ro accept
-               |  |  |     +--ro prefix-list?   prefix-list-ref
                |  |  +--ro hello-adjacencies* [local-address adjacent-address]
                |  |     +--ro local-address       inet:ipv4-address
                |  |     +--ro adjacent-address    inet:ipv4-address
@@ -408,11 +305,6 @@ augment /rt:routing/rt:control-plane-protocols:
                |  |     |  +--ro hello-dropped?        yang:counter64
                |  |     +--ro interface?          mpls-interface-ref
                |  +--ro ipv6
-               |     +--ro label-policy
-               |     |  +--ro advertise
-               |     |  |  +--ro prefix-list?   prefix-list-ref
-               |     |  +--ro accept
-               |     |     +--ro prefix-list?   prefix-list-ref
                |     +--ro hello-adjacencies* [local-address adjacent-address]
                |        +--ro local-address       inet:ipv6-address
                |        +--ro adjacent-address    inet:ipv6-address
