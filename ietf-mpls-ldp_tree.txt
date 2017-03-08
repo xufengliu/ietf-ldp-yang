@@ -80,15 +80,13 @@ augment /rt:routing/rt:control-plane-protocols:
       |        +--rw config
       |        |  +--rw hello-holdtime?   uint16
       |        |  +--rw hello-interval?   uint16
-      |        |  +--rw hello-accept {policy-extended-discovery-config}?
-      |        |     +--rw enable?          boolean
-      |        |     +--rw neighbor-list?   neighbor-list-ref
+      |        |  +--rw hello-accept
+      |        |     +--rw enable?   boolean
       |        +--ro state
       |        |  +--ro hello-holdtime?   uint16
       |        |  +--ro hello-interval?   uint16
-      |        |  +--ro hello-accept {policy-extended-discovery-config}?
-      |        |     +--ro enable?          boolean
-      |        |     +--ro neighbor-list?   neighbor-list-ref
+      |        |  +--ro hello-accept
+      |        |     +--ro enable?   boolean
       |        +--rw address-families
       |           +--rw ipv4
       |              +--ro state
@@ -119,58 +117,14 @@ augment /rt:routing/rt:control-plane-protocols:
          |  +--rw authentication
          |  |  +--rw (auth-type-selection)?
          |  |     +--:(auth-key)
-         |  |        +--rw key?                string
-         |  |        +--rw crypto-algorithm
-         |  |           +--rw (algorithm)?
-         |  |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
-         |  |              |  +--rw hmac-sha1-12?             empty
-         |  |              +--:(aes-cmac-prf-128) {aes-cmac-prf-128}?
-         |  |              |  +--rw aes-cmac-prf-128?         empty
-         |  |              +--:(md5)
-         |  |              |  +--rw md5?                      empty
-         |  |              +--:(sha-1)
-         |  |              |  +--rw sha-1?                    empty
-         |  |              +--:(hmac-sha-1)
-         |  |              |  +--rw hmac-sha-1?               empty
-         |  |              +--:(hmac-sha-256)
-         |  |              |  +--rw hmac-sha-256?             empty
-         |  |              +--:(hmac-sha-384)
-         |  |              |  +--rw hmac-sha-384?             empty
-         |  |              +--:(hmac-sha-512)
-         |  |              |  +--rw hmac-sha-512?             empty
-         |  |              +--:(clear-text) {clear-text}?
-         |  |              |  +--rw clear-text?               empty
-         |  |              +--:(replay-protection-only) {replay-protection-only}?
-         |  |                 +--rw replay-protection-only?   empty
+         |  |        +--rw md5-key?   string
          |  +--rw session-ka-holdtime?   uint16
          |  +--rw session-ka-interval?   uint16
          +--ro state
          |  +--ro authentication
          |  |  +--ro (auth-type-selection)?
          |  |     +--:(auth-key)
-         |  |        +--ro key?                string
-         |  |        +--ro crypto-algorithm
-         |  |           +--ro (algorithm)?
-         |  |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
-         |  |              |  +--ro hmac-sha1-12?             empty
-         |  |              +--:(aes-cmac-prf-128) {aes-cmac-prf-128}?
-         |  |              |  +--ro aes-cmac-prf-128?         empty
-         |  |              +--:(md5)
-         |  |              |  +--ro md5?                      empty
-         |  |              +--:(sha-1)
-         |  |              |  +--ro sha-1?                    empty
-         |  |              +--:(hmac-sha-1)
-         |  |              |  +--ro hmac-sha-1?               empty
-         |  |              +--:(hmac-sha-256)
-         |  |              |  +--ro hmac-sha-256?             empty
-         |  |              +--:(hmac-sha-384)
-         |  |              |  +--ro hmac-sha-384?             empty
-         |  |              +--:(hmac-sha-512)
-         |  |              |  +--ro hmac-sha-512?             empty
-         |  |              +--:(clear-text) {clear-text}?
-         |  |              |  +--ro clear-text?               empty
-         |  |              +--:(replay-protection-only) {replay-protection-only}?
-         |  |                 +--ro replay-protection-only?   empty
+         |  |        +--ro md5-key?   string
          |  +--ro session-ka-holdtime?   uint16
          |  +--ro session-ka-interval?   uint16
          +--rw peer* [lsr-id]
@@ -179,56 +133,12 @@ augment /rt:routing/rt:control-plane-protocols:
             |  +--rw authentication
             |     +--rw (auth-type-selection)?
             |        +--:(auth-key)
-            |           +--rw key?                string
-            |           +--rw crypto-algorithm
-            |              +--rw (algorithm)?
-            |                 +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
-            |                 |  +--rw hmac-sha1-12?             empty
-            |                 +--:(aes-cmac-prf-128) {aes-cmac-prf-128}?
-            |                 |  +--rw aes-cmac-prf-128?         empty
-            |                 +--:(md5)
-            |                 |  +--rw md5?                      empty
-            |                 +--:(sha-1)
-            |                 |  +--rw sha-1?                    empty
-            |                 +--:(hmac-sha-1)
-            |                 |  +--rw hmac-sha-1?               empty
-            |                 +--:(hmac-sha-256)
-            |                 |  +--rw hmac-sha-256?             empty
-            |                 +--:(hmac-sha-384)
-            |                 |  +--rw hmac-sha-384?             empty
-            |                 +--:(hmac-sha-512)
-            |                 |  +--rw hmac-sha-512?             empty
-            |                 +--:(clear-text) {clear-text}?
-            |                 |  +--rw clear-text?               empty
-            |                 +--:(replay-protection-only) {replay-protection-only}?
-            |                    +--rw replay-protection-only?   empty
+            |           +--rw md5-key?   string
             +--ro state
                +--ro authentication
                |  +--ro (auth-type-selection)?
                |     +--:(auth-key)
-               |        +--ro key?                string
-               |        +--ro crypto-algorithm
-               |           +--ro (algorithm)?
-               |              +--:(hmac-sha-1-12) {crypto-hmac-sha-1-12}?
-               |              |  +--ro hmac-sha1-12?             empty
-               |              +--:(aes-cmac-prf-128) {aes-cmac-prf-128}?
-               |              |  +--ro aes-cmac-prf-128?         empty
-               |              +--:(md5)
-               |              |  +--ro md5?                      empty
-               |              +--:(sha-1)
-               |              |  +--ro sha-1?                    empty
-               |              +--:(hmac-sha-1)
-               |              |  +--ro hmac-sha-1?               empty
-               |              +--:(hmac-sha-256)
-               |              |  +--ro hmac-sha-256?             empty
-               |              +--:(hmac-sha-384)
-               |              |  +--ro hmac-sha-384?             empty
-               |              +--:(hmac-sha-512)
-               |              |  +--ro hmac-sha-512?             empty
-               |              +--:(clear-text) {clear-text}?
-               |              |  +--ro clear-text?               empty
-               |              +--:(replay-protection-only) {replay-protection-only}?
-               |                 +--ro replay-protection-only?   empty
+               |        +--ro md5-key?   string
                +--ro address-families
                |  +--ro ipv4
                |     +--ro hello-adjacencies* [local-address adjacent-address]

@@ -18,10 +18,6 @@ module ietf-mpls-ldp {
     prefix "mpls";
   }
 
-  import ietf-key-chain {
-    prefix "key-chain";
-  }
-
   organization
     "IETF MPLS Working Group";
   contact
@@ -61,34 +57,11 @@ module ietf-mpls-ldp {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-02-11 {
+  revision 2017-03-06 {
     description
       "Initial revision.";
     reference
       "RFC XXXX: YANG Data Model for MPLS LDP.";
-  }
-
-  /*
-   * Features
-   */
-
-  feature admin-down-config {
-    description
-      "This feature indicates that the system allows to configure
-       administrative down on a VRF instance and a peer.";
-  }
-
-  feature global-session-authentication {
-    description
-      "This feature indicates that the system allows to configure
-       authentication at global level.";
-  }
-
-  feature policy-extended-discovery-config {
-    description
-      "This feature indicates that the system allows to configure
-       policies to control the acceptance of extended neighbor
-       discovery hello messages.";
   }
 
   /*
@@ -162,12 +135,6 @@ module ietf-mpls-ldp {
     description
       "This type is used by data models that need to reference
        mpls interfaces.";
-  }
-
-  typedef neighbor-list-ref {
-    type string;
-    description
-      "A type for a reference to a neighbor list.";
   }
 
   typedef oper-status-event-type {
@@ -358,7 +325,6 @@ module ietf-mpls-ldp {
       "LDP policy to control the acceptance of extended neighbor
        discovery hello messages.";
     container hello-accept {
-      if-feature policy-extended-discovery-config;
       description
         "Extended discovery acceptance policies.";
 
@@ -366,12 +332,6 @@ module ietf-mpls-ldp {
         type boolean;
         description
           "'true' to accept; 'false' to deny.";
-      }
-      leaf neighbor-list {
-        type neighbor-list-ref;
-        description
-
-          "The name of a peer ACL.";
       }
     } // hello-accept
   } // extended-discovery-policy-attributes
@@ -608,15 +568,10 @@ module ietf-mpls-ldp {
         description
           "Options for expressing authentication setting.";
         case auth-key {
-          leaf key {
+          leaf md5-key {
             type string;
             description
-              "Key string in ASCII format.";
-          }
-          container crypto-algorithm {
-            uses key-chain:crypto-algorithm-types;
-            description
-              "Cryptographic algorithm associated with key.";
+              "MD5 Key string.";
           }
         }
       }
@@ -1202,18 +1157,14 @@ module ietf-mpls-ldp {
         container config {
           description
             "Configuration data.";
-          uses peer-authentication {
-            if-feature global-session-authentication;
-          }
+          uses peer-authentication;
           uses peer-attributes;
         }
         container state {
           config false;
           description
             "Operational state data.";
-          uses peer-authentication {
-            if-feature global-session-authentication;
-          }
+          uses peer-authentication;
           uses peer-attributes;
         }
 

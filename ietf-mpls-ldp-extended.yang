@@ -58,7 +58,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-02-11 {
+  revision 2017-03-06 {
     description
       "Initial revision.";
     reference
@@ -134,6 +134,13 @@ module ietf-mpls-ldp-extended {
        ordered label policies.";
   }
 
+  feature policy-targeted-discovery-config {
+    description
+      "This feature indicates that the system allows to configure
+       policies to control the acceptance of targeted neighbor
+       discovery hello messages.";
+  }
+
   feature session-downstream-on-demand-config {
     description
       "This feature indicates that the system allows to configure
@@ -143,6 +150,12 @@ module ietf-mpls-ldp-extended {
   /*
    * Typedefs
    */
+  typedef neighbor-list-ref {
+    type string;
+    description
+      "A type for a reference to a neighbor list.";
+  }
+
   typedef prefix-list-ref {
     type string;
     description
@@ -177,6 +190,7 @@ module ietf-mpls-ldp-extended {
 
     leaf transport-address {
       type inet:ipv6-address;
+      mandatory true;
       description
         "The transport address advertised in LDP Hello messages.";
     }
@@ -646,7 +660,7 @@ module ietf-mpls-ldp-extended {
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:global/ldp:discovery/ldp:targeted/"
     + "ldp:address-families" {
-    description "Interface IPv6 augmentation.";
+    description "Targeted discovery IPv6 augmentation.";
 
     container ipv6 {
       description
@@ -849,6 +863,17 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
+    + "ldp:global/ldp:discovery/ldp:targeted/ldp:config" {
+    description "Targeted discovery augmentation.";
+    leaf neighbor-list {
+      if-feature policy-targeted-discovery-config;
+      type neighbor-list-ref;
+      description
+        "The name of a peer ACL.";
+    }
+  }
+
+  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:peers/ldp:config" {
     description "Peers augmentation.";
     uses peers-augment;
@@ -978,6 +1003,17 @@ module ietf-mpls-ldp-extended {
     + "ldp:address-families/ldp-ext:ipv6/ldp-ext:state" {
     description "Interface address family IPv6 augmentation.";
     uses interface-address-family-ipv6-augment;
+  }
+
+  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
+    + "ldp:global/ldp:discovery/ldp:targeted/ldp:state" {
+    description "Targeted discovery augmentation.";
+    leaf neighbor-list {
+      if-feature policy-targeted-discovery-config;
+      type neighbor-list-ref;
+      description
+        "The name of a peer ACL.";
+    }
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"

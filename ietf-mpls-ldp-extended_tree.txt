@@ -26,7 +26,7 @@ augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:addre
       |  |     |  +--rw prefix-list?   prefix-list-ref
       |  |     +--rw ordered-mode {policy-ordered-label-config}?
       |  |        +--rw egress-prefix-list?   prefix-list-ref
-      |  +--rw transport-address?   inet:ipv6-address
+      |  +--rw transport-address    inet:ipv6-address
       +--ro state
          +--ro enable?                           boolean
          +--ro label-distribution-controlmode?   enumeration
@@ -54,7 +54,7 @@ augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:addre
          |        +--ro advertisement-type    advertised-received
          |        +--ro label?                mpls:mpls-label
          |        +--ro used-in-forwarding?   boolean
-         +--ro transport-address?                inet:ipv6-address
+         +--ro transport-address                 inet:ipv6-address
 augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/ldp:address-families:
    +--rw ipv6
       +--rw config
@@ -156,6 +156,8 @@ augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:disco
       +--rw igp-synchronization-delay?   uint16 {per-interface-timer-config}?
 augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/ldp:address-families/ldp:ipv4/ldp:config:
    +--rw transport-address?   union
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:discovery/ldp:targeted/ldp:config:
+   +--rw neighbor-list?   neighbor-list-ref {policy-targeted-discovery-config}?
 augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:config:
    +--rw session-downstream-on-demand {session-downstream-on-demand-config}?
       +--rw enable?      boolean
@@ -227,6 +229,8 @@ augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:disco
    +--ro igp-synchronization-delay?   uint16 {per-interface-timer-config}?
 augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/ldp:address-families/ldp:ipv4/ldp:state:
    +--ro transport-address?   union
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:discovery/ldp:targeted/ldp:state:
+   +--ro neighbor-list?   neighbor-list-ref {policy-targeted-discovery-config}?
 augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:state:
    +--ro session-downstream-on-demand {session-downstream-on-demand-config}?
       +--ro enable?      boolean
