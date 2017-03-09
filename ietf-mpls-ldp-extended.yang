@@ -1,5 +1,4 @@
 module ietf-mpls-ldp-extended {
-//  yang-version 1.1;  
   namespace "urn:ietf:params:xml:ns:yang:ietf-mpls-ldp-extended";
   prefix "ldp-ext";
 
@@ -41,7 +40,7 @@ module ietf-mpls-ldp-extended {
                <mailto:rajiva@cisco.com>
 
      Editor:   Xufeng Liu
-               <mailto:xliu@kuatrotech.com>
+               <mailto:Xufeng_Liu@jabil.com>
 
      Editor:   Santosh Esale
                <mailto:sesale@juniper.net>
@@ -58,7 +57,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-03-06 {
+  revision 2017-03-07 {
     description
       "Initial revision.";
     reference
@@ -190,7 +189,6 @@ module ietf-mpls-ldp-extended {
 
     leaf transport-address {
       type inet:ipv6-address;
-      mandatory true;
       description
         "The transport address advertised in LDP Hello messages.";
     }
@@ -262,14 +260,14 @@ module ietf-mpls-ldp-extended {
   } // global-augment
 
   grouping global-forwarding-nexthop-augment {
-    description 
+    description
       "Augmentation to global forwarding nexthop interfaces.";
-    
+
     container forwarding-nexthop {
       if-feature forwarding-nexthop-config;
       description
         "Configuration for forwarding nexthop.";
-      
+
       container interfaces {
         description
           "A list of interfaces on which forwarding is disabled.";
@@ -474,20 +472,15 @@ module ietf-mpls-ldp-extended {
       description
         "'true' to disable the peer.";
     }
-    
-    container capability {
-      description
-        "Per peer capability";
-    }
-    
+
     uses peer-af-policy-container {
       if-feature all-af-policy-config;
     }
-    
+
     uses ldp:graceful-restart-attributes-per-peer {
       if-feature per-peer-graceful-restart-config;
     }
-    
+
     uses ldp:peer-attributes {
       if-feature per-peer-session-attributes-config;
     }
@@ -510,7 +503,7 @@ module ietf-mpls-ldp-extended {
         description
           "The name of a peer ACL.";
       }
-    }    
+    }
   } // peers-augment
 
   /*
@@ -553,7 +546,7 @@ module ietf-mpls-ldp-extended {
         leaf label-distribution-controlmode {
           type enumeration {
             enum independent {
-              description 
+              description
               "Independent label distribution control.";
             }
             enum Ordered {
@@ -566,9 +559,9 @@ module ietf-mpls-ldp-extended {
           reference
             "RFC5036: LDP Specification. Sec 2.6.";
         }
-        
+
         uses ldp:policy-container;
-        
+
         // ipv6 bindings
         container bindings {
           description
@@ -584,7 +577,7 @@ module ietf-mpls-ldp-extended {
             }
             uses ldp:binding-address-state-attributes;
           } // binding-address
-          
+
           list fec-label {
             key "fec";
             description
@@ -619,7 +612,7 @@ module ietf-mpls-ldp-extended {
             "Enable the address family on the interface.";
         }
       }
-      
+
       container state {
         config false;
         description
@@ -629,20 +622,20 @@ module ietf-mpls-ldp-extended {
           description
             "Enable the address family on the interface.";
         }
-        
+
         // ipv6
         list hello-adjacencies {
           key "adjacent-address";
           description "List of hello adjacencies.";
-          
+
           leaf adjacent-address {
             type inet:ipv6-address;
             description
               "Neighbor address of the hello adjacency.";
           }
-          
+
           uses ldp:adjacency-state-attributes;
-                      
+
           leaf peer {
             type leafref {
               path "../../../../../../../../../ldp:peers/ldp:peer/"
@@ -669,11 +662,11 @@ module ietf-mpls-ldp-extended {
         config false;
         description
           "Operational state data.";
-        
+
         list hello-adjacencies {
           key "local-address adjacent-address";
           description "List of hello adjacencies.";
-          
+
           leaf local-address {
             type inet:ipv6-address;
             description
@@ -684,9 +677,9 @@ module ietf-mpls-ldp-extended {
             description
               "Neighbor address of the hello adjacency.";
           }
-                      
+
           uses ldp:adjacency-state-attributes;
-          
+
           leaf peer {
             type leafref {
               path "../../../../../../../../ldp:peers/ldp:peer/"
@@ -697,12 +690,12 @@ module ietf-mpls-ldp-extended {
           }
         } // hello-adjacencies
       } // state
-      
+
       list target {
         key "adjacent-address";
         description
           "Targeted discovery params.";
-        
+
         leaf adjacent-address {
           type inet:ipv6-address;
           description
@@ -751,11 +744,11 @@ module ietf-mpls-ldp-extended {
     container ipv6 {
       description
         "IPv6 address family.";
-      
+
       list hello-adjacencies {
         key "local-address adjacent-address";
         description "List of hello adjacencies.";
-        
+
         leaf local-address {
           type inet:ipv6-address;
           description
@@ -766,9 +759,9 @@ module ietf-mpls-ldp-extended {
           description
             "Neighbor address of the hello adjacency.";
         }
-        
+
         uses ldp:adjacency-state-attributes;
-        
+
         leaf interface {
           type ldp:mpls-interface-ref;
           description "Interface for this adjacency.";
@@ -905,7 +898,7 @@ module ietf-mpls-ldp-extended {
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:peers/ldp:peer/ldp:config" {
-    description 
+    description
       "Peer list entry augmentation to add address family.";
     container address-families {
       description
@@ -1048,7 +1041,7 @@ module ietf-mpls-ldp-extended {
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:peers/ldp:peer/ldp:state/ldp:address-families/ldp:ipv4" {
-    description 
+    description
       "Peer list entry IPv4 augmentation.";
     uses peer-af-policy-container;
   }
@@ -1056,7 +1049,7 @@ module ietf-mpls-ldp-extended {
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:peers/ldp:peer/ldp:state/ldp:address-families/"
     + "ldp-ext:ipv6" {
-    description 
+    description
       "Peer list entry IPv6 augmentation.";
     uses peer-af-policy-container;
   }

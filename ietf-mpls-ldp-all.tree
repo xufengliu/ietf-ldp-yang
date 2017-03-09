@@ -102,7 +102,7 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |     |  |     |  +--rw ldp-ext:prefix-list?   prefix-list-ref
       |  |     |  |     +--rw ldp-ext:ordered-mode {policy-ordered-label-config}?
       |  |     |  |        +--rw ldp-ext:egress-prefix-list?   prefix-list-ref
-      |  |     |  +--rw ldp-ext:transport-address    inet:ipv6-address
+      |  |     |  +--rw ldp-ext:transport-address?   inet:ipv6-address
       |  |     +--ro ldp-ext:state
       |  |        +--ro ldp-ext:enable?                           boolean
       |  |        +--ro ldp-ext:label-distribution-controlmode?   enumeration
@@ -130,7 +130,7 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |        |        +--ro ldp-ext:advertisement-type    advertised-received
       |  |        |        +--ro ldp-ext:label?                mpls:mpls-label
       |  |        |        +--ro ldp-ext:used-in-forwarding?   boolean
-      |  |        +--ro ldp-ext:transport-address                 inet:ipv6-address
+      |  |        +--ro ldp-ext:transport-address?                inet:ipv6-address
       |  +--rw discovery
       |  |  +--rw interfaces
       |  |  |  +--rw config
@@ -297,8 +297,8 @@ augment /rt:routing/rt:control-plane-protocols:
             |  |     |  +--rw md5-key?             string
             |  |     +--:(ldp-ext:auth-key-chain)
             |  |        +--rw ldp-ext:key-chain?   key-chain:key-chain-ref
+            |  +--rw capability
             |  +--rw ldp-ext:admin-down?            boolean
-            |  +--rw ldp-ext:capability
             |  +--rw ldp-ext:label-policy
             |  |  +--rw ldp-ext:advertise
             |  |  |  +--rw ldp-ext:prefix-list?   prefix-list-ref
@@ -330,6 +330,7 @@ augment /rt:routing/rt:control-plane-protocols:
                |     |  +--ro md5-key?             string
                |     +--:(ldp-ext:auth-key-chain)
                |        +--ro ldp-ext:key-chain?   key-chain:key-chain-ref
+               +--ro capability
                +--ro address-families
                |  +--ro ipv4
                |  |  +--ro hello-adjacencies* [local-address adjacent-address]
@@ -432,7 +433,6 @@ augment /rt:routing/rt:control-plane-protocols:
                |  +--ro total-labels?               uint32
                |  +--ro total-fec-label-bindings?   uint32
                +--ro ldp-ext:admin-down?            boolean
-               +--ro ldp-ext:capability
                +--ro ldp-ext:label-policy
                |  +--ro ldp-ext:advertise
                |  |  +--ro ldp-ext:prefix-list?   prefix-list-ref

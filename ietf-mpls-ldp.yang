@@ -40,7 +40,7 @@ module ietf-mpls-ldp {
                <mailto:rajiva@cisco.com>
 
      Editor:   Xufeng Liu
-               <mailto:xliu@kuatrotech.com>
+               <mailto:Xufeng_Liu@jabil.com>
 
      Editor:   Santosh Esale
                <mailto:sesale@juniper.net>
@@ -57,7 +57,7 @@ module ietf-mpls-ldp {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-03-06 {
+  revision 2017-03-07 {
     description
       "Initial revision.";
     reference
@@ -902,7 +902,7 @@ module ietf-mpls-ldp {
               leaf label-distribution-controlmode {
                 type enumeration {
                   enum independent {
-                    description 
+                    description
                     "Independent label distribution control.";
                   }
                   enum Ordered {
@@ -933,7 +933,7 @@ module ietf-mpls-ldp {
                   }
                   uses binding-address-state-attributes;
                 } // binding-address
-                
+
                 list fec-label {
                   key "fec";
                   description
@@ -1005,7 +1005,7 @@ module ietf-mpls-ldp {
                         "Enable the address family on the interface.";
                     }
                   }
-                  
+
                   container state {
                     config false;
                     description
@@ -1015,20 +1015,20 @@ module ietf-mpls-ldp {
                       description
                         "Enable the address family on the interface.";
                     }
-                    
+
                     // ipv4
                     list hello-adjacencies {
                       key "adjacent-address";
                       description "List of hello adjacencies.";
-                      
+
                       leaf adjacent-address {
                         type inet:ipv4-address;
                         description
                           "Neighbor address of the hello adjacency.";
                       }
-                      
+
                       uses adjacency-state-attributes;
-                      
+
                       leaf peer {
                         type leafref {
                           path "../../../../../../../../../"
@@ -1088,9 +1088,9 @@ module ietf-mpls-ldp {
                       description
                         "Neighbor address of the hello adjacency.";
                     }
-                    
+
                     uses adjacency-state-attributes;
-                    
+
                     leaf peer {
                       type leafref {
                         path "../../../../../../../../peers/peer/"
@@ -1106,7 +1106,7 @@ module ietf-mpls-ldp {
                   key "adjacent-address";
                   description
                     "Targeted discovery params.";
-                  
+
                   leaf adjacent-address {
                     type inet:ipv4-address;
                     description
@@ -1183,6 +1183,10 @@ module ietf-mpls-ldp {
               "Configuration data.";
 
             uses peer-authentication;
+            container capability {
+              description
+                "Per peer capability";
+            }
           }
           container state {
             config false;
@@ -1190,6 +1194,10 @@ module ietf-mpls-ldp {
               "Operational state data.";
 
             uses peer-authentication;
+            container capability {
+              description
+                "Per peer capability";
+            }
 
             container address-families {
               description

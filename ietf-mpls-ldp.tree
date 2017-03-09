@@ -118,6 +118,7 @@ augment /rt:routing/rt:control-plane-protocols:
          |  |  +--rw (auth-type-selection)?
          |  |     +--:(auth-key)
          |  |        +--rw md5-key?   string
+         |  +--rw capability
          |  +--rw session-ka-holdtime?   uint16
          |  +--rw session-ka-interval?   uint16
          +--ro state
@@ -125,6 +126,7 @@ augment /rt:routing/rt:control-plane-protocols:
          |  |  +--ro (auth-type-selection)?
          |  |     +--:(auth-key)
          |  |        +--ro md5-key?   string
+         |  +--ro capability
          |  +--ro session-ka-holdtime?   uint16
          |  +--ro session-ka-interval?   uint16
          +--rw peer* [lsr-id]

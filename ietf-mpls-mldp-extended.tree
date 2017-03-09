@@ -1,0 +1,85 @@
+module: ietf-mpls-mldp-extended
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:config/ldp:capability/mldp:mldp:
+   +--rw hub-and-spoke {capability-mldp-hsmp}?
+   |  +--rw enable?   boolean
+   +--rw node-protection {capability-mldp-node-protection}?
+      +--rw plr?           boolean
+      +--rw merge-point
+         +--rw enable?                            boolean
+         +--rw targeted-session-teardown-delay?   uint16
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4:
+   +--rw config
+      +--rw multicast-only-frr {mldp-mofrr}?
+      |  +--rw prefix-list?   ldp-ext:prefix-list-ref
+      +--rw recursive-fec
+         +--rw prefix-list?   ldp-ext:prefix-list-ref
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv6:
+   +--rw config
+      +--rw multicast-only-frr {mldp-mofrr}?
+      |  +--rw prefix-list?   ldp-ext:prefix-list-ref
+      +--rw recursive-fec
+         +--rw prefix-list?   ldp-ext:prefix-list-ref
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp-ext:forwarding-nexthop/ldp-ext:interfaces/ldp-ext:interface/ldp-ext:address-family/ldp-ext:config:
+   +--rw mldp-disable?   boolean
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:state/ldp:capability/mldp:mldp:
+   +--ro hub-and-spoke {capability-mldp-hsmp}?
+   |  +--ro enable?   boolean
+   +--ro node-protection {capability-mldp-node-protection}?
+      +--ro plr?           boolean
+      +--ro merge-point
+         +--ro enable?                            boolean
+         +--ro targeted-session-teardown-delay?   uint16
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:state:
+   +--ro multicast-only-frr {mldp-mofrr}?
+   |  +--ro prefix-list?   ldp-ext:prefix-list-ref
+   +--ro recursive-fec
+      +--ro prefix-list?   ldp-ext:prefix-list-ref
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv6/mldp:state:
+   +--ro multicast-only-frr {mldp-mofrr}?
+   |  +--ro prefix-list?   ldp-ext:prefix-list-ref
+   +--ro recursive-fec
+      +--ro prefix-list?   ldp-ext:prefix-list-ref
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp-ext:forwarding-nexthop/ldp-ext:interfaces/ldp-ext:interface/ldp-ext:address-family/ldp-ext:state:
+   +--ro mldp-disable?   boolean
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:state/ldp:received-peer-state/ldp:capability/mldp:mldp:
+   +--ro hub-and-spoke
+   |  +--ro enable?   boolean
+   +--ro node-protection
+      +--ro plr?           boolean
+      +--ro merge-point?   boolean
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4:
+   +--rw configured-leaf-lsps
+      +--rw p2mp
+      |  +--rw roots
+      |     +--rw root* [root-address]
+      |        +--rw root-address    inet:ipv4-address
+      |        +--rw lsp* [lsp-id source-address group-address]
+      |           +--rw lsp-id            uint16
+      |           +--rw source-address    inet:ipv4-address
+      |           +--rw group-address     inet:ipv4-address-no-zone
+      +--rw mp2mp
+         +--rw roots
+            +--rw root* [root-address]
+               +--rw root-address    inet:ipv4-address
+               +--rw lsp* [lsp-id source-address group-address]
+                  +--rw lsp-id            uint16
+                  +--rw source-address    inet:ipv4-address
+                  +--rw group-address     inet:ipv4-address-no-zone
+augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv6:
+   +--rw configured-leaf-lsps
+      +--rw p2mp
+      |  +--rw roots
+      |     +--rw root* [root-address]
+      |        +--rw root-address    inet:ipv6-address
+      |        +--rw lsp* [lsp-id source-address group-address]
+      |           +--rw lsp-id            uint16
+      |           +--rw source-address    inet:ipv6-address
+      |           +--rw group-address     inet:ipv6-address-no-zone
+      +--rw mp2mp
+         +--rw roots
+            +--rw root* [root-address]
+               +--rw root-address    inet:ipv6-address
+               +--rw lsp* [lsp-id source-address group-address]
+                  +--rw lsp-id            uint16
+                  +--rw source-address    inet:ipv6-address
+                  +--rw group-address     inet:ipv6-address-no-zone
