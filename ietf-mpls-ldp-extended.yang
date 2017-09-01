@@ -57,7 +57,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-09-01 {
+  revision 2017-09-02 {
     description
       "Initial revision.";
     reference
@@ -67,12 +67,6 @@ module ietf-mpls-ldp-extended {
   /*
    * Features
    */
-  feature all-af-policy-config {
-    description
-      "This feature indicates that the system allows to configure
-       policies that are applied to all address families.";
-  }
-
   feature capability-end-of-lib {
     description
       "This feature indicates that the system allows to configure
@@ -256,10 +250,6 @@ module ietf-mpls-ldp-extended {
          completed so that IGP can start advertising the normal
          metric for the link.";
     }
-
-    uses policy-container {
-      if-feature all-af-policy-config;
-    }
   } // global-augment
 
   grouping global-forwarding-nexthop-augment {
@@ -423,10 +413,6 @@ module ietf-mpls-ldp-extended {
       default false;
       description
         "'true' to disable the peer.";
-    }
-
-    uses peer-af-policy-container {
-      if-feature all-af-policy-config;
     }
 
     uses ldp:graceful-restart-attributes-per-peer {
