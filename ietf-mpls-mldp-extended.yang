@@ -60,7 +60,7 @@ module ietf-mpls-mldp-extended {
      management of Multi-Protocol Label Switching (MPLS) Multipoint
      LDP (mLDP).";
 
-  revision 2017-03-10 {
+  revision 2017-03-12 {
     description
       "Initial revision.";
     reference
@@ -86,6 +86,12 @@ module ietf-mpls-mldp-extended {
     description
       "This feature indicates that the system supports mLDP
        Multicast only FRR (MoFRR).";
+  }
+
+  feature per-peer-capability {
+    description
+      "This feature indicates that the system allows to configure
+       mLDP capabilities at the per peer level.";
   }
 
   /*
@@ -212,33 +218,49 @@ module ietf-mpls-mldp-extended {
             "Root address.";
         }
 
-        list lsp {
-          must "(lsp-id = 0 and source-address != '::' and "
-            + "group-address != '::') or "
-            + "(lsp-id != 0 and source-address = '::' and "
-            + "group-address = '::')" {
-            description
-              "A LSP can be identified by either <lsp-id> or
-               <source-address, group-address>.";
-          }
-          key "lsp-id source-address group-address";
+        choice lsp-key-type {
           description
-            "List of LSPs.";
-          leaf lsp-id {
-            type uint16;
-            description "ID to identify the LSP.";
-          }
-          leaf source-address {
-            type inet:ipv6-address;
-            description
-              "Source address.";
-          }
-          leaf group-address {
-            type inet:ipv6-address-no-zone;
-            description
-              "Group address.";
-          }
-        } // list lsp
+            "LSP ID based or source-group based .";
+          case lsp-id {
+            container opaque-type-lspid {
+              description
+                "The type of opaque value element is
+                 the generic LSP identifier";
+              list lsp {
+                key "lsp-id";
+                description
+                  "List of LSPs.";
+                leaf lsp-id {
+                  type uint16;
+                  description "ID to identify the LSP.";
+                }
+              } // list lsp
+            } // opaque-type-lspid
+          } // case lsp-id
+
+          case source-group {
+            container opaque-type-transit {
+              description
+                "The type of opaque value element is the transit IPv6
+                 source.";
+              list lsp {
+                key "source-address group-address";
+                description
+                  "List of LSPs.";
+                leaf source-address {
+                  type inet:ipv6-address;
+                  description
+                    "Source address.";
+                }
+                leaf group-address {
+                  type inet:ipv6-address-no-zone;
+                  description
+                    "Group address.";
+                }
+              }
+            }
+          } // case source-group
+        } // choice lsp-key-type
       } // list root
     } // roots
   } // mldp-ipv6-configured-lsp-roots
@@ -284,6 +306,7 @@ module ietf-mpls-mldp-extended {
     + "ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:config/ldp:capability" {
     description "Augmentation for MLDP peer capability.";
     container mldp {
+      if-feature per-peer-capability;
       description
         "mLDP capabilities.";
       uses mldp:mldp-capabilities;
@@ -300,6 +323,68 @@ module ietf-mpls-mldp-extended {
         "Configuration data.";
       uses mldp-ext-per-af-config-attibutes;
     }
+  }
+
+  // IPv4 configured-leaf-lsps config
+  augment "/rt:routing/rt:control-plane-protocols/"
+    + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
+    + "mldp:ipv4/mldp:configured-leaf-lsps/mldp:p2mp/mldp:roots/"
+    + "mldp:root/mldp:lsp-key-type" {
+    description
+      "Augmentation for MLDP IPv4 configured-leaf-lsps
+       configuration.";
+    case source-group {
+      container opaque-type-transit {
+        description
+          "The type of opaque value element is the transit IPv4
+           source.";
+        list lsp {
+          key "source-address group-address";
+          description
+            "List of LSPs.";
+          leaf source-address {
+            type inet:ipv4-address;
+            description
+              "Source address.";
+          }
+          leaf group-address {
+            type inet:ipv4-address-no-zone;
+            description
+              "Group address.";
+          }
+        }
+      }
+    } // case source-group
+  }
+  augment "/rt:routing/rt:control-plane-protocols/"
+    + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
+    + "mldp:ipv4/mldp:configured-leaf-lsps/mldp:mp2mp/mldp:roots/"
+    + "mldp:root/mldp:lsp-key-type" {
+    description
+      "Augmentation for MLDP IPv4 configured-leaf-lsps
+       configuration.";
+    case source-group {
+      container opaque-type-transit {
+        description
+          "The type of opaque value element is the transit IPv4
+           source.";
+        list lsp {
+          key "source-address group-address";
+          description
+            "List of LSPs.";
+          leaf source-address {
+            type inet:ipv4-address;
+            description
+              "Source address.";
+          }
+          leaf group-address {
+            type inet:ipv4-address-no-zone;
+            description
+              "Group address.";
+          }
+        }
+      }
+    } // case source-group
   }
 
   // IPv6 config
@@ -363,8 +448,8 @@ module ietf-mpls-mldp-extended {
   // IPv4 state for per peer bindings
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "mldp:ipv4/mldp:state/mldp:bindings/mldp:opaque-type-lspid/"
-    + "mldp:fec-label/mldp:peer" {
+    + "mldp:ipv4/mldp:state/mldp:roots/mldp:root/mldp:bindings/"
+    + "mldp:opaque-type-lspid/mldp:fec-label/mldp:peer" {
     description "Augmentation for MLDP IPv4 state.";
 
     leaf mofrr-role {
@@ -441,7 +526,7 @@ module ietf-mpls-mldp-extended {
   // IPv4 bindings state
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "mldp:ipv4/mldp:state/mldp:bindings" {
+    + "mldp:ipv4/mldp:state/mldp:roots/mldp:root/mldp:bindings" {
     description "Augmentation for MLDP IPv4 bindings.";
     container opaque-type-transit {
       description
@@ -453,15 +538,10 @@ module ietf-mpls-mldp-extended {
          Multipoint-to-Multipoint Label Switched Paths.";
       list fec-label {
         key
-          "root-address source-address group-address "
-          + "rd recur-root-address recur-rd";
+          "source-address group-address "
+        + "rd recur-root-address recur-rd";
         description
           "List of FEC to label bindings.";
-        leaf root-address {
-          type inet:ipv4-address;
-          description
-            "Root address.";
-        }
         leaf source-address {
           type inet:ip-address;
           description
@@ -514,15 +594,9 @@ module ietf-mpls-mldp-extended {
          Paths.";
       list fec-label {
         key
-          "root-address rp group-address "
-          + "rd recur-root-address recur-rd";
+          "rp group-address rd recur-root-address recur-rd";
         description
           "List of FEC to label bindings.";
-        leaf root-address {
-          type inet:ipv4-address;
-          description
-            "Root address.";
-        }
         leaf rp {
           type inet:ip-address;
           description
@@ -568,9 +642,10 @@ module ietf-mpls-mldp-extended {
   // IPv6 bindings state
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "ipv6/state/bindings" {
+    + "ipv6/state/roots/root/bindings" {
     description "Augmentation for MLDP IPv6 bindings.";
     container opaque-type-transit {
+      config false;
       description
         "The type of opaque value element is the transit IPv6
          source.";
@@ -581,15 +656,10 @@ module ietf-mpls-mldp-extended {
          Paths.";
       list fec-label {
         key
-          "root-address source-address group-address "
-          + "rd recur-root-address recur-rd";
+          "source-address group-address "
+        + "rd recur-root-address recur-rd";
         description
           "List of FEC to label bindings.";
-        leaf root-address {
-          type inet:ipv6-address;
-          description
-            "Root address.";
-        }
         leaf source-address {
           type inet:ip-address;
           description
@@ -632,6 +702,7 @@ module ietf-mpls-mldp-extended {
     } // opaque-type-transit
 
     container opaque-type-bidir {
+      config false;
       description
         "The type of opaque value element is
          the generic LSP identifier";
@@ -642,15 +713,9 @@ module ietf-mpls-mldp-extended {
          Paths.";
       list fec-label {
         key
-          "root-address rp group-address "
-          + "rd recur-root-address recur-rd";
+          "rp group-address rd recur-root-address recur-rd";
         description
           "List of FEC to label bindings.";
-        leaf root-address {
-          type inet:ipv6-address;
-          description
-            "Root address.";
-        }
         leaf rp {
           type inet:ip-address;
           description
@@ -696,8 +761,8 @@ module ietf-mpls-mldp-extended {
   // IPv4 bindings opaque-type-lspid state
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "mldp:ipv4/mldp:state/mldp:bindings/mldp:opaque-type-lspid/"
-    + "mldp:fec-label" {
+    + "mldp:ipv4/mldp:state/mldp:roots/mldp:root/mldp:bindings/"
+    + "mldp:opaque-type-lspid/mldp:fec-label" {
     description
       "Augmentation for MLDP IPv4 bindings with opaque type LSP ID.";
     list recursive-fec {
@@ -729,13 +794,13 @@ module ietf-mpls-mldp-extended {
   // IPv6 bindings opaque-type-lspid state
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "ipv6/state/bindings/opaque-type-lspid/"
+    + "ipv6/state/roots/root/bindings/opaque-type-lspid/"
     + "fec-label" {
     description
       "Augmentation for MLDP IPv6 bindings with opaque type LSP ID.";
     list recursive-fec {
-      key
-        "recur-root-address recur-rd";
+      key "recur-root-address recur-rd";
+      config false;
       description
         "List of recursive opaque values.";
       leaf recur-root-address {
@@ -821,38 +886,34 @@ module ietf-mpls-mldp-extended {
                    reached.";
               }
             }
+
+            container bindings {
+              description
+                "mLDP FEC to label bindings.";
+              container opaque-type-lspid {
+                description
+                  "The type of opaque value element is
+                   the generic LSP identifier";
+                reference
+                  "RFC6388: Label Distribution Protocol
+                   Extensions for Point-to-Multipoint and
+                   Multipoint-to-Multipoint Label Switched
+                   Paths.";
+                list fec-label {
+                  key
+                    "lsp-id";
+                  description
+                    "List of FEC to label bindings.";
+                  leaf lsp-id {
+                    type uint32;
+                    description "ID to identify the LSP.";
+                  }
+                  uses mldp-ext-binding-label-state-attributes;
+                } // fec-label
+              } // opaque-type-lspid
+            } // bindings
           } // list root
         } // roots
-        container bindings {
-          description
-            "mLDP FEC to label bindings.";
-          container opaque-type-lspid {
-            description
-              "The type of opaque value element is
-               the generic LSP identifier";
-            reference
-              "RFC6388: Label Distribution Protocol
-               Extensions for Point-to-Multipoint and
-               Multipoint-to-Multipoint Label Switched
-               Paths.";
-            list fec-label {
-              key
-                "root-address lsp-id";
-              description
-                "List of FEC to label bindings.";
-              leaf root-address {
-                type inet:ipv6-address;
-                description
-                  "Root address.";
-              }
-              leaf lsp-id {
-                type uint32;
-                description "ID to identify the LSP.";
-              }
-              uses mldp-ext-binding-label-state-attributes;
-            } // fec-label
-          } // opaque-type-lspid
-        } // bindings
       } // state
 
       container configured-leaf-lsps {
@@ -880,5 +941,19 @@ module ietf-mpls-mldp-extended {
   /*
    * Notifications
    */
-
+  augment "/mldp:mpls-mldp-fec-event/mldp:lsp-key-type" {
+    description "";
+    case source-group-based {
+      leaf source-address {
+        type inet:ip-address;
+        description
+          "LSP source address.";
+      }
+      leaf group-address {
+        type inet:ip-address;
+        description
+          "Multicast group address.";
+      }
+    } // case source-group
+  }
 }

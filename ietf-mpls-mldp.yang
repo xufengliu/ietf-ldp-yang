@@ -10,8 +10,8 @@ module ietf-mpls-mldp {
     prefix "rt";
   }
 
-  import ietf-mpls {
-    prefix "mpls";
+  import ietf-routing-types {
+    prefix "rt-types";
   }
 
   import ietf-mpls-ldp {
@@ -56,7 +56,7 @@ module ietf-mpls-mldp {
      management of Multi-Protocol Label Switching (MPLS) Multipoint
      LDP (mLDP).";
 
-  revision 2017-03-10 {
+  revision 2017-03-12 {
     description
       "Initial revision.";
     reference
@@ -143,26 +143,13 @@ module ietf-mpls-mldp {
     choice lsp-key-type {
       description
         "LSP ID based or source-group based .";
-      case lsp-id-based {
+      case lsp-id {
         leaf lsp-id {
           type uint16;
           description
             "ID to identify the LSP.";
         }
       }
-      case source-group-based {
-        leaf source-address {
-          type inet:ip-address;
-          description
-
-            "LSP source address.";
-        }
-        leaf group-address {
-          type inet:ip-address;
-          description
-            "Multicast group address.";
-        }
-      } // case source-group-based
     }
   } // mldp-fec-event
 
@@ -190,7 +177,7 @@ module ietf-mpls-mldp {
         "Advertised or received.";
     }
     leaf label {
-      type mpls:mpls-label;
+      type rt-types:mpls-label;
       description
         "Advertised (outbound) or received (inbound) label.";
     }
@@ -250,33 +237,26 @@ module ietf-mpls-mldp {
             "Root address.";
         }
 
-        list lsp {
-          must "(lsp-id = 0 and source-address != '0.0.0.0' and "
-            + "group-address != '0.0.0.0') or "
-            + "(lsp-id != 0 and source-address = '0.0.0.0' and "
-            + "group-address = '0.0.0.0')" {
-            description
-              "A LSP can be identified by either <lsp-id> or
-               <source-address, group-address>.";
-          }
-          key "lsp-id source-address group-address";
+        choice lsp-key-type {
           description
-            "List of LSPs.";
-          leaf lsp-id {
-            type uint16;
-            description "ID to identify the LSP.";
-          }
-          leaf source-address {
-            type inet:ipv4-address;
-            description
-              "Source address.";
-          }
-          leaf group-address {
-            type inet:ipv4-address-no-zone;
-            description
-              "Group address.";
-          }
-        } // list lsp
+            "LSP ID based or source-group based .";
+          case lsp-id {
+            container opaque-type-lspid {
+              description
+                "The type of opaque value element is
+                 the generic LSP identifier";
+              list lsp {
+                key "lsp-id";
+                description
+                  "List of LSPs.";
+                leaf lsp-id {
+                  type uint16;
+                  description "ID to identify the LSP.";
+                }
+              } // list lsp
+            } // opaque-type-lspid
+          } // case lsp-id
+        } // choice lsp-key-type
       } // list root
     } // roots
   } // mldp-ipv4-configured-lsp-roots
@@ -438,39 +418,34 @@ module ietf-mpls-mldp {
                        reached.";
                   }
                 }
+
+                container bindings {
+                  description
+                    "mLDP FEC to label bindings.";
+                  container opaque-type-lspid {
+                    description
+                      "The type of opaque value element is
+                       the generic LSP identifier";
+                    reference
+                      "RFC6388: Label Distribution Protocol
+                       Extensions for Point-to-Multipoint and
+                       Multipoint-to-Multipoint Label Switched
+                       Paths.";
+                    list fec-label {
+                      key
+                        "lsp-id";
+                      description
+                        "List of FEC to label bindings.";
+                      leaf lsp-id {
+                        type uint32;
+                        description "ID to identify the LSP.";
+                      }
+                      uses mldp-binding-label-state-attributes;
+                    } // fec-label
+                  } // opaque-type-lspid
+                } // bindings
               } // list root
             } // roots
-            container bindings {
-              description
-                "mLDP FEC to label bindings.";
-              container opaque-type-lspid {
-                description
-                  "The type of opaque value element is
-                   the generic LSP identifier";
-                reference
-                  "RFC6388: Label Distribution Protocol
-                   Extensions for Point-to-Multipoint and
-                   Multipoint-to-Multipoint Label Switched
-                   Paths.";
-                list fec-label {
-                  key
-                    "root-address lsp-id";
-                  description
-                    "List of FEC to label bindings.";
-                  leaf root-address {
-                    type inet:ipv4-address;
-                    description
-                      "Root address.";
-                  }
-                  leaf lsp-id {
-                    type uint32;
-                    description "ID to identify the LSP.";
-                  }
-                  uses mldp-binding-label-state-attributes;
-                } // fec-label
-              } // opaque-type-lspid
-
-            } // bindings
           } // state
 
           container configured-leaf-lsps {
