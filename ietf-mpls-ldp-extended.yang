@@ -57,7 +57,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-03-07 {
+  revision 2017-03-12 {
     description
       "Initial revision.";
     reference
@@ -189,6 +189,7 @@ module ietf-mpls-ldp-extended {
 
     leaf transport-address {
       type inet:ipv6-address;
+      mandatory true;
       description
         "The transport address advertised in LDP Hello messages.";
     }
@@ -522,6 +523,9 @@ module ietf-mpls-ldp-extended {
     description "Global IPv6 augmentation.";
 
     container ipv6 {
+      presence
+        "Present if IPv6 is enabled, unless the 'enable'
+         leaf is set to 'false'";
       description
         "IPv6 address family.";
       container config {
@@ -529,6 +533,7 @@ module ietf-mpls-ldp-extended {
           "Configuration data.";
         leaf enable {
           type boolean;
+          default true;
           description
             "'true' to enable the address family.";
         }
@@ -601,6 +606,9 @@ module ietf-mpls-ldp-extended {
     description "Interface IPv6 augmentation.";
 
     container ipv6 {
+      presence
+        "Present if IPv6 is enabled, unless the 'enable'
+         leaf is set to 'false'";
       description
         "IPv6 address family.";
       container config {
@@ -608,6 +616,7 @@ module ietf-mpls-ldp-extended {
           "Configuration data.";
         leaf enable {
           type boolean;
+          default true;
           description
             "Enable the address family on the interface.";
         }
@@ -656,6 +665,8 @@ module ietf-mpls-ldp-extended {
     description "Targeted discovery IPv6 augmentation.";
 
     container ipv6 {
+      presence
+        "Present if IPv6 is enabled.";
       description
         "IPv6 address family.";
       container state {
@@ -742,6 +753,8 @@ module ietf-mpls-ldp-extended {
     description "Peer state IPv6 augmentation.";
 
     container ipv6 {
+      presence
+        "Present if IPv6 is enabled.";
       description
         "IPv6 address family.";
 
@@ -856,7 +869,8 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:targeted/ldp:config" {
+    + "ldp:global/ldp:discovery/ldp:targeted/ldp:config/"
+    + "ldp:hello-accept" {
     description "Targeted discovery augmentation.";
     leaf neighbor-list {
       if-feature policy-targeted-discovery-config;
@@ -999,7 +1013,8 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:targeted/ldp:state" {
+    + "ldp:global/ldp:discovery/ldp:targeted/ldp:state/"
+    + "ldp:hello-accept" {
     description "Targeted discovery augmentation.";
     leaf neighbor-list {
       if-feature policy-targeted-discovery-config;

@@ -19,7 +19,7 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |  |  +--ro forwarding-holdtime?   uint16
       |  |  +--ro lsr-id?             yang:dotted-quad
       |  +--rw address-families
-      |  |  +--rw ipv4
+      |  |  +--rw ipv4!
       |  |     +--rw config
       |  |     |  +--rw enable?         boolean
       |  |     |  +--rw label-policy
@@ -43,7 +43,7 @@ augment /rt:routing/rt:control-plane-protocols:
       |  |              +--ro peer* [peer advertisement-type]
       |  |                 +--ro peer                  leafref
       |  |                 +--ro advertisement-type    advertised-received
-      |  |                 +--ro label?                mpls:mpls-label
+      |  |                 +--ro label?                rt-types:mpls-label
       |  |                 +--ro used-in-forwarding?   boolean
       |  +--rw discovery
       |     +--rw interfaces
@@ -58,7 +58,7 @@ augment /rt:routing/rt:control-plane-protocols:
       |     |     +--ro state
       |     |     |  +--ro next-hello?   uint16
       |     |     +--rw address-families
-      |     |        +--rw ipv4
+      |     |        +--rw ipv4!
       |     |           +--rw config
       |     |           |  +--rw enable?   boolean
       |     |           +--ro state
@@ -88,7 +88,7 @@ augment /rt:routing/rt:control-plane-protocols:
       |        |  +--ro hello-accept
       |        |     +--ro enable?   boolean
       |        +--rw address-families
-      |           +--rw ipv4
+      |           +--rw ipv4!
       |              +--ro state
       |              |  +--ro hello-adjacencies* [local-address adjacent-address]
       |              |     +--ro local-address       inet:ipv4-address
@@ -118,7 +118,6 @@ augment /rt:routing/rt:control-plane-protocols:
          |  |  +--rw (auth-type-selection)?
          |  |     +--:(auth-key)
          |  |        +--rw md5-key?   string
-         |  +--rw capability
          |  +--rw session-ka-holdtime?   uint16
          |  +--rw session-ka-interval?   uint16
          +--ro state
@@ -126,23 +125,24 @@ augment /rt:routing/rt:control-plane-protocols:
          |  |  +--ro (auth-type-selection)?
          |  |     +--:(auth-key)
          |  |        +--ro md5-key?   string
-         |  +--ro capability
          |  +--ro session-ka-holdtime?   uint16
          |  +--ro session-ka-interval?   uint16
          +--rw peer* [lsr-id]
             +--rw lsr-id    yang:dotted-quad
             +--rw config
             |  +--rw authentication
-            |     +--rw (auth-type-selection)?
-            |        +--:(auth-key)
-            |           +--rw md5-key?   string
+            |  |  +--rw (auth-type-selection)?
+            |  |     +--:(auth-key)
+            |  |        +--rw md5-key?   string
+            |  +--rw capability
             +--ro state
                +--ro authentication
                |  +--ro (auth-type-selection)?
                |     +--:(auth-key)
                |        +--ro md5-key?   string
+               +--ro capability
                +--ro address-families
-               |  +--ro ipv4
+               |  +--ro ipv4!
                |     +--ro hello-adjacencies* [local-address adjacent-address]
                |        +--ro local-address       inet:ipv4-address
                |        +--ro adjacent-address    inet:ipv4-address

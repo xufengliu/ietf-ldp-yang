@@ -14,6 +14,10 @@ module ietf-mpls-ldp {
     prefix "rt";
   }
 
+  import ietf-routing-types {
+    prefix "rt-types";
+  }
+
   import ietf-mpls {
     prefix "mpls";
   }
@@ -57,7 +61,7 @@ module ietf-mpls-ldp {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-03-07 {
+  revision 2017-03-12 {
     description
       "Initial revision.";
     reference
@@ -307,7 +311,7 @@ module ietf-mpls-ldp {
           "Received or advertised.";
       }
       leaf label {
-        type mpls:mpls-label;
+        type rt-types:mpls-label;
         description
           "Advertised (outbound) or received (inbound)
            label.";
@@ -878,6 +882,9 @@ module ietf-mpls-ldp {
           description
             "Container for address families.";
           container ipv4 {
+            presence
+              "Present if IPv4 is enabled, unless the 'enable'
+               leaf is set to 'false'";
             description
               "IPv4 address family.";
             container config {
@@ -885,6 +892,7 @@ module ietf-mpls-ldp {
                 "Configuration data.";
               leaf enable {
                 type boolean;
+                default true;
                 description
                   "'true' to enable the address family.";
               }
@@ -994,6 +1002,9 @@ module ietf-mpls-ldp {
                 description
                   "Container for address families.";
                 container ipv4 {
+                  presence
+                    "Present if IPv4 is enabled, unless the 'enable'
+                     leaf is set to 'false'";
                   description
                     "IPv4 address family.";
                   container config {
@@ -1001,6 +1012,7 @@ module ietf-mpls-ldp {
                       "Configuration data.";
                     leaf enable {
                       type boolean;
+                      default true;
                       description
                         "Enable the address family on the interface.";
                     }
@@ -1067,6 +1079,8 @@ module ietf-mpls-ldp {
               description
                 "Container for address families.";
               container ipv4 {
+                presence
+                  "Present if IPv4 is enabled.";
                 description
                   "IPv4 address family.";
                 container state {
@@ -1203,6 +1217,8 @@ module ietf-mpls-ldp {
               description
                 "Per-vrf per-af params.";
               container ipv4 {
+                presence
+                  "Present if IPv4 is enabled.";
                 description
                   "IPv4 address family.";
 
