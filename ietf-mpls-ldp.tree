@@ -21,18 +21,10 @@ augment /rt:routing/rt:control-plane-protocols:
       |  +--rw address-families
       |  |  +--rw ipv4!
       |  |     +--rw config
-      |  |     |  +--rw enable?         boolean
-      |  |     |  +--rw label-policy
-      |  |     |     +--rw advertise
-      |  |     |        +--rw egress-explicit-null
-      |  |     |           +--rw enable?   boolean
+      |  |     |  +--rw enable?   boolean
       |  |     +--ro state
       |  |        +--ro enable?                           boolean
       |  |        +--ro label-distribution-controlmode?   enumeration
-      |  |        +--ro label-policy
-      |  |        |  +--ro advertise
-      |  |        |     +--ro egress-explicit-null
-      |  |        |        +--ro enable?   boolean
       |  |        +--ro bindings
       |  |           +--ro address* [address]
       |  |           |  +--ro address               inet:ipv4-address

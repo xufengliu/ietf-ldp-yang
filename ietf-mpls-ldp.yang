@@ -61,7 +61,7 @@ module ietf-mpls-ldp {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-03-12 {
+  revision 2017-09-01 {
     description
       "Initial revision.";
     reference
@@ -760,31 +760,6 @@ module ietf-mpls-ldp {
     } // statistics
   } // peer-state-derived
 
-  grouping policy-container {
-    description
-      "LDP policy attributes.";
-    container label-policy {
-      description
-        "Label policy attributes.";
-      container advertise {
-        description
-          "Label advertising policies.";
-        container egress-explicit-null {
-          description
-            "Enables an egress router to advertise an
-             explicit null label (value 0) in place of an
-             implicit null label (value 3) to the
-             penultimate hop router.";
-          leaf enable {
-            type boolean;
-            description
-              "'true' to enable explicit null.";
-          }
-        }
-      } // advertise
-    } // label-policy
-  } // policy-container
-
   grouping statistics-peer-received-sent {
     description
       "Inbound and outbound statistic counters.";
@@ -896,7 +871,6 @@ module ietf-mpls-ldp {
                 description
                   "'true' to enable the address family.";
               }
-              uses policy-container;
             }
             container state {
               config false;
@@ -923,8 +897,6 @@ module ietf-mpls-ldp {
                 reference
                   "RFC5036: LDP Specification. Sec 2.6.";
               }
-
-              uses policy-container;
 
               // ipv4 bindings
               container bindings {

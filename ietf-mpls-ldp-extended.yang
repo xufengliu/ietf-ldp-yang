@@ -57,7 +57,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-03-12 {
+  revision 2017-09-01 {
     description
       "Initial revision.";
     reference
@@ -177,6 +177,8 @@ module ietf-mpls-ldp-extended {
   grouping address-family-ipv4-augment {
     description "Augmentation to address family IPv4.";
 
+    uses policy-container;
+
     leaf transport-address {
       type inet:ipv4-address;
       description
@@ -255,7 +257,7 @@ module ietf-mpls-ldp-extended {
          metric for the link.";
     }
 
-    uses ldp:policy-container {
+    uses policy-container {
       if-feature all-af-policy-config;
     }
   } // global-augment
@@ -384,57 +386,6 @@ module ietf-mpls-ldp-extended {
     }
   } // interface-augment
 
-  grouping label-policy-augment {
-    description "Augmentation to graceful restart.";
-
-    container accept {
-      description
-        "Label advertisement acceptance policies.";
-      leaf prefix-list {
-        type prefix-list-ref;
-        description
-          "Applies the prefix list to incoming label
-           advertisements.";
-      }
-    } // accept
-    container assign {
-      if-feature policy-label-assignment-config;
-      description
-        "Label assignment policies";
-      container independent-mode {
-        description
-          "Independent label policy attributes.";
-        leaf prefix-list {
-          type prefix-list-ref;
-          description
-            "Assign labels according to certain prefixes.";
-        }
-      } // independent-mode
-      container ordered-mode {
-        if-feature policy-ordered-label-config;
-        description
-          "Ordered label policy attributes.";
-        leaf egress-prefix-list {
-          type prefix-list-ref;
-          description
-            "Assign labels according to certain prefixes for
-             egress LSR.";
-        }
-      } // ordered-mode
-    } // assign
-  } // label-policy-augment
-
-  grouping label-policy-advertise-augment {
-    description "Augmentation to graceful restart.";
-
-    leaf prefix-list {
-      type prefix-list-ref;
-      description
-        "Applies the prefix list to outgoing label
-         advertisements.";
-    }
-  } // label-policy-advertise-augment
-
   grouping peer-af-policy-container {
     description
       "LDP policy attribute container under peer address-family.";
@@ -507,6 +458,72 @@ module ietf-mpls-ldp-extended {
     }
   } // peers-augment
 
+  grouping policy-container {
+    description
+      "LDP policy attributes.";
+    container label-policy {
+      description
+        "Label policy attributes.";
+      container advertise {
+        description
+          "Label advertising policies.";
+        container egress-explicit-null {
+          description
+            "Enables an egress router to advertise an
+             explicit null label (value 0) in place of an
+             implicit null label (value 3) to the
+             penultimate hop router.";
+          leaf enable {
+            type boolean;
+            description
+              "'true' to enable explicit null.";
+          }
+        }
+        leaf prefix-list {
+          type prefix-list-ref;
+          description
+            "Applies the prefix list to outgoing label
+             advertisements.";
+        }
+      } // advertise
+      container accept {
+        description
+          "Label advertisement acceptance policies.";
+        leaf prefix-list {
+          type prefix-list-ref;
+          description
+            "Applies the prefix list to incoming label
+             advertisements.";
+        }
+      } // accept
+      container assign {
+        if-feature policy-label-assignment-config;
+        description
+          "Label assignment policies";
+        container independent-mode {
+          description
+            "Independent label policy attributes.";
+          leaf prefix-list {
+            type prefix-list-ref;
+            description
+              "Assign labels according to certain prefixes.";
+          }
+        } // independent-mode
+        container ordered-mode {
+          if-feature policy-ordered-label-config;
+          description
+            "Ordered label policy attributes.";
+          leaf egress-prefix-list {
+            type prefix-list-ref;
+            description
+              "Assign labels according to certain prefixes for
+               egress LSR.";
+          }
+        } // ordered-mode
+      } // assign
+    } // label-policy
+  } // policy-container
+
   /*
    * Configuration and state data nodes
    */
@@ -537,7 +554,7 @@ module ietf-mpls-ldp-extended {
           description
             "'true' to enable the address family.";
         }
-        uses ldp:policy-container;
+        uses policy-container;
       }
       container state {
         config false;
@@ -565,7 +582,7 @@ module ietf-mpls-ldp-extended {
             "RFC5036: LDP Specification. Sec 2.6.";
         }
 
-        uses ldp:policy-container;
+        uses policy-container;
 
         // ipv6 bindings
         container bindings {
@@ -805,34 +822,6 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:config/"
-    + "ldp:label-policy" {
-    description "Label policy augmentation.";
-    uses label-policy-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp-ext:ipv6/ldp-ext:config/"
-    + "ldp-ext:label-policy" {
-    description "Label policy augmentation.";
-    uses label-policy-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:config/"
-    + "ldp:label-policy/ldp:advertise" {
-    description "Label policy advertise augmentation.";
-    uses label-policy-advertise-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp-ext:ipv6/ldp-ext:config/"
-    + "ldp-ext:label-policy/ldp-ext:advertise" {
-    description "Label policy advertise augmentation.";
-    uses label-policy-advertise-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:global/ldp:address-families/ldp:ipv4/ldp:config" {
     description "Address family IPv4 augmentation.";
     uses address-family-ipv4-augment;
@@ -952,34 +941,6 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:state/"
-    + "ldp:label-policy" {
-    description "Label policy augmentation.";
-    uses label-policy-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp-ext:ipv6/ldp-ext:state/"
-    + "ldp-ext:label-policy" {
-    description "Label policy augmentation.";
-    uses label-policy-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:state/"
-    + "ldp:label-policy/ldp:advertise" {
-    description "Label policy advertise augmentation.";
-    uses label-policy-advertise-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp-ext:ipv6/ldp-ext:state/"
-    + "ldp-ext:label-policy/ldp-ext:advertise" {
-    description "Label policy advertise augmentation.";
-    uses label-policy-advertise-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:global/ldp:address-families/ldp:ipv4/ldp:state" {
     description "Address family IPv4 augmentation.";
     uses address-family-ipv4-augment;
@@ -1068,12 +1029,4 @@ module ietf-mpls-ldp-extended {
       "Peer list entry IPv6 augmentation.";
     uses peer-af-policy-container;
   }
-
-  /*
-   * RPCs
-   */
-
-  /*
-   * Notifications
-   */
 }
