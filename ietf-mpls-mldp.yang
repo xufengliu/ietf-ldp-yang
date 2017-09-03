@@ -56,7 +56,7 @@ module ietf-mpls-mldp {
      management of Multi-Protocol Label Switching (MPLS) Multipoint
      LDP (mLDP).";
 
-  revision 2017-03-12 {
+  revision 2017-09-01 {
     description
       "Initial revision.";
     reference
@@ -130,25 +130,34 @@ module ietf-mpls-mldp {
   grouping mldp-fec-event {
     description
       "A mLDP FEC event.";
-    leaf tree-type {
-      type multipoint-type;
+    choice opaque-type {
       description
-        "p2mp or mp2mp.";
-    }
-    leaf root {
-      type inet:ip-address;
-      description
-        "Root address.";
-    }
-    choice lsp-key-type {
-      description
-        "LSP ID based or source-group based .";
-      case lsp-id {
-        leaf lsp-id {
-          type uint16;
+        "The type of opaque value element.";
+      case opaque-type-lspid {
+        container opaque-type-lspid {
           description
-            "ID to identify the LSP.";
-        }
+            "The type of opaque value element is
+             the generic LSP identifier";
+          reference
+            "RFC6388: Label Distribution Protocol
+            Extensions for Point-to-Multipoint and
+            Multipoint-to-Multipoint Label Switched
+            Paths.";
+          leaf root-address {
+            type inet:ip-address;
+            description
+              "Root address.";
+          }
+          leaf lsp-id {
+            type uint32;
+            description "ID to identify the LSP.";
+          }
+          leaf multipoint-type {
+            type multipoint-type;
+            description
+              "The type of mutipoint, p2mp or mp2mp.";
+          }
+        } // container opaque-type-lspid
       }
     }
   } // mldp-fec-event
@@ -205,12 +214,6 @@ module ietf-mpls-mldp {
   grouping  mldp-binding-label-state-attributes {
     description
       "mLDP label binding attributes.";
-
-    leaf multipoint-type {
-      type multipoint-type;
-      description
-        "The type of mutipoint, p2mp or mp2mp.";
-    }
     list peer {
       key "direction peer advertisement-type";
       description
@@ -218,48 +221,6 @@ module ietf-mpls-mldp {
       uses mldp-binding-label-peer-state-attributes;
     } // peer
   } // mldp-binding-label-state-attributes
-
-  grouping  mldp-ipv4-configured-lsp-roots {
-    description
-      "mLDP IPv4 roots containers.";
-
-    container roots {
-      description
-        "Configured IPv4 multicast LSPs.";
-      list root {
-        key "root-address";
-        description
-          "List of roots for configured multicast LSPs.";
-
-        leaf root-address {
-          type inet:ipv4-address;
-          description
-            "Root address.";
-        }
-
-        choice lsp-key-type {
-          description
-            "LSP ID based or source-group based .";
-          case lsp-id {
-            container opaque-type-lspid {
-              description
-                "The type of opaque value element is
-                 the generic LSP identifier";
-              list lsp {
-                key "lsp-id";
-                description
-                  "List of LSPs.";
-                leaf lsp-id {
-                  type uint16;
-                  description "ID to identify the LSP.";
-                }
-              } // list lsp
-            } // opaque-type-lspid
-          } // case lsp-id
-        } // choice lsp-key-type
-      } // list root
-    } // roots
-  } // mldp-ipv4-configured-lsp-roots
 
   /*
    * Configuration data nodes
@@ -440,6 +401,11 @@ module ietf-mpls-mldp {
                         type uint32;
                         description "ID to identify the LSP.";
                       }
+                      leaf multipoint-type {
+                        type multipoint-type;
+                        description
+                          "The type of mutipoint, p2mp or mp2mp.";
+                      }
                       uses mldp-binding-label-state-attributes;
                     } // fec-label
                   } // opaque-type-lspid
@@ -451,17 +417,36 @@ module ietf-mpls-mldp {
           container configured-leaf-lsps {
             description
               "Configured multicast LSPs.";
-
-            container p2mp {
+            container opaque-type-lspid {
               description
-                "Configured point-to-multipoint LSPs.";
-              uses mldp-ipv4-configured-lsp-roots;
-            }
-            container mp2mp {
-              description
-                "Configured multipoint-to-multipoint LSPs.";
-              uses mldp-ipv4-configured-lsp-roots;
-            }
+                "The type of opaque value element is
+                 the generic LSP identifier";
+              reference
+                "RFC6388: Label Distribution Protocol
+                 Extensions for Point-to-Multipoint and
+                 Multipoint-to-Multipoint Label Switched
+                 Paths.";
+              list fec-label {
+                key
+                  "root-address lsp-id";
+                description
+                  "List of FEC to label bindings.";
+                leaf root-address {
+                  type inet:ipv4-address;
+                  description
+                    "Root address.";
+                }
+                leaf lsp-id {
+                  type uint32;
+                  description "ID to identify the LSP.";
+                }
+                leaf multipoint-type {
+                  type multipoint-type;
+                  description
+                    "The type of mutipoint, p2mp or mp2mp.";
+                }
+              } // fec-label
+            } // opaque-type-lspid
           } // configured-leaf-lsps
         } // ipv4
       } // list address-family

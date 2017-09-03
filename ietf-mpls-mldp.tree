@@ -56,29 +56,17 @@ augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global:
             |                    +--ro label?                rt-types:mpls-label
             |                    +--ro mbb-role?             enumeration
             +--rw configured-leaf-lsps
-               +--rw p2mp
-               |  +--rw roots
-               |     +--rw root* [root-address]
-               |        +--rw root-address         inet:ipv4-address
-               |        +--rw (lsp-key-type)?
-               |           +--:(lsp-id)
-               |              +--rw opaque-type-lspid
-               |                 +--rw lsp* [lsp-id]
-               |                    +--rw lsp-id    uint16
-               +--rw mp2mp
-                  +--rw roots
-                     +--rw root* [root-address]
-                        +--rw root-address         inet:ipv4-address
-                        +--rw (lsp-key-type)?
-                           +--:(lsp-id)
-                              +--rw opaque-type-lspid
-                                 +--rw lsp* [lsp-id]
-                                    +--rw lsp-id    uint16
+               +--rw opaque-type-lspid
+                  +--rw fec-label* [root-address lsp-id]
+                     +--rw root-address       inet:ipv4-address
+                     +--rw lsp-id             uint32
+                     +--rw multipoint-type?   multipoint-type
 notifications:
    +---n mpls-mldp-fec-event
-      +--ro event-type?   ldp:oper-status-event-type
-      +--ro tree-type?    multipoint-type
-      +--ro root?         inet:ip-address
-      +--ro (lsp-key-type)?
-         +--:(lsp-id)
-            +--ro lsp-id?       uint16
+      +--ro event-type?          ldp:oper-status-event-type
+      +--ro (opaque-type)?
+         +--:(opaque-type-lspid)
+            +--ro opaque-type-lspid
+               +--ro root-address?      inet:ip-address
+               +--ro lsp-id?            uint32
+               +--ro multipoint-type?   multipoint-type
