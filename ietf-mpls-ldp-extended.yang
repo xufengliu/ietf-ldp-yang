@@ -57,7 +57,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-09-02 {
+  revision 2017-10-12 {
     description
       "Initial revision.";
     reference
@@ -283,24 +283,10 @@ module ietf-mpls-ldp-extended {
               description
                 "Address family type value.";
             }
-            container config {
+            leaf ldp-disable {
+              type boolean;
               description
-                "Configuration data.";
-              leaf ldp-disable {
-                type boolean;
-                description
-                  "Disable LDP forwarding on the interface.";
-              }
-            }
-            container state {
-              config false;
-              description
-                "Operational state data.";
-              leaf ldp-disable {
-                type boolean;
-                description
-                  "Disable LDP forwarding on the interface.";
-              }
+                "Disable LDP forwarding on the interface.";
             }
           } // address-family
         } // list interface
@@ -531,80 +517,69 @@ module ietf-mpls-ldp-extended {
          leaf is set to 'false'";
       description
         "IPv6 address family.";
-      container config {
+
+      leaf enable {
+        type boolean;
+        default true;
         description
-          "Configuration data.";
-        leaf enable {
-          type boolean;
-          default true;
-          description
-            "'true' to enable the address family.";
-        }
-        uses policy-container;
+          "'true' to enable the address family.";
       }
-      container state {
+
+      uses policy-container;
+
+      leaf label-distribution-controlmode {
+        type enumeration {
+          enum independent {
+            description
+            "Independent label distribution control.";
+          }
+          enum Ordered {
+            description
+            "Ordered Label Distribution Control.";
+          }
+        }
         config false;
         description
-          "Operational state data.";
-        leaf enable {
-          type boolean;
-          description
-            "'true' to enable the address family.";
-        }
-        leaf label-distribution-controlmode {
-          type enumeration {
-            enum independent {
-              description
-              "Independent label distribution control.";
-            }
-            enum Ordered {
-              description
-              "Ordered Label Distribution Control.";
-            }
-          }
-          description
-            "Label distribution control mode.";
-          reference
-            "RFC5036: LDP Specification. Sec 2.6.";
-        }
+          "Label distribution control mode.";
+        reference
+          "RFC5036: LDP Specification. Sec 2.6.";
+      }
 
-        uses policy-container;
-
-        // ipv6 bindings
-        container bindings {
+      // ipv6 bindings
+      container bindings {
+        config false;
+        description
+          "LDP address and label binding information.";
+        list address {
+          key "address";
           description
-            "LDP address and label binding information.";
-          list address {
-            key "address";
+            "List of address bindings.";
+          leaf address {
+            type inet:ipv6-address;
             description
-              "List of address bindings.";
-            leaf address {
-              type inet:ipv6-address;
-              description
                 "Binding address.";
-            }
-            uses ldp:binding-address-state-attributes;
-          } // binding-address
+          }
+          uses ldp:binding-address-state-attributes;
+        } // binding-address
 
-          list fec-label {
-            key "fec";
+        list fec-label {
+          key "fec";
+          description
+            "List of label bindings.";
+          leaf fec {
+            type inet:ipv6-prefix;
             description
-              "List of label bindings.";
-            leaf fec {
-              type inet:ipv6-prefix;
-              description
-                "Prefix FEC.";
-            }
-            uses ldp:binding-label-state-attributes;
-          } // fec-label
-        } // bindings
-      } // state
+              "Prefix FEC.";
+          }
+          uses ldp:binding-label-state-attributes;
+        } // fec-label
+      } // bindings
     } // ipv6
   }
 
   // discovery/interfaces/interface/address-families/ipv6
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
+    + "ldp:discovery/ldp:interfaces/ldp:interface/"
     + "ldp:address-families" {
     description "Interface IPv6 augmentation.";
 
@@ -614,30 +589,23 @@ module ietf-mpls-ldp-extended {
          leaf is set to 'false'";
       description
         "IPv6 address family.";
-      container config {
+
+      leaf enable {
+        type boolean;
+        default true;
         description
-          "Configuration data.";
-        leaf enable {
-          type boolean;
-          default true;
-          description
-            "Enable the address family on the interface.";
-        }
+          "Enable the address family on the interface.";
       }
 
-      container state {
+      // ipv6
+      container hello-adjacencies {
         config false;
         description
-          "Operational state data.";
-        leaf enable {
-          type boolean;
-          description
-            "Enable the address family on the interface.";
-        }
+          "Containing a list of hello adjacencies.";
 
-        // ipv6
-        list hello-adjacencies {
+        list hello-adjacency {
           key "adjacent-address";
+          config false;
           description "List of hello adjacencies.";
 
           leaf adjacent-address {
@@ -650,21 +618,20 @@ module ietf-mpls-ldp-extended {
 
           leaf peer {
             type leafref {
-              path "../../../../../../../../../ldp:peers/ldp:peer/"
+              path "../../../../../../../../ldp:peers/ldp:peer/"
                 + "ldp:lsr-id";
             }
             description
               "LDP peer from this adjacency.";
           }
-        } // hello-adjacencies
-      } // state
+        } // hello-adjacency
+      } // hello-adjacencies
     } // ipv6
   }
 
   // discovery/targeted/address-families/ipv6
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:targeted/"
-    + "ldp:address-families" {
+    + "ldp:discovery/ldp:targeted/ldp:address-families" {
     description "Targeted discovery IPv6 augmentation.";
 
     container ipv6 {
@@ -672,13 +639,15 @@ module ietf-mpls-ldp-extended {
         "Present if IPv6 is enabled.";
       description
         "IPv6 address family.";
-      container state {
+
+      container hello-adjacencies {
         config false;
         description
-          "Operational state data.";
+          "Containing a list of hello adjacencies.";
 
-        list hello-adjacencies {
+        list hello-adjacency {
           key "local-address adjacent-address";
+          config false;
           description "List of hello adjacencies.";
 
           leaf local-address {
@@ -696,14 +665,14 @@ module ietf-mpls-ldp-extended {
 
           leaf peer {
             type leafref {
-              path "../../../../../../../../ldp:peers/ldp:peer/"
+              path "../../../../../../../ldp:peers/ldp:peer/"
                 + "ldp:lsr-id";
             }
             description
               "LDP peer from this adjacency.";
           }
-        } // hello-adjacencies
-      } // state
+        } // hello-adjacency
+      } // hello-adjacencies
 
       list target {
         key "adjacent-address";
@@ -717,42 +686,23 @@ module ietf-mpls-ldp-extended {
              extended LDP discovery of the specified
              neighbor.";
         }
-        container config {
+        leaf enable {
+          type boolean;
           description
-            "Configuration data.";
-          leaf enable {
-            type boolean;
-            description
-              "Enable the target.";
-          }
-          leaf local-address {
-            type inet:ipv6-address;
-            description
-              "The local address.";
-          }
+            "Enable the target.";
         }
-        container state {
-          config false;
+        leaf local-address {
+          type inet:ipv6-address;
           description
-            "Operational state data.";
-          leaf enable {
-            type boolean;
-            description
-              "Enable the target.";
-          }
-          leaf local-address {
-            type inet:ipv6-address;
-            description
-              "The local address.";
-          }
-        } // state
+            "The local address.";
+        }
       } // target
     } // ipv6
   }
 
   // /peers/peer/state/address-families/ipv6
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:state/ldp:address-families" {
+    + "ldp:peers/ldp:peer/ldp:address-families" {
     description "Peer state IPv6 augmentation.";
 
     container ipv6 {
@@ -787,181 +737,60 @@ module ietf-mpls-ldp-extended {
   }
 
   /*
-   * Configuration data nodes
+   * Configuration data and operational state data nodes
    */
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:config" {
+    + "ldp:global" {
     description "Graceful restart augmentation.";
     uses global-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:config/ldp:capability" {
+    + "ldp:global/ldp:capability" {
     description "Capability augmentation.";
     uses capability-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:config/ldp:graceful-restart" {
+    + "ldp:global/ldp:graceful-restart" {
     description "Graceful restart augmentation.";
     uses graceful-restart-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:config" {
+    + "ldp:global/ldp:address-families/ldp:ipv4" {
     description "Address family IPv4 augmentation.";
     uses address-family-ipv4-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp-ext:ipv6/ldp-ext:config" {
+    + "ldp:global/ldp:address-families/ldp-ext:ipv6" {
     description "Address family IPv4 augmentation.";
     uses address-family-ipv6-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface" {
-    description "Interface augmentation.";
-    container config {
-      description
-        "Configuration data.";
-      uses interface-augment;
-    }
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
-    + "ldp:address-families/ldp:ipv4/ldp:config" {
-    description "Interface address family IPv4 augmentation.";
-    uses interface-address-family-ipv4-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
-    + "ldp:address-families/ldp-ext:ipv6/ldp-ext:config" {
-    description "Interface address family IPv6 augmentation.";
-    uses interface-address-family-ipv6-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:targeted/ldp:config/"
-    + "ldp:hello-accept" {
-    description "Targeted discovery augmentation.";
-    leaf neighbor-list {
-      if-feature policy-targeted-discovery-config;
-      type neighbor-list-ref;
-      description
-        "The name of a peer ACL.";
-    }
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:config" {
-    description "Peers augmentation.";
-    uses peers-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:config/ldp:authentication/"
-    + "ldp:auth-type-selection" {
-    description "Peers authentication augmentation.";
-    case auth-key-chain {
-      uses authentication-keychain-augment;
-    }
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:config" {
-    description "Peer list entry augmentation.";
-    uses peer-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:config/ldp:authentication/"
-    + "ldp:auth-type-selection" {
-    description "Peer list entry authentication augmentation.";
-    case auth-key-chain {
-      uses authentication-keychain-augment;
-    }
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:config" {
-    description
-      "Peer list entry augmentation to add address family.";
-    container address-families {
-      description
-        "Per-vrf per-af params.";
-      container ipv4 {
-        description
-          "IPv4 address family.";
-        uses peer-af-policy-container;
-      }
-      container ipv6 {
-        description
-          "IPv6 address family.";
-        uses peer-af-policy-container;
-      } // ipv6
-    } // address-family
-  }
-
-  /*
-   * Operational data nodes
-   */
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:state" {
-    description "Graceful restart augmentation.";
-    uses global-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:state/ldp:capability" {
-    description "Capability augmentation.";
-    uses capability-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:state/ldp:graceful-restart" {
-    description "Graceful restart augmentation.";
-    uses graceful-restart-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp:ipv4/ldp:state" {
-    description "Address family IPv4 augmentation.";
-    uses address-family-ipv4-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp-ext:ipv6/ldp-ext:state" {
-    description "Address family IPv6 augmentation.";
-    uses address-family-ipv6-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
-    + "ldp:state" {
+    + "ldp:discovery/ldp:interfaces/ldp:interface" {
     description "Interface augmentation.";
     uses interface-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
-    + "ldp:address-families/ldp:ipv4/ldp:state" {
+    + "ldp:discovery/ldp:interfaces/ldp:interface/"
+    + "ldp:address-families/ldp:ipv4" {
     description "Interface address family IPv4 augmentation.";
     uses interface-address-family-ipv4-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:interfaces/ldp:interface/"
-    + "ldp:address-families/ldp-ext:ipv6/ldp-ext:state" {
+    + "ldp:discovery/ldp:interfaces/ldp:interface/"
+    + "ldp:address-families/ldp-ext:ipv6" {
     description "Interface address family IPv6 augmentation.";
     uses interface-address-family-ipv6-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:discovery/ldp:targeted/ldp:state/"
-    + "ldp:hello-accept" {
+    + "ldp:discovery/ldp:targeted/ldp:hello-accept" {
     description "Targeted discovery augmentation.";
     leaf neighbor-list {
       if-feature policy-targeted-discovery-config;
@@ -972,14 +801,13 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:state" {
+    + "ldp:peers" {
     description "Peers augmentation.";
     uses peers-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:state/ldp:authentication/"
-    + "ldp:auth-type-selection" {
+    + "ldp:peers/ldp:authentication/ldp:auth-type-selection" {
     description "Peers authentication augmentation.";
     case auth-key-chain {
       uses authentication-keychain-augment;
@@ -987,13 +815,13 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:state" {
+    + "ldp:peers/ldp:peer" {
     description "Peer list entry augmentation.";
     uses peer-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:state/ldp:authentication/"
+    + "ldp:peers/ldp:peer/ldp:authentication/"
     + "ldp:auth-type-selection" {
     description "Peer list entry authentication augmentation.";
     case auth-key-chain {
@@ -1002,15 +830,14 @@ module ietf-mpls-ldp-extended {
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:state/ldp:address-families/ldp:ipv4" {
+    + "ldp:peers/ldp:peer/ldp:address-families/ldp:ipv4" {
     description
       "Peer list entry IPv4 augmentation.";
     uses peer-af-policy-container;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:peers/ldp:peer/ldp:state/ldp:address-families/"
-    + "ldp-ext:ipv6" {
+    + "ldp:peers/ldp:peer/ldp:address-families/ldp-ext:ipv6" {
     description
       "Peer list entry IPv6 augmentation.";
     uses peer-af-policy-container;

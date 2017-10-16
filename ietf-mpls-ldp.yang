@@ -61,7 +61,7 @@ module ietf-mpls-ldp {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-09-01 {
+  revision 2017-10-12 {
     description
       "Initial revision.";
     reference
@@ -278,7 +278,7 @@ module ietf-mpls-ldp {
     }
     leaf peer {
       type leafref {
-        path "../../../../../../../ldp:peers/ldp:peer/ldp:lsr-id";
+        path "../../../../../../ldp:peers/ldp:peer/ldp:lsr-id";
       }
       must "../advertisement-type = 'received'" {
         description
@@ -298,7 +298,7 @@ module ietf-mpls-ldp {
         "List of advertised and received peers.";
       leaf peer {
         type leafref {
-          path "../../../../../../../../ldp:peers/ldp:peer/"
+          path "../../../../../../../ldp:peers/ldp:peer/"
             + "ldp:lsr-id";
         }
         description
@@ -586,6 +586,7 @@ module ietf-mpls-ldp {
     description "Peer derived state attributes.";
 
     container label-advertisement-mode {
+      config false;
       description "Label advertisement mode state.";
       leaf local {
         type label-adv-mode;
@@ -606,15 +607,18 @@ module ietf-mpls-ldp {
     leaf next-keep-alive {
       type uint16;
       units seconds;
+      config false;
       description "Time to send the next KeepAlive message.";
     }
 
     leaf peer-ldp-id {
       type yang:dotted-quad;
+      config false;
       description "Peer LDP ID.";
     }
 
     container received-peer-state {
+      config false;
       description "Peer features.";
 
       uses graceful-restart-attributes-per-peer;
@@ -652,6 +656,7 @@ module ietf-mpls-ldp {
     } // received-peer-state
 
     container session-holdtime {
+      config false;
       description "Session holdtime state.";
       leaf peer {
         type uint16;
@@ -688,11 +693,13 @@ module ietf-mpls-ldp {
           description "OPERATIONAL state.";
         }
       }
+      config false;
       description
         "Representing the operational status.";
     }
 
     container tcp-connection {
+      config false;
       description "TCP connection state.";
       leaf local-address {
         type inet:ip-address;
@@ -714,10 +721,12 @@ module ietf-mpls-ldp {
 
     leaf up-time {
       type string;
+      config false;
       description "Up time. The interval format in ISO 8601.";
     }
 
     container statistics {
+      config false;
       description
         "Statistics objects.";
 
@@ -827,7 +836,7 @@ module ietf-mpls-ldp {
   } // statistics-peer-received-sent
 
   /*
-   * Configuration data nodes
+   * Configuration data and operational state data nodes
    */
 
   augment "/rt:routing/rt:control-plane-protocols" {
@@ -841,17 +850,8 @@ module ietf-mpls-ldp {
       container global {
         description
           "Global attributes for LDP.";
-        container config {
-          description
-            "Configuration data.";
-          uses global-attributes;
-        }
-        container state {
-          config false;
-          description
-            "Operational state data.";
-          uses global-attributes;
-        }
+
+        uses global-attributes;
 
         container address-families {
           description
@@ -862,189 +862,89 @@ module ietf-mpls-ldp {
                leaf is set to 'false'";
             description
               "IPv4 address family.";
-            container config {
+
+            leaf enable {
+              type boolean;
+              default true;
               description
-                "Configuration data.";
-              leaf enable {
-                type boolean;
-                default true;
-                description
-                  "'true' to enable the address family.";
-              }
+                "'true' to enable the address family.";
             }
-            container state {
+
+            leaf label-distribution-controlmode {
+              type enumeration {
+                enum independent {
+                  description
+                  "Independent label distribution control.";
+                }
+                enum Ordered {
+                  description
+                  "Ordered Label Distribution Control.";
+                }
+              }
               config false;
               description
-                "Operational state data.";
-              leaf enable {
-                type boolean;
+                "Label distribution control mode.";
+              reference
+                "RFC5036: LDP Specification. Sec 2.6.";
+            }
+
+            // ipv4 bindings
+            container bindings {
+              config false;
+              description
+                "LDP address and label binding information.";
+              list address {
+                key "address";
                 description
-                  "'true' to enable the address family.";
-              }
-              leaf label-distribution-controlmode {
-                type enumeration {
-                  enum independent {
-                    description
-                    "Independent label distribution control.";
-                  }
-                  enum Ordered {
-                    description
-                    "Ordered Label Distribution Control.";
-                  }
+                  "List of address bindings.";
+                leaf address {
+                  type inet:ipv4-address;
+                  description
+                    "Binding address.";
                 }
-                description
-                  "Label distribution control mode.";
-                reference
-                  "RFC5036: LDP Specification. Sec 2.6.";
-              }
+                uses binding-address-state-attributes;
+              } // binding-address
 
-              // ipv4 bindings
-              container bindings {
+              list fec-label {
+                key "fec";
                 description
-                  "LDP address and label binding information.";
-                list address {
-                  key "address";
+                  "List of label bindings.";
+                leaf fec {
+                  type inet:ipv4-prefix;
                   description
-                    "List of address bindings.";
-                  leaf address {
-                    type inet:ipv4-address;
-                    description
-                      "Binding address.";
-                  }
-                  uses binding-address-state-attributes;
-                } // binding-address
-
-                list fec-label {
-                  key "fec";
-                  description
-                    "List of label bindings.";
-                  leaf fec {
-                    type inet:ipv4-prefix;
-                    description
-                      "Prefix FEC.";
-                  }
-                  uses binding-label-state-attributes;
-                } // fec-label
-              } // bindings
-            } // state
+                    "Prefix FEC.";
+                }
+                uses binding-label-state-attributes;
+              } // fec-label
+            } // bindings
           } // ipv4
         } // address-families
+      } // global
 
-        container discovery {
+      container discovery {
+        description
+          "Neibgbor discovery configuration.";
+
+        container interfaces {
           description
-            "Neibgbor discovery configuration.";
+            "A list of interfaces for basic descovery.";
 
-          container interfaces {
+          uses basic-discovery-timers;
+
+          list interface {
+            key "interface";
             description
-              "A list of interfaces for basic descovery.";
-            container config {
+              "List of LDP interfaces.";
+            leaf interface {
+              type mpls-interface-ref;
               description
-                "Configuration data.";
-              uses basic-discovery-timers;
+                "Interface.";
             }
-            container state {
+            leaf next-hello {
+              type uint16;
+              units seconds;
               config false;
-              description
-
-                "Operational state data.";
-              uses basic-discovery-timers;
-            }
-
-            list interface {
-              key "interface";
-              description
-                "List of LDP interfaces.";
-              leaf interface {
-                type mpls-interface-ref;
-                description
-                  "Interface.";
-              }
-              container state {
-                config false;
-                description
-                  "Operational state data.";
-                leaf next-hello {
-                  type uint16;
-                  units seconds;
-                  description "Time to send the next hello message.";
-                }
-              } // state
-
-              container address-families {
-                description
-                  "Container for address families.";
-                container ipv4 {
-                  presence
-                    "Present if IPv4 is enabled, unless the 'enable'
-                     leaf is set to 'false'";
-                  description
-                    "IPv4 address family.";
-                  container config {
-                    description
-                      "Configuration data.";
-                    leaf enable {
-                      type boolean;
-                      default true;
-                      description
-                        "Enable the address family on the interface.";
-                    }
-                  }
-
-                  container state {
-                    config false;
-                    description
-                      "Operational state data.";
-                    leaf enable {
-                      type boolean;
-                      description
-                        "Enable the address family on the interface.";
-                    }
-
-                    // ipv4
-                    list hello-adjacencies {
-                      key "adjacent-address";
-                      description "List of hello adjacencies.";
-
-                      leaf adjacent-address {
-                        type inet:ipv4-address;
-                        description
-                          "Neighbor address of the hello adjacency.";
-                      }
-
-                      uses adjacency-state-attributes;
-
-                      leaf peer {
-                        type leafref {
-                          path "../../../../../../../../../"
-                            + "peers/peer/lsr-id";
-                        }
-                        description
-                          "LDP peer from this adjacency.";
-                      }
-                    } // hello-adjacencies
-                  } // state
-                } // ipv4
-              } // address-families
-            } // list interface
-          } // interfaces
-
-          container targeted
-          {
-            description
-              "A list of targeted neighbors for extended discovery.";
-            container config {
-
-              description
-                "Configuration data.";
-              uses extended-discovery-timers;
-              uses extended-discovery-policy-attributes;
-            }
-            container state {
-              config false;
-              description
-                "Operational state data.";
-              uses extended-discovery-timers;
-              uses extended-discovery-policy-attributes;
+              description "Time to send the next hello message.";
             }
 
             container address-families {
@@ -1052,23 +952,29 @@ module ietf-mpls-ldp {
                 "Container for address families.";
               container ipv4 {
                 presence
-                  "Present if IPv4 is enabled.";
+                  "Present if IPv4 is enabled, unless the 'enable'
+                   leaf is set to 'false'";
                 description
                   "IPv4 address family.";
-                container state {
+
+                leaf enable {
+                  type boolean;
+                  default true;
+                  description
+                    "Enable the address family on the interface.";
+                }
+
+                // ipv4
+                container hello-adjacencies {
                   config false;
                   description
-                    "Operational state data.";
+                    "Containing a list of hello adjacencies.";
 
-                  list hello-adjacencies {
-                    key "local-address adjacent-address";
+                  list hello-adjacency {
+                    key "adjacent-address";
+                    config false;
                     description "List of hello adjacencies.";
 
-                    leaf local-address {
-                      type inet:ipv4-address;
-                      description
-                        "Local address of the hello adjacency.";
-                    }
                     leaf adjacent-address {
                       type inet:ipv4-address;
                       description
@@ -1079,80 +985,99 @@ module ietf-mpls-ldp {
 
                     leaf peer {
                       type leafref {
-                        path "../../../../../../../../peers/peer/"
-                          + "lsr-id";
+                        path "../../../../../../../../"
+                          + "peers/peer/lsr-id";
                       }
                       description
                         "LDP peer from this adjacency.";
                     }
-                  } // hello-adjacencies
-                } // state
-
-                list target {
-                  key "adjacent-address";
-                  description
-                    "Targeted discovery params.";
-
-                  leaf adjacent-address {
-                    type inet:ipv4-address;
-                    description
-                      "Configures a remote LDP neighbor and enables
-                       extended LDP discovery of the specified
-                       neighbor.";
-                  }
-                  container config {
-                    description
-                      "Configuration data.";
-                    leaf enable {
-                      type boolean;
-                      description
-                        "Enable the target.";
-                    }
-                    leaf local-address {
-                      type inet:ipv4-address;
-                      description
-                        "The local address.";
-                    }
-                  }
-                  container state {
-                    config false;
-                    description
-                      "Operational state data.";
-                    leaf enable {
-                      type boolean;
-                      description
-                        "Enable the target.";
-                    }
-                    leaf local-address {
-                      type inet:ipv4-address;
-                      description
-                        "The local address.";
-                    }
-                  } // state
-                } // target
+                  } // hello-adjacency
+                } // hello-adjacencies
               } // ipv4
             } // address-families
-          } // targeted
-        } // discovery
-      } // global
+          } // list interface
+        } // interfaces
+
+        container targeted
+        {
+          description
+            "A list of targeted neighbors for extended discovery.";
+
+          uses extended-discovery-timers;
+          uses extended-discovery-policy-attributes;
+
+          container address-families {
+            description
+              "Container for address families.";
+            container ipv4 {
+              presence
+                "Present if IPv4 is enabled.";
+              description
+                "IPv4 address family.";
+
+              list hello-adjacencies {
+                key "local-address adjacent-address";
+                config false;
+                description "List of hello adjacencies.";
+
+                leaf local-address {
+                  type inet:ipv4-address;
+                  description
+                    "Local address of the hello adjacency.";
+                }
+                leaf adjacent-address {
+                  type inet:ipv4-address;
+                  description
+                    "Neighbor address of the hello adjacency.";
+                }
+
+                uses adjacency-state-attributes;
+
+                leaf peer {
+                  type leafref {
+                    path "../../../../../../peers/peer/"
+                      + "lsr-id";
+                  }
+                  description
+                    "LDP peer from this adjacency.";
+                }
+              } // hello-adjacencies
+
+              list target {
+                key "adjacent-address";
+                description
+                  "Targeted discovery params.";
+
+                leaf adjacent-address {
+                  type inet:ipv4-address;
+                  description
+                    "Configures a remote LDP neighbor and enables
+                     extended LDP discovery of the specified
+                     neighbor.";
+                }
+
+                leaf enable {
+                  type boolean;
+                  description
+                    "Enable the target.";
+                }
+                leaf local-address {
+                  type inet:ipv4-address;
+                  description
+                    "The local address.";
+                }
+              } // target
+            } // ipv4
+          } // address-families
+        } // targeted
+      } // discovery
 
       container peers {
         description
           "Peers configuration attributes.";
 
-        container config {
-          description
-            "Configuration data.";
-          uses peer-authentication;
-          uses peer-attributes;
-        }
-        container state {
-          config false;
-          description
-            "Operational state data.";
-          uses peer-authentication;
-          uses peer-attributes;
-        }
+        uses peer-authentication;
+        uses peer-attributes;
 
         list peer {
           key "lsr-id";
@@ -1164,63 +1089,48 @@ module ietf-mpls-ldp {
             description "LSR ID.";
           }
 
-          container config {
+          uses peer-authentication;
+          container capability {
             description
-              "Configuration data.";
-
-            uses peer-authentication;
-            container capability {
-              description
-                "Per peer capability";
-            }
+              "Per peer capability";
           }
-          container state {
-            config false;
+
+          container address-families {
             description
-              "Operational state data.";
-
-            uses peer-authentication;
-            container capability {
+              "Per-vrf per-af params.";
+            container ipv4 {
+              presence
+                "Present if IPv4 is enabled.";
               description
-                "Per peer capability";
-            }
+                "IPv4 address family.";
 
-            container address-families {
-              description
-                "Per-vrf per-af params.";
-              container ipv4 {
-                presence
-                  "Present if IPv4 is enabled.";
-                description
-                  "IPv4 address family.";
+              list hello-adjacencies {
+                key "local-address adjacent-address";
+                config false;
+                description "List of hello adjacencies.";
 
-                list hello-adjacencies {
-                  key "local-address adjacent-address";
-                  description "List of hello adjacencies.";
+                leaf local-address {
+                  type inet:ipv4-address;
+                  description
+                    "Local address of the hello adjacency.";
+                }
+                leaf adjacent-address {
+                  type inet:ipv4-address;
+                  description
+                    "Neighbor address of the hello adjacency.";
+                }
 
-                  leaf local-address {
-                    type inet:ipv4-address;
-                    description
-                      "Local address of the hello adjacency.";
-                  }
-                  leaf adjacent-address {
-                    type inet:ipv4-address;
-                    description
-                      "Neighbor address of the hello adjacency.";
-                  }
+                uses adjacency-state-attributes;
 
-                  uses adjacency-state-attributes;
+                leaf interface {
+                  type mpls-interface-ref;
+                  description "Interface for this adjacency.";
+                }
+              } // hello-adjacencies
+            } // ipv4
+          } // address-families
 
-                  leaf interface {
-                    type mpls-interface-ref;
-                    description "Interface for this adjacency.";
-                  }
-                } // hello-adjacencies
-              } // ipv4
-            } // address-families
-
-            uses peer-state-derived;
-          } // state
+          uses peer-state-derived;
         } // list peer
       } // peers
     } // container mpls-ldp
