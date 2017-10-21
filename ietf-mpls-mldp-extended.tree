@@ -1,252 +1,220 @@
 module: ietf-mpls-mldp-extended
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:config/ldp:capability/mldp:mldp:
-   +--rw hub-and-spoke {capability-mldp-hsmp}?
-   |  +--rw enable?   boolean
-   +--rw node-protection {capability-mldp-node-protection}?
-      +--rw plr?           boolean
-      +--rw merge-point
-         +--rw enable?                            boolean
-         +--rw targeted-session-teardown-delay?   uint16
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:config/ldp:capability:
-   +--rw mldp {per-peer-capability}?
-      +--rw p2mp
-      |  +--rw enable?   boolean
-      +--rw mp2mp
-      |  +--rw enable?   boolean
-      +--rw make-before-break
-         +--rw enable?             boolean
-         +--rw switchover-delay?   uint16
-         +--rw timeout?            uint16
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4:
-   +--rw config
-      +--rw multicast-only-frr {mldp-mofrr}?
-      |  +--rw prefix-list?   ldp-ext:prefix-list-ref
-      +--rw recursive-fec
-         +--rw prefix-list?   ldp-ext:prefix-list-ref
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:configured-leaf-lsps/mldp:opaque-type-lspid/mldp:fec-label:
-   +--rw recursive-fec* [recur-root-address recur-rd]
-      +--rw recur-root-address    inet:ip-address
-      +--rw recur-rd              route-distinguisher
-      +--rw multipoint-type?      mldp:multipoint-type
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:configured-leaf-lsps:
-   +--rw opaque-type-transit
-   |  +--rw fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
-   |     +--rw root-address          inet:ipv4-address
-   |     +--rw source-address        inet:ip-address
-   |     +--rw group-address         inet:ip-address-no-zone
-   |     +--rw rd                    route-distinguisher
-   |     +--rw recur-root-address    inet:ip-address
-   |     +--rw recur-rd              route-distinguisher
-   |     +--rw multipoint-type?      mldp:multipoint-type
-   +--rw opaque-type-bidir
-      +--rw fec-label* [root-address rp group-address rd recur-root-address recur-rd]
-         +--rw root-address          inet:ipv4-address
-         +--rw rp                    inet:ip-address
-         +--rw group-address         inet:ip-address-no-zone
-         +--rw rd                    route-distinguisher
-         +--rw recur-root-address    inet:ip-address
-         +--rw recur-rd              route-distinguisher
-         +--rw multipoint-type?      mldp:multipoint-type
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp-ext:forwarding-nexthop/ldp-ext:interfaces/ldp-ext:interface/ldp-ext:address-family/ldp-ext:config:
-   +--rw mldp-disable?   boolean
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:state/ldp:capability/mldp:mldp:
-   +--ro hub-and-spoke {capability-mldp-hsmp}?
-   |  +--ro enable?   boolean
-   +--ro node-protection {capability-mldp-node-protection}?
-      +--ro plr?           boolean
-      +--ro merge-point
-         +--ro enable?                            boolean
-         +--ro targeted-session-teardown-delay?   uint16
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:state/ldp:capability:
-   +--ro mldp
-      +--ro p2mp
-      |  +--ro enable?   boolean
-      +--ro mp2mp
-      |  +--ro enable?   boolean
-      +--ro make-before-break
-         +--ro enable?             boolean
-         +--ro switchover-delay?   uint16
-         +--ro timeout?            uint16
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:state:
-   +--ro multicast-only-frr {mldp-mofrr}?
-   |  +--ro prefix-list?   ldp-ext:prefix-list-ref
-   +--ro recursive-fec
-      +--ro prefix-list?   ldp-ext:prefix-list-ref
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:state/mldp:roots/mldp:root/mldp:bindings/mldp:opaque-type-lspid/mldp:fec-label/mldp:peer:
-   +--ro mofrr-role?   mofrr-role
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp-ext:forwarding-nexthop/ldp-ext:interfaces/ldp-ext:interface/ldp-ext:address-family/ldp-ext:state:
-   +--ro mldp-disable?   boolean
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:state/ldp:received-peer-state/ldp:capability/mldp:mldp:
-   +--ro hub-and-spoke
-   |  +--ro enable?   boolean
-   +--ro node-protection
-      +--ro plr?           boolean
-      +--ro merge-point?   boolean
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:state/mldp:roots/mldp:root/mldp:bindings:
-   +--ro opaque-type-transit
-   |  +--ro fec-label* [source-address group-address rd recur-root-address recur-rd]
-   |     +--ro source-address        inet:ip-address
-   |     +--ro group-address         inet:ip-address-no-zone
-   |     +--ro rd                    route-distinguisher
-   |     +--ro recur-root-address    inet:ip-address
-   |     +--ro recur-rd              route-distinguisher
-   |     +--ro multipoint-type?      mldp:multipoint-type
-   |     +--ro peer* [direction peer advertisement-type]
-   |        +--ro direction             ldp:downstream-upstream
-   |        +--ro peer                  leafref
-   |        +--ro advertisement-type    ldp:advertised-received
-   |        +--ro label?                rt-types:mpls-label
-   |        +--ro mbb-role?             enumeration
-   |        +--ro mofrr-role?           mofrr-role
-   +--ro opaque-type-bidir
-      +--ro fec-label* [rp group-address rd recur-root-address recur-rd]
-         +--ro rp                    inet:ip-address
-         +--ro group-address         inet:ip-address-no-zone
-         +--ro rd                    route-distinguisher
-         +--ro recur-root-address    inet:ip-address
-         +--ro recur-rd              route-distinguisher
-         +--ro multipoint-type?      mldp:multipoint-type
-         +--ro peer* [direction peer advertisement-type]
-            +--ro direction             ldp:downstream-upstream
-            +--ro peer                  leafref
-            +--ro advertisement-type    ldp:advertised-received
-            +--ro label?                rt-types:mpls-label
-            +--ro mbb-role?             enumeration
-            +--ro mofrr-role?           mofrr-role
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:state/mldp:roots/mldp:root/mldp:bindings/mldp:opaque-type-lspid/mldp:fec-label:
-   +--ro recursive-fec* [recur-root-address recur-rd]
-      +--ro recur-root-address    inet:ip-address
-      +--ro recur-rd              route-distinguisher
-      +--ro multipoint-type?      mldp:multipoint-type
-      +--ro peer* [direction peer advertisement-type]
-         +--ro direction             ldp:downstream-upstream
-         +--ro peer                  leafref
-         +--ro advertisement-type    ldp:advertised-received
-         +--ro label?                rt-types:mpls-label
-         +--ro mbb-role?             enumeration
-         +--ro mofrr-role?           mofrr-role
-augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families:
-   +--rw ipv6
-      +--ro state
-      |  +--ro roots
-      |  |  +--ro root* [root-address]
-      |  |     +--ro root-address    inet:ipv6-address
-      |  |     +--ro is-self?        boolean
-      |  |     +--ro reachability* [address interface]
-      |  |     |  +--ro address      inet:ipv6-address
-      |  |     |  +--ro interface    ldp:mpls-interface-ref
-      |  |     |  +--ro peer?        leafref
-      |  |     +--ro bindings
-      |  |        +--ro opaque-type-lspid
-      |  |        |  +--ro fec-label* [lsp-id]
-      |  |        |     +--ro lsp-id             uint32
-      |  |        |     +--ro multipoint-type?   mldp:multipoint-type
-      |  |        |     +--ro peer* [direction peer advertisement-type]
-      |  |        |     |  +--ro direction             ldp:downstream-upstream
-      |  |        |     |  +--ro peer                  leafref
-      |  |        |     |  +--ro advertisement-type    ldp:advertised-received
-      |  |        |     |  +--ro label?                rt-types:mpls-label
-      |  |        |     |  +--ro mbb-role?             enumeration
-      |  |        |     |  +--ro mofrr-role?           mofrr-role
-      |  |        |     +--ro recursive-fec* [recur-root-address recur-rd]
-      |  |        |        +--ro recur-root-address    inet:ip-address
-      |  |        |        +--ro recur-rd              route-distinguisher
-      |  |        |        +--ro multipoint-type?      mldp:multipoint-type
-      |  |        |        +--ro peer* [direction peer advertisement-type]
-      |  |        |           +--ro direction             ldp:downstream-upstream
-      |  |        |           +--ro peer                  leafref
-      |  |        |           +--ro advertisement-type    ldp:advertised-received
-      |  |        |           +--ro label?                rt-types:mpls-label
-      |  |        |           +--ro mbb-role?             enumeration
-      |  |        |           +--ro mofrr-role?           mofrr-role
-      |  |        +--ro opaque-type-transit
-      |  |        |  +--ro fec-label* [source-address group-address rd recur-root-address recur-rd]
-      |  |        |     +--ro source-address        inet:ip-address
-      |  |        |     +--ro group-address         inet:ip-address-no-zone
-      |  |        |     +--ro rd                    route-distinguisher
-      |  |        |     +--ro recur-root-address    inet:ip-address
-      |  |        |     +--ro recur-rd              route-distinguisher
-      |  |        |     +--ro multipoint-type?      mldp:multipoint-type
-      |  |        |     +--ro peer* [direction peer advertisement-type]
-      |  |        |        +--ro direction             ldp:downstream-upstream
-      |  |        |        +--ro peer                  leafref
-      |  |        |        +--ro advertisement-type    ldp:advertised-received
-      |  |        |        +--ro label?                rt-types:mpls-label
-      |  |        |        +--ro mbb-role?             enumeration
-      |  |        |        +--ro mofrr-role?           mofrr-role
-      |  |        +--ro opaque-type-bidir
-      |  |           +--ro fec-label* [rp group-address rd recur-root-address recur-rd]
-      |  |              +--ro rp                    inet:ip-address
-      |  |              +--ro group-address         inet:ip-address-no-zone
-      |  |              +--ro rd                    route-distinguisher
-      |  |              +--ro recur-root-address    inet:ip-address
-      |  |              +--ro recur-rd              route-distinguisher
-      |  |              +--ro multipoint-type?      mldp:multipoint-type
-      |  |              +--ro peer* [direction peer advertisement-type]
-      |  |                 +--ro direction             ldp:downstream-upstream
-      |  |                 +--ro peer                  leafref
-      |  |                 +--ro advertisement-type    ldp:advertised-received
-      |  |                 +--ro label?                rt-types:mpls-label
-      |  |                 +--ro mbb-role?             enumeration
-      |  |                 +--ro mofrr-role?           mofrr-role
-      |  +--rw multicast-only-frr {mldp-mofrr}?
-      |  |  +--rw prefix-list?   ldp-ext:prefix-list-ref
-      |  +--rw recursive-fec
-      |     +--rw prefix-list?   ldp-ext:prefix-list-ref
-      +--rw configured-leaf-lsps
-      |  +--rw opaque-type-lspid
-      |  |  +--rw fec-label* [root-address lsp-id]
-      |  |     +--rw root-address       inet:ipv6-address
-      |  |     +--rw lsp-id             uint32
-      |  |     +--rw multipoint-type?   mldp:multipoint-type
-      |  |     +--rw recursive-fec* [recur-root-address recur-rd]
-      |  |        +--rw recur-root-address    inet:ip-address
-      |  |        +--rw recur-rd              route-distinguisher
-      |  |        +--rw multipoint-type?      mldp:multipoint-type
-      |  +--rw opaque-type-transit
-      |  |  +--rw fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
-      |  |     +--rw root-address          inet:ipv6-address
-      |  |     +--rw source-address        inet:ip-address
-      |  |     +--rw group-address         inet:ip-address-no-zone
-      |  |     +--rw rd                    route-distinguisher
-      |  |     +--rw recur-root-address    inet:ip-address
-      |  |     +--rw recur-rd              route-distinguisher
-      |  |     +--rw multipoint-type?      mldp:multipoint-type
-      |  +--rw opaque-type-bidir
-      |     +--rw fec-label* [root-address rp group-address rd recur-root-address recur-rd]
-      |        +--rw root-address          inet:ipv6-address
-      |        +--rw rp                    inet:ip-address
-      |        +--rw group-address         inet:ip-address-no-zone
-      |        +--rw rd                    route-distinguisher
-      |        +--rw recur-root-address    inet:ip-address
-      |        +--rw recur-rd              route-distinguisher
-      |        +--rw multipoint-type?      mldp:multipoint-type
-      +--rw config
-         +--rw multicast-only-frr {mldp-mofrr}?
-         |  +--rw prefix-list?   ldp-ext:prefix-list-ref
-         +--rw recursive-fec
-            +--rw prefix-list?   ldp-ext:prefix-list-ref
-augment /mldp:mpls-mldp-fec-event/mldp:opaque-type/mldp:opaque-type-lspid/mldp:opaque-type-lspid:
-   +---- recursive-fec
-      +---- recur-root-address?   inet:ip-address
-      +---- recur-rd?             route-distinguisher
-      +---- multipoint-type?      mldp:multipoint-type
-augment /mldp:mpls-mldp-fec-event/mldp:opaque-type:
-   +--:(opaque-type-transit)
-   |  +---- opaque-type-transit
-   |     +---- root-address?         inet:ip-address
-   |     +---- source-address?       inet:ip-address
-   |     +---- group-address?        inet:ip-address-no-zone
-   |     +---- rd?                   route-distinguisher
-   |     +---- recur-root-address?   inet:ip-address
-   |     +---- recur-rd?             route-distinguisher
-   |     +---- multipoint-type?      mldp:multipoint-type
-   +--:(opaque-type-bidir)
-      +---- opaque-type-bidir
-         +---- root-address?         inet:ip-address
-         +---- rp?                   inet:ip-address
-         +---- group-address?        inet:ip-address-no-zone
-         +---- rd?                   route-distinguisher
-         +---- recur-root-address?   inet:ip-address
-         +---- recur-rd?             route-distinguisher
-         +---- multipoint-type?      mldp:multipoint-type
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:capability/mldp:mldp:
+    +--rw hub-and-spoke {capability-mldp-hsmp}?
+    |  +--rw enable?   boolean
+    +--rw node-protection {capability-mldp-node-protection}?
+       +--rw plr?           boolean
+       +--rw merge-point
+          +--rw enable?                            boolean
+          +--rw targeted-session-teardown-delay?   uint16
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:capability:
+    +--rw mldp {per-peer-capability}?
+       +--rw p2mp
+       |  +--rw enable?   boolean
+       +--rw mp2mp
+       |  +--rw enable?   boolean
+       +--rw make-before-break
+          +--rw enable?             boolean
+          +--rw switchover-delay?   uint16
+          +--rw timeout?            uint16
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4:
+    +--rw multicast-only-frr {mldp-mofrr}?
+    |  +--rw prefix-list?   ldp-ext:prefix-list-ref
+    +--rw recursive-fec
+       +--rw prefix-list?   ldp-ext:prefix-list-ref
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:configured-leaf-lsps/mldp:opaque-type-lspid/mldp:fec-label:
+    +--rw recursive-fec* [recur-root-address recur-rd]
+       +--rw recur-root-address    inet:ip-address
+       +--rw recur-rd              route-distinguisher
+       +--rw multipoint-type?      mldp:multipoint-type
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:configured-leaf-lsps:
+    +--rw opaque-type-transit
+    |  +--rw fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
+    |     +--rw root-address          inet:ipv4-address
+    |     +--rw source-address        inet:ip-address
+    |     +--rw group-address         inet:ip-address-no-zone
+    |     +--rw rd                    route-distinguisher
+    |     +--rw recur-root-address    inet:ip-address
+    |     +--rw recur-rd              route-distinguisher
+    |     +--rw multipoint-type?      mldp:multipoint-type
+    +--rw opaque-type-bidir
+       +--rw fec-label* [root-address rp group-address rd recur-root-address recur-rd]
+          +--rw root-address          inet:ipv4-address
+          +--rw rp                    inet:ip-address
+          +--rw group-address         inet:ip-address-no-zone
+          +--rw rd                    route-distinguisher
+          +--rw recur-root-address    inet:ip-address
+          +--rw recur-rd              route-distinguisher
+          +--rw multipoint-type?      mldp:multipoint-type
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp-ext:forwarding-nexthop/ldp-ext:interfaces/ldp-ext:interface/ldp-ext:address-family:
+    +--rw mldp-disable?   boolean
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:roots/mldp:root/mldp:bindings/mldp:opaque-type-lspid/mldp:fec-label/mldp:peer:
+    +--ro mofrr-role?   mofrr-role
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:received-peer-state/ldp:capability/mldp:mldp:
+    +--ro hub-and-spoke
+    |  +--ro enable?   boolean
+    +--ro node-protection
+       +--ro plr?           boolean
+       +--ro merge-point?   boolean
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:roots/mldp:root/mldp:bindings:
+    +--ro opaque-type-transit
+    |  +--ro fec-label* [source-address group-address rd recur-root-address recur-rd]
+    |     +--ro source-address        inet:ip-address
+    |     +--ro group-address         inet:ip-address-no-zone
+    |     +--ro rd                    route-distinguisher
+    |     +--ro recur-root-address    inet:ip-address
+    |     +--ro recur-rd              route-distinguisher
+    |     +--ro multipoint-type?      mldp:multipoint-type
+    |     +--ro peer* [direction peer advertisement-type]
+    |        +--ro direction             ldp:downstream-upstream
+    |        +--ro peer                  -> /rt:routing/control-plane-protocols/ldp:mpls-ldp/peers/peer/lsr-id
+    |        +--ro advertisement-type    ldp:advertised-received
+    |        +--ro label?                rt-types:mpls-label
+    |        +--ro mbb-role?             enumeration
+    |        +--ro mofrr-role?           mofrr-role
+    +--ro opaque-type-bidir
+       +--ro fec-label* [rp group-address rd recur-root-address recur-rd]
+          +--ro rp                    inet:ip-address
+          +--ro group-address         inet:ip-address-no-zone
+          +--ro rd                    route-distinguisher
+          +--ro recur-root-address    inet:ip-address
+          +--ro recur-rd              route-distinguisher
+          +--ro multipoint-type?      mldp:multipoint-type
+          +--ro peer* [direction peer advertisement-type]
+             +--ro direction             ldp:downstream-upstream
+             +--ro peer                  -> /rt:routing/control-plane-protocols/ldp:mpls-ldp/peers/peer/lsr-id
+             +--ro advertisement-type    ldp:advertised-received
+             +--ro label?                rt-types:mpls-label
+             +--ro mbb-role?             enumeration
+             +--ro mofrr-role?           mofrr-role
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/mldp:ipv4/mldp:roots/mldp:root/mldp:bindings/mldp:opaque-type-lspid/mldp:fec-label:
+    +--ro recursive-fec* [recur-root-address recur-rd]
+       +--ro recur-root-address    inet:ip-address
+       +--ro recur-rd              route-distinguisher
+       +--ro multipoint-type?      mldp:multipoint-type
+       +--ro peer* [direction peer advertisement-type]
+          +--ro direction             ldp:downstream-upstream
+          +--ro peer                  -> /rt:routing/control-plane-protocols/ldp:mpls-ldp/peers/peer/lsr-id
+          +--ro advertisement-type    ldp:advertised-received
+          +--ro label?                rt-types:mpls-label
+          +--ro mbb-role?             enumeration
+          +--ro mofrr-role?           mofrr-role
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families:
+    +--rw ipv6
+       +--ro roots
+       |  +--ro root* [root-address]
+       |     +--ro root-address    inet:ipv6-address
+       |     +--ro is-self?        boolean
+       |     +--ro reachability* [address interface]
+       |     |  +--ro address      inet:ipv6-address
+       |     |  +--ro interface    if:interface-ref
+       |     |  +--ro peer?        -> ../../../../../../../../ldp:peers/peer/lsr-id
+       |     +--ro bindings
+       |        +--ro opaque-type-lspid
+       |        |  +--ro fec-label* [lsp-id]
+       |        |     +--ro lsp-id             uint32
+       |        |     +--ro multipoint-type?   mldp:multipoint-type
+       |        |     +--ro peer* [direction peer advertisement-type]
+       |        |     |  +--ro direction             ldp:downstream-upstream
+       |        |     |  +--ro peer                  -> /rt:routing/control-plane-protocols/ldp:mpls-ldp/peers/peer/lsr-id
+       |        |     |  +--ro advertisement-type    ldp:advertised-received
+       |        |     |  +--ro label?                rt-types:mpls-label
+       |        |     |  +--ro mbb-role?             enumeration
+       |        |     |  +--ro mofrr-role?           mofrr-role
+       |        |     +--ro recursive-fec* [recur-root-address recur-rd]
+       |        |        +--ro recur-root-address    inet:ip-address
+       |        |        +--ro recur-rd              route-distinguisher
+       |        |        +--ro multipoint-type?      mldp:multipoint-type
+       |        |        +--ro peer* [direction peer advertisement-type]
+       |        |           +--ro direction             ldp:downstream-upstream
+       |        |           +--ro peer                  -> /rt:routing/control-plane-protocols/ldp:mpls-ldp/peers/peer/lsr-id
+       |        |           +--ro advertisement-type    ldp:advertised-received
+       |        |           +--ro label?                rt-types:mpls-label
+       |        |           +--ro mbb-role?             enumeration
+       |        |           +--ro mofrr-role?           mofrr-role
+       |        +--ro opaque-type-transit
+       |        |  +--ro fec-label* [source-address group-address rd recur-root-address recur-rd]
+       |        |     +--ro source-address        inet:ip-address
+       |        |     +--ro group-address         inet:ip-address-no-zone
+       |        |     +--ro rd                    route-distinguisher
+       |        |     +--ro recur-root-address    inet:ip-address
+       |        |     +--ro recur-rd              route-distinguisher
+       |        |     +--ro multipoint-type?      mldp:multipoint-type
+       |        |     +--ro peer* [direction peer advertisement-type]
+       |        |        +--ro direction             ldp:downstream-upstream
+       |        |        +--ro peer                  -> /rt:routing/control-plane-protocols/ldp:mpls-ldp/peers/peer/lsr-id
+       |        |        +--ro advertisement-type    ldp:advertised-received
+       |        |        +--ro label?                rt-types:mpls-label
+       |        |        +--ro mbb-role?             enumeration
+       |        |        +--ro mofrr-role?           mofrr-role
+       |        +--ro opaque-type-bidir
+       |           +--ro fec-label* [rp group-address rd recur-root-address recur-rd]
+       |              +--ro rp                    inet:ip-address
+       |              +--ro group-address         inet:ip-address-no-zone
+       |              +--ro rd                    route-distinguisher
+       |              +--ro recur-root-address    inet:ip-address
+       |              +--ro recur-rd              route-distinguisher
+       |              +--ro multipoint-type?      mldp:multipoint-type
+       |              +--ro peer* [direction peer advertisement-type]
+       |                 +--ro direction             ldp:downstream-upstream
+       |                 +--ro peer                  -> /rt:routing/control-plane-protocols/ldp:mpls-ldp/peers/peer/lsr-id
+       |                 +--ro advertisement-type    ldp:advertised-received
+       |                 +--ro label?                rt-types:mpls-label
+       |                 +--ro mbb-role?             enumeration
+       |                 +--ro mofrr-role?           mofrr-role
+       +--rw configured-leaf-lsps
+       |  +--rw opaque-type-lspid
+       |  |  +--rw fec-label* [root-address lsp-id]
+       |  |     +--rw root-address       inet:ipv6-address
+       |  |     +--rw lsp-id             uint32
+       |  |     +--rw multipoint-type?   mldp:multipoint-type
+       |  |     +--rw recursive-fec* [recur-root-address recur-rd]
+       |  |        +--rw recur-root-address    inet:ip-address
+       |  |        +--rw recur-rd              route-distinguisher
+       |  |        +--rw multipoint-type?      mldp:multipoint-type
+       |  +--rw opaque-type-transit
+       |  |  +--rw fec-label* [root-address source-address group-address rd recur-root-address recur-rd]
+       |  |     +--rw root-address          inet:ipv6-address
+       |  |     +--rw source-address        inet:ip-address
+       |  |     +--rw group-address         inet:ip-address-no-zone
+       |  |     +--rw rd                    route-distinguisher
+       |  |     +--rw recur-root-address    inet:ip-address
+       |  |     +--rw recur-rd              route-distinguisher
+       |  |     +--rw multipoint-type?      mldp:multipoint-type
+       |  +--rw opaque-type-bidir
+       |     +--rw fec-label* [root-address rp group-address rd recur-root-address recur-rd]
+       |        +--rw root-address          inet:ipv6-address
+       |        +--rw rp                    inet:ip-address
+       |        +--rw group-address         inet:ip-address-no-zone
+       |        +--rw rd                    route-distinguisher
+       |        +--rw recur-root-address    inet:ip-address
+       |        +--rw recur-rd              route-distinguisher
+       |        +--rw multipoint-type?      mldp:multipoint-type
+       +--rw multicast-only-frr {mldp-mofrr}?
+       |  +--rw prefix-list?   ldp-ext:prefix-list-ref
+       +--rw recursive-fec
+          +--rw prefix-list?   ldp-ext:prefix-list-ref
+  augment /mldp:mpls-mldp-fec-event/mldp:opaque-type/mldp:opaque-type-lspid/mldp:opaque-type-lspid:
+    +---- recursive-fec
+       +---- recur-root-address?   inet:ip-address
+       +---- recur-rd?             route-distinguisher
+       +---- multipoint-type?      mldp:multipoint-type
+  augment /mldp:mpls-mldp-fec-event/mldp:opaque-type:
+    +--:(opaque-type-transit)
+    |  +---- opaque-type-transit
+    |     +---- root-address?         inet:ip-address
+    |     +---- source-address?       inet:ip-address
+    |     +---- group-address?        inet:ip-address-no-zone
+    |     +---- rd?                   route-distinguisher
+    |     +---- recur-root-address?   inet:ip-address
+    |     +---- recur-rd?             route-distinguisher
+    |     +---- multipoint-type?      mldp:multipoint-type
+    +--:(opaque-type-bidir)
+       +---- opaque-type-bidir
+          +---- root-address?         inet:ip-address
+          +---- rp?                   inet:ip-address
+          +---- group-address?        inet:ip-address-no-zone
+          +---- rd?                   route-distinguisher
+          +---- recur-root-address?   inet:ip-address
+          +---- recur-rd?             route-distinguisher
+          +---- multipoint-type?      mldp:multipoint-type

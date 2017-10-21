@@ -6,6 +6,10 @@ module ietf-mpls-mldp-extended {
     prefix "inet";
   }
 
+  import ietf-interfaces {
+    prefix "if";
+  }
+
   import ietf-routing {
     prefix "rt";
   }
@@ -60,7 +64,7 @@ module ietf-mpls-mldp-extended {
      management of Multi-Protocol Label Switching (MPLS) Multipoint
      LDP (mLDP).";
 
-  revision 2017-09-01 {
+  revision 2017-10-19 {
     description
       "Initial revision.";
     reference
@@ -312,20 +316,19 @@ module ietf-mpls-mldp-extended {
   } // recursive-fec-attibutes
 
   /*
-   * Configuration data nodes
+   * Configuration data and operational state data nodes
    */
-  // Global capability config
+  // Global capability
   augment "/rt:routing/rt:control-plane-protocols/"
-    + "ldp:mpls-ldp/ldp:global/ldp:config/ldp:capability/"
-    + "mldp:mldp" {
+    + "ldp:mpls-ldp/ldp:global/ldp:capability/mldp:mldp" {
     description "Augmentation for MLDP global capability.";
 
     uses mldp-ext-capabilities;
   }
 
-  // Peer capability config
+  // Peer capability
   augment "/rt:routing/rt:control-plane-protocols/"
-    + "ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:config/ldp:capability" {
+    + "ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:capability" {
     description "Augmentation for MLDP peer capability.";
     container mldp {
       if-feature per-peer-capability;
@@ -340,11 +343,7 @@ module ietf-mpls-mldp-extended {
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
     + "mldp:ipv4" {
     description "Augmentation for MLDP IPv4 configuration.";
-    container config {
-      description
-        "Configuration data.";
-      uses mldp-ext-per-af-config-attibutes;
-    }
+    uses mldp-ext-per-af-config-attibutes;
   }
 
   // IPv4 configured-leaf-lsps config
@@ -465,18 +464,13 @@ module ietf-mpls-mldp-extended {
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
     + "ipv6" {
     description "Augmentation for MLDP IPv4 configuration.";
-    container config {
-      description
-        "Configuration data.";
-      uses mldp-ext-per-af-config-attibutes;
-    }
+    uses mldp-ext-per-af-config-attibutes;
   }
 
-  // Global forwarding-nexthop config
+  // Global forwarding-nexthop
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/ldp-ext:forwarding-nexthop/"
-    + "ldp-ext:interfaces/ldp-ext:interface/ldp-ext:address-family/"
-    + "ldp-ext:config" {
+    + "ldp-ext:interfaces/ldp-ext:interface/ldp-ext:address-family" {
     description
       "Augmentation for MLDP nexthop forwarding interface.";
     leaf mldp-disable {
@@ -489,39 +483,10 @@ module ietf-mpls-mldp-extended {
   /*
    * Operational state data nodes
    */
-  // Global capability state
-  augment "/rt:routing/rt:control-plane-protocols/"
-    + "ldp:mpls-ldp/ldp:global/ldp:state/ldp:capability/"
-    + "mldp:mldp" {
-    description "Augmentation for MLDP global capability.";
-
-    uses mldp-ext-capabilities;
-  }
-
-  // Peer capability state
-  augment "/rt:routing/rt:control-plane-protocols/"
-    + "ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:state/ldp:capability" {
-    description "Augmentation for MLDP peer capability.";
-    container mldp {
-      description
-        "mLDP capabilities.";
-      uses mldp:mldp-capabilities;
-    }
-  }
-
-  // IPv4 state
-  augment "/rt:routing/rt:control-plane-protocols/"
-    + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "mldp:ipv4/mldp:state" {
-    description "Augmentation for MLDP IPv4 state.";
-
-    uses mldp-ext-per-af-config-attibutes;
-  }
-
   // IPv4 state for per peer bindings
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "mldp:ipv4/mldp:state/mldp:roots/mldp:root/mldp:bindings/"
+    + "mldp:ipv4/mldp:roots/mldp:root/mldp:bindings/"
     + "mldp:opaque-type-lspid/mldp:fec-label/mldp:peer" {
     description "Augmentation for MLDP IPv4 state.";
 
@@ -536,33 +501,10 @@ module ietf-mpls-mldp-extended {
     }
   }
 
-  // IPv6 state
-  augment "/rt:routing/rt:control-plane-protocols/"
-    + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "ipv6/state" {
-    description "Augmentation for MLDP IPv6 state.";
-
-    uses mldp-ext-per-af-config-attibutes;
-  }
-
-  // Global forwarding-nexthop config
-  augment "/rt:routing/rt:control-plane-protocols/"
-    + "ldp:mpls-ldp/ldp:global/ldp-ext:forwarding-nexthop/"
-    + "ldp-ext:interfaces/ldp-ext:interface/ldp-ext:address-family/"
-    + "ldp-ext:state" {
-    description
-      "Augmentation for MLDP nexthop forwarding interface.";
-    leaf mldp-disable {
-      type boolean;
-      description
-        "Disable mLDP forwarding on the interface.";
-    }
-  }
-
   // Peer capability state
   augment "/rt:routing/rt:control-plane-protocols/"
-    + "ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:state/"
-    + "ldp:received-peer-state/ldp:capability/mldp:mldp" {
+    + "ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:received-peer-state/"
+    + "ldp:capability/mldp:mldp" {
     description
       "Augmentation for MLDP received peer state capability.";
     container hub-and-spoke {
@@ -599,7 +541,7 @@ module ietf-mpls-mldp-extended {
   // IPv4 bindings state
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "mldp:ipv4/mldp:state/mldp:roots/mldp:root/mldp:bindings" {
+    + "mldp:ipv4/mldp:roots/mldp:root/mldp:bindings" {
     description "Augmentation for MLDP IPv4 bindings.";
     container opaque-type-transit {
       description
@@ -683,7 +625,7 @@ module ietf-mpls-mldp-extended {
   // IPv6 bindings state
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "ipv6/state/roots/root/bindings" {
+    + "ipv6/roots/root/bindings" {
     description "Augmentation for MLDP IPv6 bindings.";
     container opaque-type-transit {
       config false;
@@ -770,7 +712,7 @@ module ietf-mpls-mldp-extended {
   // IPv4 bindings opaque-type-lspid state
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "mldp:ipv4/mldp:state/mldp:roots/mldp:root/mldp:bindings/"
+    + "mldp:ipv4/mldp:roots/mldp:root/mldp:bindings/"
     + "mldp:opaque-type-lspid/mldp:fec-label" {
     description
       "Augmentation for MLDP IPv4 bindings with opaque type LSP ID.";
@@ -787,8 +729,7 @@ module ietf-mpls-mldp-extended {
   // IPv6 bindings opaque-type-lspid state
   augment "/rt:routing/rt:control-plane-protocols/"
     + "ldp:mpls-ldp/ldp:global/mldp:mldp/mldp:address-families/"
-    + "ipv6/state/roots/root/bindings/opaque-type-lspid/"
-    + "fec-label" {
+    + "ipv6/roots/root/bindings/opaque-type-lspid/fec-label" {
     description
       "Augmentation for MLDP IPv6 bindings with opaque type LSP ID.";
     list recursive-fec {
@@ -812,92 +753,87 @@ module ietf-mpls-mldp-extended {
       description
         "IPv6 information.";
 
-      container state {
+      container roots {
         config false;
         description
-          "Operational state data.";
-
-        container roots {
+          "IPv6 multicast LSP roots.";
+        list root {
+          key "root-address";
           description
-            "IPv6 multicast LSP roots.";
-          list root {
-            key "root-address";
-            description
-              "List of roots for configured multicast LSPs.";
+            "List of roots for configured multicast LSPs.";
 
-            leaf root-address {
+          leaf root-address {
+            type inet:ipv6-address;
+            description
+              "Root address.";
+          }
+
+          leaf is-self {
+            type boolean;
+            description
+              "This is the root.";
+          }
+
+          list reachability {
+            key "address interface";
+            description
+              "A next hop for reachability to root,
+               as a RIB view.";
+            leaf address {
               type inet:ipv6-address;
               description
-                "Root address.";
+                "The next hop address to reach root.";
             }
-
-            leaf is-self {
-              type boolean;
+            leaf interface {
+              type if:interface-ref;
               description
-                "This is the root.";
+                "Interface connecting to next-hop.";
             }
-
-            list reachability {
-              key "address interface";
+            leaf peer {
+              type leafref {
+                path
+                  "../../../../../../../../ldp:peers/"
+                  + "ldp:peer/ldp:lsr-id";
+              }
               description
-                "A next hop for reachability to root,
-                 as a RIB view.";
-              leaf address {
-                type inet:ipv6-address;
+                "LDP peer from which this next hop can be
+                 reached.";
+            }
+          }
+
+          container bindings {
+            description
+              "mLDP FEC to label bindings.";
+            container opaque-type-lspid {
+              description
+                "The type of opaque value element is
+                 the generic LSP identifier";
+              reference
+                "RFC6388: Label Distribution Protocol
+                 Extensions for Point-to-Multipoint and
+                 Multipoint-to-Multipoint Label Switched
+                 Paths.";
+              list fec-label {
+                key
+                  "lsp-id";
                 description
-                  "The next hop address to reach root.";
-              }
-              leaf interface {
-                type ldp:mpls-interface-ref;
-                description
-                  "Interface connecting to next-hop.";
-              }
-              leaf peer {
-                type leafref {
-                  path
-                    "../../../../../../../../../ldp:peers/"
-                    + "ldp:peer/ldp:lsr-id";
+                  "List of FEC to label bindings.";
+                leaf lsp-id {
+                  type uint32;
+                  description "ID to identify the LSP.";
                 }
-                description
-                  "LDP peer from which this next hop can be
-                   reached.";
-              }
-            }
-
-            container bindings {
-              description
-                "mLDP FEC to label bindings.";
-              container opaque-type-lspid {
-                description
-                  "The type of opaque value element is
-                   the generic LSP identifier";
-                reference
-                  "RFC6388: Label Distribution Protocol
-                   Extensions for Point-to-Multipoint and
-                   Multipoint-to-Multipoint Label Switched
-                   Paths.";
-                list fec-label {
-                  key
-                    "lsp-id";
+                leaf multipoint-type {
+                  type mldp:multipoint-type;
                   description
-                    "List of FEC to label bindings.";
-                  leaf lsp-id {
-                    type uint32;
-                    description "ID to identify the LSP.";
-                  }
-                  leaf multipoint-type {
-                    type mldp:multipoint-type;
-                    description
-                      "The type of mutipoint, p2mp or mp2mp.";
-                  }
+                    "The type of mutipoint, p2mp or mp2mp.";
+                }
 
-                  uses mldp-ext-binding-label-state-attributes;
-                } // fec-label
-              } // opaque-type-lspid
-            } // bindings
-          } // list root
-        } // roots
-      } // state
+                uses mldp-ext-binding-label-state-attributes;
+              } // fec-label
+            } // opaque-type-lspid
+          } // bindings
+        } // list root
+      } // roots
 
       container configured-leaf-lsps {
         description
