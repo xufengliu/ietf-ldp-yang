@@ -2,8 +2,8 @@ module: ietf-mpls-ldp-extended
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global:
     +--rw forwarding-nexthop {forwarding-nexthop-config}?
        +--rw interfaces
-          +--rw interface* [interface]
-             +--rw interface         ldp:mpls-interface-ref
+          +--rw interface* [name]
+             +--rw name              if:interface-ref
              +--rw address-family* [afi]
                 +--rw afi            ldp:ldp-address-family
                 +--rw ldp-disable?   boolean
@@ -77,20 +77,21 @@ module: ietf-mpls-ldp-extended
           +--rw local-address?      inet:ipv6-address
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:address-families:
     +--rw ipv6!
-       +--rw hello-adjacencies* [local-address adjacent-address]
-       |  +--rw local-address       inet:ipv6-address
-       |  +--rw adjacent-address    inet:ipv6-address
-       |  +--rw flag*               identityref
-       |  +--rw hello-holdtime
-       |  |  +--rw adjacent?     uint16
-       |  |  +--rw negotiated?   uint16
-       |  |  +--rw remaining?    uint16
-       |  +--rw next-hello?         uint16
-       |  +--rw statistics
-       |  |  +--rw discontinuity-time    yang:date-and-time
-       |  |  +--rw hello-received?       yang:counter64
-       |  |  +--rw hello-dropped?        yang:counter64
-       |  +--rw interface?          ldp:mpls-interface-ref
+       +--ro hello-adjacencies
+       |  +--ro hello-adjacency* [local-address adjacent-address]
+       |     +--ro local-address       inet:ipv6-address
+       |     +--ro adjacent-address    inet:ipv6-address
+       |     +--ro flag*               identityref
+       |     +--ro hello-holdtime
+       |     |  +--ro adjacent?     uint16
+       |     |  +--ro negotiated?   uint16
+       |     |  +--ro remaining?    uint16
+       |     +--ro next-hello?         uint16
+       |     +--ro statistics
+       |     |  +--ro discontinuity-time    yang:date-and-time
+       |     |  +--ro hello-received?       yang:counter64
+       |     |  +--ro hello-dropped?        yang:counter64
+       |     +--ro interface?          if:interface-ref
        +--rw label-policy
           +--rw advertise
           |  +--rw prefix-list?   prefix-list-ref

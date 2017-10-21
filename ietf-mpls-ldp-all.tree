@@ -27,8 +27,8 @@ module: ietf-mpls-ldp
        |  |  |  |  |  +--ro peer?                 -> ../../../../../../peers/peer/lsr-id
        |  |  |  |  +--ro fec-label* [fec]
        |  |  |  |     +--ro fec     inet:ipv4-prefix
-       |  |  |  |     +--ro peer* [peer advertisement-type]
-       |  |  |  |        +--ro peer                  -> ../../../../../../../peers/peer/lsr-id
+       |  |  |  |     +--ro peer* [lsr-id advertisement-type]
+       |  |  |  |        +--ro lsr-id                -> ../../../../../../../peers/peer/lsr-id
        |  |  |  |        +--ro advertisement-type    advertised-received
        |  |  |  |        +--ro label?                rt-types:mpls-label
        |  |  |  |        +--ro used-in-forwarding?   boolean
@@ -67,16 +67,16 @@ module: ietf-mpls-ldp
        |  |     |  |  +--ro ldp-ext:peer?                 -> ../../../../../../ldp:peers/peer/lsr-id
        |  |     |  +--ro ldp-ext:fec-label* [fec]
        |  |     |     +--ro ldp-ext:fec     inet:ipv6-prefix
-       |  |     |     +--ro ldp-ext:peer* [peer advertisement-type]
-       |  |     |        +--ro ldp-ext:peer                  -> ../../../../../../../ldp:peers/peer/lsr-id
+       |  |     |     +--ro ldp-ext:peer* [lsr-id advertisement-type]
+       |  |     |        +--ro ldp-ext:lsr-id                -> ../../../../../../../ldp:peers/peer/lsr-id
        |  |     |        +--ro ldp-ext:advertisement-type    advertised-received
        |  |     |        +--ro ldp-ext:label?                rt-types:mpls-label
        |  |     |        +--ro ldp-ext:used-in-forwarding?   boolean
        |  |     +--rw ldp-ext:transport-address                 inet:ipv6-address
        |  +--rw ldp-ext:forwarding-nexthop {forwarding-nexthop-config}?
        |  |  +--rw ldp-ext:interfaces
-       |  |     +--rw ldp-ext:interface* [interface]
-       |  |        +--rw ldp-ext:interface         ldp:mpls-interface-ref
+       |  |     +--rw ldp-ext:interface* [name]
+       |  |        +--rw ldp-ext:name              if:interface-ref
        |  |        +--rw ldp-ext:address-family* [afi]
        |  |           +--rw ldp-ext:afi            ldp:ldp-address-family
        |  |           +--rw ldp-ext:ldp-disable?   boolean
@@ -85,8 +85,8 @@ module: ietf-mpls-ldp
        |  +--rw interfaces
        |  |  +--rw hello-holdtime?   uint16
        |  |  +--rw hello-interval?   uint16
-       |  |  +--rw interface* [interface]
-       |  |     +--rw interface                            mpls-interface-ref
+       |  |  +--rw interface* [name]
+       |  |     +--rw name                                 if:interface-ref
        |  |     +--ro next-hello?                          uint16
        |  |     +--rw address-families
        |  |     |  +--rw ipv4!
@@ -134,20 +134,21 @@ module: ietf-mpls-ldp
        |     |  +--rw ldp-ext:neighbor-list?   neighbor-list-ref {policy-targeted-discovery-config}?
        |     +--rw address-families
        |        +--rw ipv4!
-       |        |  +--ro hello-adjacencies* [local-address adjacent-address]
-       |        |  |  +--ro local-address       inet:ipv4-address
-       |        |  |  +--ro adjacent-address    inet:ipv4-address
-       |        |  |  +--ro flag*               identityref
-       |        |  |  +--ro hello-holdtime
-       |        |  |  |  +--ro adjacent?     uint16
-       |        |  |  |  +--ro negotiated?   uint16
-       |        |  |  |  +--ro remaining?    uint16
-       |        |  |  +--ro next-hello?         uint16
-       |        |  |  +--ro statistics
-       |        |  |  |  +--ro discontinuity-time    yang:date-and-time
-       |        |  |  |  +--ro hello-received?       yang:counter64
-       |        |  |  |  +--ro hello-dropped?        yang:counter64
-       |        |  |  +--ro peer?               -> ../../../../../../peers/peer/lsr-id
+       |        |  +--ro hello-adjacencies
+       |        |  |  +--ro hello-adjacency* [local-address adjacent-address]
+       |        |  |     +--ro local-address       inet:ipv4-address
+       |        |  |     +--ro adjacent-address    inet:ipv4-address
+       |        |  |     +--ro flag*               identityref
+       |        |  |     +--ro hello-holdtime
+       |        |  |     |  +--ro adjacent?     uint16
+       |        |  |     |  +--ro negotiated?   uint16
+       |        |  |     |  +--ro remaining?    uint16
+       |        |  |     +--ro next-hello?         uint16
+       |        |  |     +--ro statistics
+       |        |  |     |  +--ro discontinuity-time    yang:date-and-time
+       |        |  |     |  +--ro hello-received?       yang:counter64
+       |        |  |     |  +--ro hello-dropped?        yang:counter64
+       |        |  |     +--ro peer?               -> ../../../../../../../peers/peer/lsr-id
        |        |  +--rw target* [adjacent-address]
        |        |     +--rw adjacent-address    inet:ipv4-address
        |        |     +--rw enable?             boolean
@@ -192,40 +193,42 @@ module: ietf-mpls-ldp
           |  +--rw capability
           |  +--rw address-families
           |  |  +--rw ipv4!
-          |  |  |  +--ro hello-adjacencies* [local-address adjacent-address]
-          |  |  |  |  +--ro local-address       inet:ipv4-address
-          |  |  |  |  +--ro adjacent-address    inet:ipv4-address
-          |  |  |  |  +--ro flag*               identityref
-          |  |  |  |  +--ro hello-holdtime
-          |  |  |  |  |  +--ro adjacent?     uint16
-          |  |  |  |  |  +--ro negotiated?   uint16
-          |  |  |  |  |  +--ro remaining?    uint16
-          |  |  |  |  +--ro next-hello?         uint16
-          |  |  |  |  +--ro statistics
-          |  |  |  |  |  +--ro discontinuity-time    yang:date-and-time
-          |  |  |  |  |  +--ro hello-received?       yang:counter64
-          |  |  |  |  |  +--ro hello-dropped?        yang:counter64
-          |  |  |  |  +--ro interface?          mpls-interface-ref
+          |  |  |  +--ro hello-adjacencies
+          |  |  |  |  +--ro hello-adjacency* [local-address adjacent-address]
+          |  |  |  |     +--ro local-address       inet:ipv4-address
+          |  |  |  |     +--ro adjacent-address    inet:ipv4-address
+          |  |  |  |     +--ro flag*               identityref
+          |  |  |  |     +--ro hello-holdtime
+          |  |  |  |     |  +--ro adjacent?     uint16
+          |  |  |  |     |  +--ro negotiated?   uint16
+          |  |  |  |     |  +--ro remaining?    uint16
+          |  |  |  |     +--ro next-hello?         uint16
+          |  |  |  |     +--ro statistics
+          |  |  |  |     |  +--ro discontinuity-time    yang:date-and-time
+          |  |  |  |     |  +--ro hello-received?       yang:counter64
+          |  |  |  |     |  +--ro hello-dropped?        yang:counter64
+          |  |  |  |     +--ro interface?          if:interface-ref
           |  |  |  +--rw ldp-ext:label-policy
           |  |  |     +--rw ldp-ext:advertise
           |  |  |     |  +--rw ldp-ext:prefix-list?   prefix-list-ref
           |  |  |     +--rw ldp-ext:accept
           |  |  |        +--rw ldp-ext:prefix-list?   prefix-list-ref
           |  |  +--rw ldp-ext:ipv6!
-          |  |     +--rw ldp-ext:hello-adjacencies* [local-address adjacent-address]
-          |  |     |  +--rw ldp-ext:local-address       inet:ipv6-address
-          |  |     |  +--rw ldp-ext:adjacent-address    inet:ipv6-address
-          |  |     |  +--rw ldp-ext:flag*               identityref
-          |  |     |  +--rw ldp-ext:hello-holdtime
-          |  |     |  |  +--rw ldp-ext:adjacent?     uint16
-          |  |     |  |  +--rw ldp-ext:negotiated?   uint16
-          |  |     |  |  +--rw ldp-ext:remaining?    uint16
-          |  |     |  +--rw ldp-ext:next-hello?         uint16
-          |  |     |  +--rw ldp-ext:statistics
-          |  |     |  |  +--rw ldp-ext:discontinuity-time    yang:date-and-time
-          |  |     |  |  +--rw ldp-ext:hello-received?       yang:counter64
-          |  |     |  |  +--rw ldp-ext:hello-dropped?        yang:counter64
-          |  |     |  +--rw ldp-ext:interface?          ldp:mpls-interface-ref
+          |  |     +--ro ldp-ext:hello-adjacencies
+          |  |     |  +--ro ldp-ext:hello-adjacency* [local-address adjacent-address]
+          |  |     |     +--ro ldp-ext:local-address       inet:ipv6-address
+          |  |     |     +--ro ldp-ext:adjacent-address    inet:ipv6-address
+          |  |     |     +--ro ldp-ext:flag*               identityref
+          |  |     |     +--ro ldp-ext:hello-holdtime
+          |  |     |     |  +--ro ldp-ext:adjacent?     uint16
+          |  |     |     |  +--ro ldp-ext:negotiated?   uint16
+          |  |     |     |  +--ro ldp-ext:remaining?    uint16
+          |  |     |     +--ro ldp-ext:next-hello?         uint16
+          |  |     |     +--ro ldp-ext:statistics
+          |  |     |     |  +--ro ldp-ext:discontinuity-time    yang:date-and-time
+          |  |     |     |  +--ro ldp-ext:hello-received?       yang:counter64
+          |  |     |     |  +--ro ldp-ext:hello-dropped?        yang:counter64
+          |  |     |     +--ro ldp-ext:interface?          if:interface-ref
           |  |     +--rw ldp-ext:label-policy
           |  |        +--rw ldp-ext:advertise
           |  |        |  +--rw ldp-ext:prefix-list?   prefix-list-ref
@@ -315,7 +318,7 @@ module: ietf-mpls-ldp
     |           |     +---w target-address?   inet:ip-address
     |           +--:(link)
     |              +---w link!
-    |                 +---w next-hop-interface?   mpls-interface-ref
+    |                 +---w next-hop-interface?   -> /rt:routing/control-plane-protocols/mpls-ldp/discovery/interfaces/interface/name
     |                 +---w next-hop-address?     inet:ip-address
     +---x mpls-ldp-clear-peer-statistics
        +---w input
@@ -333,7 +336,7 @@ module: ietf-mpls-ldp
     |     |     +--ro target-address?   inet:ip-address
     |     +--:(link)
     |        +--ro link
-    |           +--ro next-hop-interface?   mpls-interface-ref
+    |           +--ro next-hop-interface?   if:interface-ref
     |           +--ro next-hop-address?     inet:ip-address
     +---n mpls-ldp-fec-event
        +--ro event-type?   oper-status-event-type

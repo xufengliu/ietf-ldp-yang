@@ -18,6 +18,10 @@ module ietf-mpls-ldp-extended {
     prefix "ldp";
   }
 
+  import ietf-interfaces {
+    prefix "if";
+  }
+
   organization
     "IETF MPLS Working Group";
   contact
@@ -57,7 +61,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-10-12 {
+  revision 2017-10-19 {
     description
       "Initial revision.";
     reference
@@ -146,19 +150,32 @@ module ietf-mpls-ldp-extended {
   typedef neighbor-list-ref {
     type string;
     description
-      "A type for a reference to a neighbor list.";
+      "A type for a reference to a neighbor address list.
+       The string value is the name identifier for uniquely
+       identifying the referenced address list, which contains a list
+       of addresses that a routing policy can applied. The definition
+       of such an address list is outside the scope of this document.";
   }
 
   typedef prefix-list-ref {
     type string;
     description
-      "A type for a reference to a prefix list.";
+      "A type for a reference to a prefix list.
+       The string value is the name identifier for uniquely
+       identifying the referenced prefix set, which contains a list
+       of prefixes that a routing policy can applied. The definition
+       of such a prefix set is outside the scope of this document.";
+
   }
 
   typedef peer-list-ref {
     type string;
     description
-      "A type for a reference to a peer list.";
+      "A type for a reference to a peer address list.
+       The string value is the name identifier for uniquely
+       identifying the referenced address list, which contains a list
+       of addresses that a routing policy can applied. The definition
+       of such an address list is outside the scope of this document.";
   }
 
   /*
@@ -266,14 +283,10 @@ module ietf-mpls-ldp-extended {
           "A list of interfaces on which forwarding is disabled.";
 
         list interface {
-          key "interface";
+          key "name";
           description
             "List of LDP interfaces.";
-          leaf interface {
-            type ldp:mpls-interface-ref;
-            description
-              "Interface.";
-          }
+          uses ldp:ldp-interface-ref;
           list address-family {
             key "afi";
             description
@@ -533,7 +546,7 @@ module ietf-mpls-ldp-extended {
             description
             "Independent label distribution control.";
           }
-          enum Ordered {
+          enum ordered {
             description
             "Ordered Label Distribution Control.";
           }
@@ -711,27 +724,33 @@ module ietf-mpls-ldp-extended {
       description
         "IPv6 address family.";
 
-      list hello-adjacencies {
-        key "local-address adjacent-address";
-        description "List of hello adjacencies.";
+      container hello-adjacencies {
+        config false;
+        description
+          "Containing a list of hello adjacencies.";
+        
+        list hello-adjacency {
+          key "local-address adjacent-address";
+          description "List of hello adjacencies.";
 
-        leaf local-address {
-          type inet:ipv6-address;
-          description
-            "Local address of the hello adjacency.";
-        }
-        leaf adjacent-address {
-          type inet:ipv6-address;
-          description
-            "Neighbor address of the hello adjacency.";
-        }
+          leaf local-address {
+            type inet:ipv6-address;
+            description
+              "Local address of the hello adjacency.";
+          }
+          leaf adjacent-address {
+            type inet:ipv6-address;
+            description
+              "Neighbor address of the hello adjacency.";
+          }
 
-        uses ldp:adjacency-state-attributes;
+          uses ldp:adjacency-state-attributes;
 
-        leaf interface {
-          type ldp:mpls-interface-ref;
-          description "Interface for this adjacency.";
-        }
+          leaf interface {
+            type if:interface-ref;
+            description "Interface for this adjacency.";
+          }
+        } // hello-adjacency
       } // hello-adjacencies
     } // ipv6
   }
