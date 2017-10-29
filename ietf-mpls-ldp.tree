@@ -20,8 +20,8 @@ module: ietf-mpls-ldp
        |           |  +--ro peer?                 -> ../../../../../../peers/peer/lsr-id
        |           +--ro fec-label* [fec]
        |              +--ro fec     inet:ipv4-prefix
-       |              +--ro peer* [peer advertisement-type]
-       |                 +--ro peer                  -> ../../../../../../../peers/peer/lsr-id
+       |              +--ro peer* [lsr-id advertisement-type]
+       |                 +--ro lsr-id                -> ../../../../../../../peers/peer/lsr-id
        |                 +--ro advertisement-type    advertised-received
        |                 +--ro label?                rt-types:mpls-label
        |                 +--ro used-in-forwarding?   boolean

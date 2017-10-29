@@ -59,20 +59,20 @@ module: ietf-mpls-ldp
        |  |     |     |  +--rw ldp-ext:prefix-list?   prefix-list-ref
        |  |     |     +--rw ldp-ext:ordered-mode {policy-ordered-label-config}?
        |  |     |        +--rw ldp-ext:egress-prefix-list?   prefix-list-ref
+       |  |     +--rw ldp-ext:transport-address                 inet:ipv6-address
        |  |     +--ro ldp-ext:label-distribution-controlmode?   enumeration
        |  |     +--ro ldp-ext:bindings
-       |  |     |  +--ro ldp-ext:address* [address]
-       |  |     |  |  +--ro ldp-ext:address               inet:ipv6-address
-       |  |     |  |  +--ro ldp-ext:advertisement-type?   advertised-received
-       |  |     |  |  +--ro ldp-ext:peer?                 -> ../../../../../../ldp:peers/peer/lsr-id
-       |  |     |  +--ro ldp-ext:fec-label* [fec]
-       |  |     |     +--ro ldp-ext:fec     inet:ipv6-prefix
-       |  |     |     +--ro ldp-ext:peer* [lsr-id advertisement-type]
-       |  |     |        +--ro ldp-ext:lsr-id                -> ../../../../../../../ldp:peers/peer/lsr-id
-       |  |     |        +--ro ldp-ext:advertisement-type    advertised-received
-       |  |     |        +--ro ldp-ext:label?                rt-types:mpls-label
-       |  |     |        +--ro ldp-ext:used-in-forwarding?   boolean
-       |  |     +--rw ldp-ext:transport-address                 inet:ipv6-address
+       |  |        +--ro ldp-ext:address* [address]
+       |  |        |  +--ro ldp-ext:address               inet:ipv6-address
+       |  |        |  +--ro ldp-ext:advertisement-type?   advertised-received
+       |  |        |  +--ro ldp-ext:peer?                 -> ../../../../../../ldp:peers/peer/lsr-id
+       |  |        +--ro ldp-ext:fec-label* [fec]
+       |  |           +--ro ldp-ext:fec     inet:ipv6-prefix
+       |  |           +--ro ldp-ext:peer* [lsr-id advertisement-type]
+       |  |              +--ro ldp-ext:lsr-id                -> ../../../../../../../ldp:peers/peer/lsr-id
+       |  |              +--ro ldp-ext:advertisement-type    advertised-received
+       |  |              +--ro ldp-ext:label?                rt-types:mpls-label
+       |  |              +--ro ldp-ext:used-in-forwarding?   boolean
        |  +--rw ldp-ext:forwarding-nexthop {forwarding-nexthop-config}?
        |  |  +--rw ldp-ext:interfaces
        |  |     +--rw ldp-ext:interface* [name]

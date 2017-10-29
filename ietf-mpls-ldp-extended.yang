@@ -61,7 +61,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-10-19 {
+  revision 2017-10-29 {
     description
       "Initial revision.";
     reference
@@ -196,17 +196,6 @@ module ietf-mpls-ldp-extended {
         "The transport address advertised in LDP Hello messages.";
     }
   } // address-family-ipv4-augment
-
-  grouping address-family-ipv6-augment {
-    description "Augmentation to address family IPv6.";
-
-    leaf transport-address {
-      type inet:ipv6-address;
-      mandatory true;
-      description
-        "The transport address advertised in LDP Hello messages.";
-    }
-  } // address-family-ipv6-augment
 
   grouping authentication-keychain-augment {
     description "Augmentation to authentication to add keychain.";
@@ -540,6 +529,13 @@ module ietf-mpls-ldp-extended {
 
       uses policy-container;
 
+      leaf transport-address {
+        type inet:ipv6-address;
+        mandatory true;
+        description
+          "The transport address advertised in LDP Hello messages.";
+      }
+
       leaf label-distribution-controlmode {
         type enumeration {
           enum independent {
@@ -728,7 +724,7 @@ module ietf-mpls-ldp-extended {
         config false;
         description
           "Containing a list of hello adjacencies.";
-        
+
         list hello-adjacency {
           key "local-address adjacent-address";
           description "List of hello adjacencies.";
@@ -780,12 +776,6 @@ module ietf-mpls-ldp-extended {
     + "ldp:global/ldp:address-families/ldp:ipv4" {
     description "Address family IPv4 augmentation.";
     uses address-family-ipv4-augment;
-  }
-
-  augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
-    + "ldp:global/ldp:address-families/ldp-ext:ipv6" {
-    description "Address family IPv4 augmentation.";
-    uses address-family-ipv6-augment;
   }
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"

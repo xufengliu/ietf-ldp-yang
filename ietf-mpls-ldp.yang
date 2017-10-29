@@ -65,7 +65,7 @@ module ietf-mpls-ldp {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-10-19 {
+  revision 2017-10-29 {
     description
       "Initial revision.";
     reference
@@ -246,8 +246,8 @@ module ietf-mpls-ldp {
       type uint16 {
         range 15..3600;
       }
-      default 15;
       units seconds;
+      default 15;
       description
         "The time interval for which a LDP link Hello adjacency
          is maintained in the absence of link Hello messages from
@@ -257,8 +257,8 @@ module ietf-mpls-ldp {
       type uint16 {
         range 5..1200;
       }
-      default 5;
       units seconds;
+      default 5;
       description
         "The interval between consecutive LDP link Hello messages
          used in basic LDP discovery";
@@ -344,8 +344,8 @@ module ietf-mpls-ldp {
       type uint16 {
         range 15..3600;
       }
-      default 45;
       units seconds;
+      default 45;
       description
         "The time interval for which LDP targeted Hello adjacency
 
@@ -356,8 +356,8 @@ module ietf-mpls-ldp {
       type uint16 {
         range 5..3600;
       }
-      default 15;
       units seconds;
+      default 15;
       description
         "The interval between consecutive LDP targeted Hello
          messages used in extended LDP discovery.";
@@ -460,7 +460,7 @@ module ietf-mpls-ldp {
 
     leaf lsr-id {
       type yang:dotted-quad;
-      description 
+      description
         "Specify the value to act as the LDP LSR ID.
          If this attribute is not specified, LDP uses the router
          ID as determined by the system.";
@@ -508,7 +508,7 @@ module ietf-mpls-ldp {
 
   grouping ldp-fec-event {
     description
-      "The event attributes for a change of FEC 
+      "The event attributes for a change of FEC
       (Forwarding Equivalence Class) status.";
     leaf prefix {
       type inet:ip-prefix;
@@ -1040,7 +1040,7 @@ module ietf-mpls-ldp {
                 list hello-adjacency {
                   key "local-address adjacent-address";
                   description "List of hello adjacencies.";
-                  
+
                   leaf local-address {
                     type inet:ipv4-address;
                     description
@@ -1051,7 +1051,7 @@ module ietf-mpls-ldp {
                     description
                       "Neighbor address of the hello adjacency.";
                   }
-                  
+
                   uses adjacency-state-attributes;
 
                   leaf peer {
@@ -1130,11 +1130,11 @@ module ietf-mpls-ldp {
                 config false;
                 description
                   "Containing a list of hello adjacencies.";
-        
+
                 list hello-adjacency {
                   key "local-address adjacent-address";
                   description "List of hello adjacencies.";
-                  
+
                   leaf local-address {
                     type inet:ipv4-address;
                     description
@@ -1145,9 +1145,9 @@ module ietf-mpls-ldp {
                     description
                       "Neighbor address of the hello adjacency.";
                   }
-                  
+
                   uses adjacency-state-attributes;
-                  
+
                   leaf interface {
                     type if:interface-ref;
                     description "Interface for this adjacency.";
