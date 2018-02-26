@@ -489,10 +489,14 @@ module ietf-mpls-ldp {
       description "Time to send the next KeepAlive message.";
     }
 
-    leaf peer-ldp-id {
-      type yang:dotted-quad;
+    leaf peer-ldp-id-label-space {
+      type uint16;
       config false;
-      description "Peer LDP ID.";
+      description 
+        "The label space portion of the peer LDP ID, to a specific
+         label space within the peer LSR.";
+      reference
+        "RFC5036. Sec 2.2.2.";
     }
 
     container received-peer-state {
@@ -785,7 +789,7 @@ module ietf-mpls-ldp {
         } // graceful-restart
         
         leaf lsr-id {
-          type yang:dotted-quad;
+          type rt-types:router-id;
           description
             "Specify the value to act as the LDP LSR ID.
              If this attribute is not specified, LDP uses the router
@@ -1068,7 +1072,7 @@ module ietf-mpls-ldp {
             "List of peers.";
 
           leaf lsr-id {
-            type yang:dotted-quad;
+            type rt-types:router-id;
             description 
               "The LSR ID of the peer. This is the first four octets
                of the LDP ID";
@@ -1134,10 +1138,7 @@ module ietf-mpls-ldp {
       "Clears the session to the peer.";
     input {
       leaf lsr-id {
-        type union {
-          type yang:dotted-quad;
-          type uint32;
-        }
+        type rt-types:router-id;
         description
           "LSR ID of peer to be cleared. If this is not provided
            then all peers are cleared";
@@ -1206,10 +1207,7 @@ module ietf-mpls-ldp {
        counters).";
     input {
       leaf lsr-id {
-        type union {
-          type yang:dotted-quad;
-          type uint32;
-        }
+        type rt-types:router-id;
         description
           "LSR ID of peer whose statistic are to be cleared.
            If this is not provided then all peers statistics are

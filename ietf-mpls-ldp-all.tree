@@ -15,7 +15,7 @@ module: ietf-mpls-ldp
        |  |  +--rw recovery-time?           uint16
        |  |  +--rw forwarding-holdtime?     uint16
        |  |  +--rw ldp-ext:helper-enable?   boolean {graceful-restart-helper-mode}?
-       |  +--rw lsr-id?                              yang:dotted-quad
+       |  +--rw lsr-id?                              rt-types:router-id
        |  +--rw address-families
        |  |  +--rw ipv4!
        |  |  |  +--rw enable?                           boolean
@@ -183,7 +183,7 @@ module: ietf-mpls-ldp
           +--rw session-ka-holdtime?                    uint16
           +--rw session-ka-interval?                    uint16
           +--rw peer* [lsr-id]
-          |  +--rw lsr-id                         yang:dotted-quad
+          |  +--rw lsr-id                         rt-types:router-id
           |  +--rw authentication
           |  |  +--rw (auth-type-selection)?
           |  |     +--:(auth-key)
@@ -239,7 +239,7 @@ module: ietf-mpls-ldp
           |  |  +--ro peer?         label-adv-mode
           |  |  +--ro negotiated?   label-adv-mode
           |  +--ro next-keep-alive?               uint16
-          |  +--ro peer-ldp-id?                   yang:dotted-quad
+          |  +--ro peer-ldp-id-label-space?       uint16
           |  +--ro received-peer-state
           |  |  +--ro graceful-restart
           |  |  |  +--ro enable?           boolean
@@ -308,7 +308,7 @@ module: ietf-mpls-ldp
   rpcs:
     +---x mpls-ldp-clear-peer
     |  +---w input
-    |     +---w lsr-id?   union
+    |     +---w lsr-id?   rt-types:router-id
     +---x mpls-ldp-clear-hello-adjacency
     |  +---w input
     |     +---w hello-adjacency
@@ -322,7 +322,7 @@ module: ietf-mpls-ldp
     |                 +---w next-hop-address?     inet:ip-address
     +---x mpls-ldp-clear-peer-statistics
        +---w input
-          +---w lsr-id?   union
+          +---w lsr-id?   rt-types:router-id
 
   notifications:
     +---n mpls-ldp-peer-event
