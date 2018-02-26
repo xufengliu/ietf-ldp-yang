@@ -61,7 +61,7 @@ module ietf-mpls-ldp-extended {
      Distribution Protocol (LDP). It is also the base model to
      be augmented for Multipoint LDP (mLDP).";
 
-  revision 2017-10-29 {
+  revision 2018-02-19 {
     description
       "Initial revision.";
     reference
@@ -193,7 +193,11 @@ module ietf-mpls-ldp-extended {
     leaf transport-address {
       type inet:ipv4-address;
       description
-        "The transport address advertised in LDP Hello messages.";
+        "The transport address advertised in LDP Hello messages.
+         If this value is not specified, the LDP LSR ID is used as
+         the transport address.";
+      reference
+        "RFC5036. Sec. 3.5.2.";
     }
   } // address-family-ipv4-augment
 
@@ -203,7 +207,8 @@ module ietf-mpls-ldp-extended {
     leaf key-chain {
       type key-chain:key-chain-ref;
       description
-        "key-chain name.";
+        "key-chain name.
+         If not specified, no key chain is used.";
     }
   } // authentication-keychain-augment
 
@@ -216,6 +221,7 @@ module ietf-mpls-ldp-extended {
         "Configure end-of-lib capability.";
       leaf enable {
         type boolean;
+        default false;
         description
           "Enable end-of-lib capability.";
       }
@@ -226,6 +232,7 @@ module ietf-mpls-ldp-extended {
         "Configure typed-wildcard-fec capability.";
       leaf enable {
         type boolean;
+        default false;
         description
           "Enable typed-wildcard-fec capability.";
       }
@@ -236,6 +243,7 @@ module ietf-mpls-ldp-extended {
         "Configure upstream label assignment capability.";
       leaf enable {
         type boolean;
+        default false;
         description
           "Enable upstream label assignment.";
       }
@@ -247,14 +255,15 @@ module ietf-mpls-ldp-extended {
 
     leaf igp-synchronization-delay {
       type uint16 {
-        range 3..60;
+        range 3..300;
       }
       units seconds;
       description
         "Sets the interval that the LDP waits before notifying the
          Interior Gateway Protocol (IGP) that label exchange is
          completed so that IGP can start advertising the normal
-         metric for the link.";
+         metric for the link.
+         If the value is not specified, there is no delay.";
     }
   } // global-augment
 
@@ -274,7 +283,7 @@ module ietf-mpls-ldp-extended {
         list interface {
           key "name";
           description
-            "List of LDP interfaces.";
+            "List of LDP interfaces used for LDP Basic Discovery.";
           uses ldp:ldp-interface-ref;
           list address-family {
             key "afi";
@@ -287,8 +296,9 @@ module ietf-mpls-ldp-extended {
             }
             leaf ldp-disable {
               type boolean;
+              default false;
               description
-                "Disable LDP forwarding on the interface.";
+                "'true' to disable LDP forwarding on the interface.";
             }
           } // address-family
         } // list interface
@@ -302,6 +312,7 @@ module ietf-mpls-ldp-extended {
     leaf helper-enable {
       if-feature graceful-restart-helper-mode;
       type boolean;
+      default false;
       description
         "Enable or disable graceful restart helper mode.";
     }
@@ -320,6 +331,7 @@ module ietf-mpls-ldp-extended {
         }
         type inet:ipv4-address;
       }
+      default "use-interface-address";
       description
         "IP address to be advertised as the LDP transport address.";
     }
@@ -338,6 +350,7 @@ module ietf-mpls-ldp-extended {
         }
         type inet:ipv6-address;
       }
+      default "use-interface-address";
       description
         "IP address to be advertised as the LDP transport address.";
     }
@@ -352,15 +365,15 @@ module ietf-mpls-ldp-extended {
     leaf igp-synchronization-delay {
       if-feature per-interface-timer-config;
       type uint16 {
-        range 3..60;
+        range 3..300;
       }
       units seconds;
       description
-        "Sets the interval that the LDP waits before
-         notifying the Interior Gateway Protocol (IGP)
-         that label exchange is completed so that IGP
-         can start advertising the normal metric for
-         the link.";
+        "Sets the interval that the LDP waits before notifying the
+         Interior Gateway Protocol (IGP) that label exchange is
+         completed so that IGP can start advertising the normal
+         metric for the link.
+         If the value is not specified, there is no delay.";
     }
   } // interface-augment
 
@@ -376,8 +389,10 @@ module ietf-mpls-ldp-extended {
         leaf prefix-list {
           type prefix-list-ref;
             description
-              "Applies the prefix list to outgoing label
-               advertisements.";
+              "Applies the prefix list to filter outgoing label
+               advertisements.
+               If the value is not specified, no prefix filter
+               is applied.";
         }
       }
       container accept {
@@ -386,8 +401,10 @@ module ietf-mpls-ldp-extended {
         leaf prefix-list {
           type prefix-list-ref;
           description
-            "Applies the prefix list to incoming label
-             advertisements.";
+            "Applies the prefix list to filer incoming label
+             advertisements.
+             If the value is not specified, no prefix filter
+             is applied.";
         }
       } // accept
     } // label-policy
@@ -421,13 +438,17 @@ module ietf-mpls-ldp-extended {
         "Session downstream-on-demand attributes.";
       leaf enable {
         type boolean;
+        default false;
         description
           "'true' if session downstream-on-demand is enabled.";
       }
       leaf peer-list {
         type peer-list-ref;
         description
-          "The name of a peer ACL.";
+          "The name of a peer ACL, to be applied to the
+           downstream-on-demand sessions.
+           If this value is not specified, no filter is applied to
+           any downstream-on-demand sessions.";
       }
     }
   } // peers-augment
@@ -449,6 +470,7 @@ module ietf-mpls-ldp-extended {
              penultimate hop router.";
           leaf enable {
             type boolean;
+            default false;
             description
               "'true' to enable explicit null.";
           }
@@ -456,8 +478,10 @@ module ietf-mpls-ldp-extended {
         leaf prefix-list {
           type prefix-list-ref;
           description
-            "Applies the prefix list to outgoing label
-             advertisements.";
+            "Applies the prefix list to filter outgoing label
+             advertisements.
+             If the value is not specified, no prefix filter
+             is applied.";
         }
       } // advertise
       container accept {
@@ -466,8 +490,10 @@ module ietf-mpls-ldp-extended {
         leaf prefix-list {
           type prefix-list-ref;
           description
-            "Applies the prefix list to incoming label
-             advertisements.";
+            "Applies the prefix list to filter incoming label
+             advertisements.
+             If the value is not specified, no prefix filter
+             is applied.";
         }
       } // accept
       container assign {
@@ -480,7 +506,11 @@ module ietf-mpls-ldp-extended {
           leaf prefix-list {
             type prefix-list-ref;
             description
-              "Assign labels according to certain prefixes.";
+              "Assign labels according to certain prefixes.
+               If the value is not specified, no prefix filter
+               is applied (labels are assigned to all learned
+               routes).";
+
           }
         } // independent-mode
         container ordered-mode {
@@ -518,7 +548,7 @@ module ietf-mpls-ldp-extended {
         "Present if IPv6 is enabled, unless the 'enable'
          leaf is set to 'false'";
       description
-        "IPv6 address family.";
+        "Containing data related to the IPv6 address family.";
 
       leaf enable {
         type boolean;
@@ -544,7 +574,7 @@ module ietf-mpls-ldp-extended {
           }
           enum ordered {
             description
-            "Ordered Label Distribution Control.";
+            "Ordered label distribution control.";
           }
         }
         config false;
@@ -562,11 +592,12 @@ module ietf-mpls-ldp-extended {
         list address {
           key "address";
           description
-            "List of address bindings.";
+            "List of address bindings learned by LDP.";
           leaf address {
             type inet:ipv6-address;
             description
-                "Binding address.";
+              "The IPv6 address learned from an Address
+               message received from or advertised to a peer.";
           }
           uses ldp:binding-address-state-attributes;
         } // binding-address
@@ -574,11 +605,13 @@ module ietf-mpls-ldp-extended {
         list fec-label {
           key "fec";
           description
-            "List of label bindings.";
+            "List of FEC-label bindings learned by LDP.";
           leaf fec {
             type inet:ipv6-prefix;
             description
-              "Prefix FEC.";
+              "The prefix FEC value in the FEC-label binding,
+               learned in a Label Mapping message received from
+               or advertised to a peer.";
           }
           uses ldp:binding-label-state-attributes;
         } // fec-label
@@ -697,13 +730,17 @@ module ietf-mpls-ldp-extended {
         }
         leaf enable {
           type boolean;
+          default true;
           description
             "Enable the target.";
         }
         leaf local-address {
           type inet:ipv6-address;
           description
-            "The local address.";
+            "The local address used as the source address to send
+             targeted Hello messages.
+             If the value is not specified, the transport-address
+             is used as the source address.";
         }
       } // target
     } // ipv6
@@ -805,7 +842,10 @@ module ietf-mpls-ldp-extended {
       if-feature policy-targeted-discovery-config;
       type neighbor-list-ref;
       description
-        "The name of a peer ACL.";
+        "The name of a neighbor ACL, to accept Hello messages from
+         LDP peers as permitted by the neighbor-list policy.
+         If this value is not specified, targeted Hello messages from
+         any source are accepted.";
     }
   }
 
