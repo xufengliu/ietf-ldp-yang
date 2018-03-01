@@ -28,11 +28,14 @@ module: ietf-mpls-ldp-extended
           +--ro address* [address]
           |  +--ro address               inet:ipv6-address
           |  +--ro advertisement-type?   advertised-received
-          |  +--ro peer?                 -> ../../../../../../ldp:peers/peer/lsr-id
+          |  +--ro peer
+          |     +--ro lsr-id?           leafref
+          |     +--ro label-space-id?   leafref
           +--ro fec-label* [fec]
              +--ro fec     inet:ipv6-prefix
-             +--ro peer* [lsr-id advertisement-type]
-                +--ro lsr-id                -> ../../../../../../../ldp:peers/peer/lsr-id
+             +--ro peer* [lsr-id label-space-id advertisement-type]
+                +--ro lsr-id                leafref
+                +--ro label-space-id        leafref
                 +--ro advertisement-type    advertised-received
                 +--ro label?                rt-types:mpls-label
                 +--ro used-in-forwarding?   boolean
@@ -52,7 +55,9 @@ module: ietf-mpls-ldp-extended
        |     |  +--ro discontinuity-time    yang:date-and-time
        |     |  +--ro hello-received?       yang:counter64
        |     |  +--ro hello-dropped?        yang:counter64
-       |     +--ro peer?               -> ../../../../../../../../ldp:peers/peer/lsr-id
+       |     +--ro peer
+       |        +--ro lsr-id?           leafref
+       |        +--ro label-space-id?   leafref
        +--rw transport-address?   union
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:discovery/ldp:targeted/ldp:address-families:
     +--rw ipv6!
@@ -70,7 +75,9 @@ module: ietf-mpls-ldp-extended
        |     |  +--ro discontinuity-time    yang:date-and-time
        |     |  +--ro hello-received?       yang:counter64
        |     |  +--ro hello-dropped?        yang:counter64
-       |     +--ro peer?               -> ../../../../../../../ldp:peers/peer/lsr-id
+       |     +--ro peer
+       |        +--ro lsr-id?           leafref
+       |        +--ro label-space-id?   leafref
        +--rw target* [adjacent-address]
           +--rw adjacent-address    inet:ipv6-address
           +--rw enable?             boolean
@@ -104,7 +111,8 @@ module: ietf-mpls-ldp-extended
     |  +--rw enable?   boolean
     +--rw typed-wildcard-fec {capability-typed-wildcard-fec}?
     |  +--rw enable?   boolean
-    +--rw upstream-label-assignment {capability-upstream-label-assignment}?
+    +--rw upstream-label-assignment
+            {capability-upstream-label-assignment}?
        +--rw enable?   boolean
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:graceful-restart:
     +--rw helper-enable?   boolean {graceful-restart-helper-mode}?
@@ -125,20 +133,23 @@ module: ietf-mpls-ldp-extended
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:discovery/ldp:interfaces/ldp:interface:
     +--rw hello-holdtime?              uint16
     +--rw hello-interval?              uint16
-    +--rw igp-synchronization-delay?   uint16 {per-interface-timer-config}?
+    +--rw igp-synchronization-delay?   uint16
+            {per-interface-timer-config}?
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:discovery/ldp:interfaces/ldp:interface/ldp:address-families/ldp:ipv4:
     +--rw transport-address?   union
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:discovery/ldp:targeted/ldp:hello-accept:
-    +--rw neighbor-list?   neighbor-list-ref {policy-targeted-discovery-config}?
+    +--rw neighbor-list?   neighbor-list-ref
+            {policy-targeted-discovery-config}?
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers:
-    +--rw session-downstream-on-demand {session-downstream-on-demand-config}?
+    +--rw session-downstream-on-demand
+            {session-downstream-on-demand-config}?
        +--rw enable?      boolean
        +--rw peer-list?   peer-list-ref
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:authentication/ldp:auth-type-selection:
-    +--:(auth-key-chain)
+    +--:(auth-key-chain) {key-chain}?
        +--rw key-chain?   key-chain:key-chain-ref
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer:
-    +--rw admin-down?            boolean
+    +--rw admin-down?            boolean {per-peer-admin-down}?
     +--rw graceful-restart
     |  +--rw enable?           boolean
     |  +--rw reconnect-time?   uint16
@@ -146,7 +157,7 @@ module: ietf-mpls-ldp-extended
     +--rw session-ka-holdtime?   uint16
     +--rw session-ka-interval?   uint16
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:authentication/ldp:auth-type-selection:
-    +--:(auth-key-chain)
+    +--:(auth-key-chain) {key-chain}?
        +--rw key-chain?   key-chain:key-chain-ref
   augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:address-families/ldp:ipv4:
     +--rw label-policy

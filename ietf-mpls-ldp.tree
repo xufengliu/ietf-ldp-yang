@@ -17,11 +17,15 @@ module: ietf-mpls-ldp
        |           +--ro address* [address]
        |           |  +--ro address               inet:ipv4-address
        |           |  +--ro advertisement-type?   advertised-received
-       |           |  +--ro peer?                 -> ../../../../../../peers/peer/lsr-id
+       |           |  +--ro peer
+       |           |     +--ro lsr-id?           leafref
+       |           |     +--ro label-space-id?   leafref
        |           +--ro fec-label* [fec]
        |              +--ro fec     inet:ipv4-prefix
-       |              +--ro peer* [lsr-id advertisement-type]
-       |                 +--ro lsr-id                -> ../../../../../../../peers/peer/lsr-id
+       |              +--ro peer*
+       |                      [lsr-id label-space-id advertisement-type]
+       |                 +--ro lsr-id                leafref
+       |                 +--ro label-space-id        leafref
        |                 +--ro advertisement-type    advertised-received
        |                 +--ro label?                rt-types:mpls-label
        |                 +--ro used-in-forwarding?   boolean
@@ -45,10 +49,13 @@ module: ietf-mpls-ldp
        |  |                 |  +--ro remaining?    uint16
        |  |                 +--ro next-hello?         uint16
        |  |                 +--ro statistics
-       |  |                 |  +--ro discontinuity-time    yang:date-and-time
+       |  |                 |  +--ro discontinuity-time
+       |  |                 |  |       yang:date-and-time
        |  |                 |  +--ro hello-received?       yang:counter64
        |  |                 |  +--ro hello-dropped?        yang:counter64
-       |  |                 +--ro peer?               -> ../../../../../../../../peers/peer/lsr-id
+       |  |                 +--ro peer
+       |  |                    +--ro lsr-id?           leafref
+       |  |                    +--ro label-space-id?   leafref
        |  +--rw targeted
        |     +--rw hello-holdtime?     uint16
        |     +--rw hello-interval?     uint16
@@ -57,7 +64,8 @@ module: ietf-mpls-ldp
        |     +--rw address-families
        |        +--rw ipv4!
        |           +--ro hello-adjacencies
-       |           |  +--ro hello-adjacency* [local-address adjacent-address]
+       |           |  +--ro hello-adjacency*
+       |           |          [local-address adjacent-address]
        |           |     +--ro local-address       inet:ipv4-address
        |           |     +--ro adjacent-address    inet:ipv4-address
        |           |     +--ro flag*               identityref
@@ -67,10 +75,13 @@ module: ietf-mpls-ldp
        |           |     |  +--ro remaining?    uint16
        |           |     +--ro next-hello?         uint16
        |           |     +--ro statistics
-       |           |     |  +--ro discontinuity-time    yang:date-and-time
+       |           |     |  +--ro discontinuity-time
+       |           |     |  |       yang:date-and-time
        |           |     |  +--ro hello-received?       yang:counter64
        |           |     |  +--ro hello-dropped?        yang:counter64
-       |           |     +--ro peer?               -> ../../../../../../../peers/peer/lsr-id
+       |           |     +--ro peer
+       |           |        +--ro lsr-id?           leafref
+       |           |        +--ro label-space-id?   leafref
        |           +--rw target* [adjacent-address]
        |              +--rw adjacent-address    inet:ipv4-address
        |              +--rw enable?             boolean
@@ -82,8 +93,9 @@ module: ietf-mpls-ldp
           |        +--rw md5-key?   string
           +--rw session-ka-holdtime?   uint16
           +--rw session-ka-interval?   uint16
-          +--rw peer* [lsr-id]
+          +--rw peer* [lsr-id label-space-id]
              +--rw lsr-id                      rt-types:router-id
+             +--rw label-space-id              uint16
              +--rw authentication
              |  +--rw (auth-type-selection)?
              |     +--:(auth-key)
@@ -92,7 +104,8 @@ module: ietf-mpls-ldp
              +--rw address-families
              |  +--rw ipv4!
              |     +--ro hello-adjacencies
-             |        +--ro hello-adjacency* [local-address adjacent-address]
+             |        +--ro hello-adjacency*
+             |                [local-address adjacent-address]
              |           +--ro local-address       inet:ipv4-address
              |           +--ro adjacent-address    inet:ipv4-address
              |           +--ro flag*               identityref
@@ -102,7 +115,8 @@ module: ietf-mpls-ldp
              |           |  +--ro remaining?    uint16
              |           +--ro next-hello?         uint16
              |           +--ro statistics
-             |           |  +--ro discontinuity-time    yang:date-and-time
+             |           |  +--ro discontinuity-time
+             |           |  |       yang:date-and-time
              |           |  +--ro hello-received?       yang:counter64
              |           |  +--ro hello-dropped?        yang:counter64
              |           +--ro interface?          if:interface-ref
@@ -111,7 +125,6 @@ module: ietf-mpls-ldp
              |  +--ro peer?         label-adv-mode
              |  +--ro negotiated?   label-adv-mode
              +--ro next-keep-alive?            uint16
-             +--ro peer-ldp-id-label-space?    uint16
              +--ro received-peer-state
              |  +--ro graceful-restart
              |  |  +--ro enable?           boolean
@@ -170,7 +183,8 @@ module: ietf-mpls-ldp
   rpcs:
     +---x mpls-ldp-clear-peer
     |  +---w input
-    |     +---w lsr-id?   rt-types:router-id
+    |     +---w lsr-id?           leafref
+    |     +---w label-space-id?   leafref
     +---x mpls-ldp-clear-hello-adjacency
     |  +---w input
     |     +---w hello-adjacency
@@ -180,16 +194,19 @@ module: ietf-mpls-ldp
     |           |     +---w target-address?   inet:ip-address
     |           +--:(link)
     |              +---w link!
-    |                 +---w next-hop-interface?   -> /rt:routing/control-plane-protocols/mpls-ldp/discovery/interfaces/interface/name
+    |                 +---w next-hop-interface?   leafref
     |                 +---w next-hop-address?     inet:ip-address
     +---x mpls-ldp-clear-peer-statistics
        +---w input
-          +---w lsr-id?   rt-types:router-id
+          +---w lsr-id?           leafref
+          +---w label-space-id?   leafref
 
   notifications:
     +---n mpls-ldp-peer-event
     |  +--ro event-type?   oper-status-event-type
-    |  +--ro peer-ref?     -> /rt:routing/control-plane-protocols/mpls-ldp/peers/peer/lsr-id
+    |  +--ro peer
+    |     +--ro lsr-id?           leafref
+    |     +--ro label-space-id?   leafref
     +---n mpls-ldp-hello-adjacency-event
     |  +--ro event-type?   oper-status-event-type
     |  +--ro (hello-adjacency-type)?

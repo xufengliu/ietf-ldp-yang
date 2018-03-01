@@ -32,15 +32,6 @@ module ietf-mpls-ldp {
     "WG Web:   <http://tools.ietf.org/wg/teas/>
      WG List:  <mailto:teas@ietf.org>
 
-     WG Chair: Loa Andersson
-               <mailto:loa@pi.nu>
-
-     WG Chair: Ross Callon
-               <mailto:rcallon@juniper.net>
-
-     WG Chair: George Swallow
-               <mailto:swallow.ietf@gmail.com>
-
      Editor:   Kamran Raza
                <mailto:skraza@cisco.com>
 
@@ -63,9 +54,22 @@ module ietf-mpls-ldp {
     "This YANG module defines the essential components for the
      management of Multi-Protocol Label Switching (MPLS) Label
      Distribution Protocol (LDP). It is also the base model to
-     be augmented for Multipoint LDP (mLDP).";
+     be augmented for Multipoint LDP (mLDP).
 
-  revision 2018-02-19 {
+     Copyright (c) 2018 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (http://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX; see the
+     RFC itself for full legal notices.";
+
+  revision 2018-02-28 {
     description
       "Initial revision.";
     reference
@@ -287,17 +291,15 @@ module ietf-mpls-ldp {
       description
         "Received or advertised.";
     }
-    leaf peer {
-      type leafref {
-        path "../../../../../../ldp:peers/ldp:peer/ldp:lsr-id";
-      }
-      must "../advertisement-type = 'received'" {
+    container peer {
+      when "../advertisement-type = 'received'" {
         description
           "Applicable for received address.";
       }
       description
         "LDP peer from which this address is received.";
-    } // peer
+      uses ldp-peer-ref;
+    }
   } // binding-address-state-attributes
 
   grouping binding-label-state-attributes {
@@ -306,17 +308,15 @@ module ietf-mpls-ldp {
        IPv4 and IPv6 address families.";
 
     list peer {
-      key "lsr-id advertisement-type";
+      key "lsr-id label-space-id advertisement-type";
       description
         "List of advertised and received peers.";
-      leaf lsr-id {
-        type leafref {
-          path "../../../../../../../ldp:peers/ldp:peer/"
-            + "ldp:lsr-id";
-        }
+      uses ldp-peer-ref {
         description
-          "LDP peer from which this binding is received,
-           or to which this binding is advertised.";
+          "The LDP peer from which this binding is received, or to
+           which this binding is advertised.
+           The peer is identified by its LDP ID, which consists of
+           the LSR ID and the Label Space ID.";
       }
       leaf advertisement-type {
         type advertised-received;
@@ -349,7 +349,7 @@ module ietf-mpls-ldp {
         "Attributes for graceful restart.";
       leaf enable {
         type boolean;
-        default true;
+        default false;
         description
           "Enable or disable graceful restart.";
       }
@@ -358,6 +358,7 @@ module ietf-mpls-ldp {
           range 10..1800;
         }
         units seconds;
+        default 120;
         description
           "Specifies the time interval that the remote LDP peer
            must wait for the local LDP peer to reconnect after the
@@ -368,6 +369,7 @@ module ietf-mpls-ldp {
           range 30..3600;
         }
         units seconds;
+        default 120;
         description
           "Specifies the time interval, in seconds, that the remote
            LDP peer preserves its MPLS forwarding state after
@@ -396,16 +398,38 @@ module ietf-mpls-ldp {
 
   grouping ldp-peer-ref {
     description
-      "An absolute reference to an LDP peer.";
+      "An absolute reference to an LDP peer, by the LDP ID, which
+       consists of the LSR ID and the Label Space ID.";
 
-    leaf peer-ref {
+    leaf lsr-id {
       type leafref {
-        path "/rt:routing/rt:control-plane-protocols/mpls-ldp/"
-          + "peers/peer/lsr-id";
+        path "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
+          + "ldp:peers/ldp:peer/ldp:lsr-id";
       }
       description
-        "Reference to an LDP peer.";
+        "The LSR ID of the peer, as a portion of the peer LDP ID.";
     }
+    leaf label-space-id {
+      type leafref {
+        path "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
+          + "ldp:peers/ldp:peer/ldp:label-space-id";
+      }
+      description
+        "The Label Space ID of the peer, as a portion of the peer
+           LDP ID.";
+    }
+  } // ldp-peer-ref
+
+  grouping ldp-peer-ref-container {
+    description
+      "A container containing an absolute reference to an LDP peer.";
+
+    container peer {
+      description
+        "Reference to an LDP peer, by the LDP ID, which consists of
+         the LSR ID and the Label Space ID.";
+      uses ldp-peer-ref;
+    } // peer
   } // ldp-peer-ref
 
   grouping peer-attributes {
@@ -418,6 +442,7 @@ module ietf-mpls-ldp {
         range 45..3600;
       }
       units seconds;
+      default 180;
       description
         "The time interval after which an inactive LDP session
          terminates and the corresponding TCP session closes.
@@ -429,6 +454,7 @@ module ietf-mpls-ldp {
         range 15..1200;
       }
       units seconds;
+      default 60;
       description
         "The interval between successive transmissions of keepalive
          packets. Keepalive packets are only sent in the absence of
@@ -487,16 +513,6 @@ module ietf-mpls-ldp {
       units seconds;
       config false;
       description "Time to send the next KeepAlive message.";
-    }
-
-    leaf peer-ldp-id-label-space {
-      type uint16;
-      config false;
-      description 
-        "The label space portion of the peer LDP ID, to a specific
-         label space within the peer LSR.";
-      reference
-        "RFC5036. Sec 2.2.2.";
     }
 
     container received-peer-state {
@@ -751,7 +767,7 @@ module ietf-mpls-ldp {
             "Attributes for graceful restart.";
           leaf enable {
             type boolean;
-            default true;
+            default false;
             description
               "Enable or disable graceful restart.";
           }
@@ -760,6 +776,7 @@ module ietf-mpls-ldp {
               range 10..1800;
             }
             units seconds;
+            default 120;
             description
               "Specifies the time interval that the remote LDP peer
                must wait for the local LDP peer to reconnect after
@@ -771,6 +788,7 @@ module ietf-mpls-ldp {
               range 30..3600;
             }
             units seconds;
+            default 120;
             description
               "Specifies the time interval, in seconds, that the
                remote LDP peer preserves its MPLS forwarding state
@@ -782,6 +800,7 @@ module ietf-mpls-ldp {
               range 30..3600;
             }
             units seconds;
+            default 180;
             description
               "Specifies the time interval, in seconds, before the
                termination of the recovery phase.";
@@ -927,15 +946,7 @@ module ietf-mpls-ldp {
                     }
 
                     uses adjacency-state-attributes;
-
-                    leaf peer {
-                      type leafref {
-                        path "../../../../../../../../"
-                          + "peers/peer/lsr-id";
-                      }
-                      description
-                        "LDP peer from this adjacency.";
-                    }
+                    uses ldp-peer-ref-container;
                   } // hello-adjacency
                 } // hello-adjacencies
               } // ipv4
@@ -1013,15 +1024,7 @@ module ietf-mpls-ldp {
                   }
 
                   uses adjacency-state-attributes;
-
-                  leaf peer {
-                    type leafref {
-                      path "../../../../../../../peers/peer/"
-                        + "lsr-id";
-                    }
-                    description
-                      "LDP peer from this adjacency.";
-                  }
+                  uses ldp-peer-ref-container;
                 } // hello-adjacency
               } // hello-adjacencies
 
@@ -1067,15 +1070,29 @@ module ietf-mpls-ldp {
         uses peer-attributes;
 
         list peer {
-          key "lsr-id";
+          key "lsr-id label-space-id";
           description
             "List of peers.";
 
           leaf lsr-id {
             type rt-types:router-id;
             description 
-              "The LSR ID of the peer. This is the first four octets
-               of the LDP ID";
+              "The LSR ID of the peer, to identify the globally
+               unique LSR. This is the first four octets of the LDP
+               ID. This leaf is used together with the leaf
+               'label-space-id' to form the LDP ID.";
+            reference
+              "RFC5036. Sec 2.2.2.";
+          }
+          leaf label-space-id {
+            type uint16;
+            description 
+              "The Label Space ID of the peer, to identify a specific
+               label space within the LSR. This is the last two
+               octets of the LDP ID. This leaf is used together with
+               the leaf 'lsr-id' to form the LDP ID.";
+            reference
+              "RFC5036. Sec 2.2.2.";
           }
 
           uses peer-authentication;
@@ -1137,11 +1154,12 @@ module ietf-mpls-ldp {
     description
       "Clears the session to the peer.";
     input {
-      leaf lsr-id {
-        type rt-types:router-id;
+      uses ldp-peer-ref {
         description
-          "LSR ID of peer to be cleared. If this is not provided
-           then all peers are cleared";
+          "The LDP peer to be cleared. If this is not provided
+           then all peers are cleared.
+           The peer is identified by its LDP ID, which consists of
+           the LSR ID and the Label Space ID.";
       }
     }
   }
@@ -1206,12 +1224,13 @@ module ietf-mpls-ldp {
       "Clears protocol statistics (e.g. sent and received
        counters).";
     input {
-      leaf lsr-id {
-        type rt-types:router-id;
+      uses ldp-peer-ref {
         description
-          "LSR ID of peer whose statistic are to be cleared.
-           If this is not provided then all peers statistics are
-           cleared";
+          "The LDP peer whose statistics are to be cleared. 
+           If this is not provided then all peers' statistics are
+           cleared.
+           The peer is identified by its LDP ID, which consists of
+           the LSR ID and the Label Space ID.";
       }
     }
   }
@@ -1228,7 +1247,7 @@ module ietf-mpls-ldp {
       type oper-status-event-type;
       description "Event type.";
     }
-    uses ldp-peer-ref;
+    uses ldp-peer-ref-container;
   }
 
   notification mpls-ldp-hello-adjacency-event {

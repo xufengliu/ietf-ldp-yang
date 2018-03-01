@@ -28,15 +28,6 @@ module ietf-mpls-ldp-extended {
     "WG Web:   <http://tools.ietf.org/wg/teas/>
      WG List:  <mailto:teas@ietf.org>
 
-     WG Chair: Loa Andersson
-               <mailto:loa@pi.nu>
-
-     WG Chair: Ross Callon
-               <mailto:rcallon@juniper.net>
-
-     WG Chair: George Swallow
-               <mailto:swallow.ietf@gmail.com>
-
      Editor:   Kamran Raza
                <mailto:skraza@cisco.com>
 
@@ -56,12 +47,25 @@ module ietf-mpls-ldp-extended {
                <mailto:hshah@ciena.com>";
 
   description
-    "This YANG module defines the essential components for the
+    "This YANG module defines the extended components for the
      management of Multi-Protocol Label Switching (MPLS) Label
-     Distribution Protocol (LDP). It is also the base model to
-     be augmented for Multipoint LDP (mLDP).";
+     Distribution Protocol (LDP). It is also the model to
+     be augmented for extended Multipoint LDP (mLDP).
 
-  revision 2018-02-19 {
+     Copyright (c) 2018 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (http://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX; see the
+     RFC itself for full legal notices.";
+
+  revision 2018-02-28 {
     description
       "Initial revision.";
     reference
@@ -101,10 +105,22 @@ module ietf-mpls-ldp-extended {
        restart helper mode.";
   }
 
+  feature key-chain {
+    description
+      "This feature indicates that the system supports keychain for
+       authentication.";
+  }
+
   feature per-interface-timer-config {
     description
       "This feature indicates that the system allows to configure
        interface hello timers at the per-interface level.";
+  }
+
+  feature per-peer-admin-down {
+    description
+      "This feature indicates that the system allows to
+       administratively disable a peer.";
   }
 
   feature per-peer-graceful-restart-config {
@@ -255,9 +271,10 @@ module ietf-mpls-ldp-extended {
 
     leaf igp-synchronization-delay {
       type uint16 {
-        range 3..300;
+        range "0 | 3..300";
       }
       units seconds;
+      default 0;
       description
         "Sets the interval that the LDP waits before notifying the
          Interior Gateway Protocol (IGP) that label exchange is
@@ -324,6 +341,11 @@ module ietf-mpls-ldp-extended {
     leaf transport-address {
       type union {
         type enumeration {
+          enum "use-global-transport-address" {
+            description
+              "Use the transport address set at the global level
+               common for all interfaces for this address family.";
+          }
           enum "use-interface-address" {
             description
               "Use interface address as the transport address.";
@@ -331,7 +353,7 @@ module ietf-mpls-ldp-extended {
         }
         type inet:ipv4-address;
       }
-      default "use-interface-address";
+      default "use-global-transport-address";
       description
         "IP address to be advertised as the LDP transport address.";
     }
@@ -343,6 +365,11 @@ module ietf-mpls-ldp-extended {
     leaf transport-address {
       type union {
         type enumeration {
+          enum "use-global-transport-address" {
+            description
+              "Use the transport address set at the global level
+               common for all interfaces for this address family.";
+          }
           enum "use-interface-address" {
             description
               "Use interface address as the transport address.";
@@ -350,7 +377,7 @@ module ietf-mpls-ldp-extended {
         }
         type inet:ipv6-address;
       }
-      default "use-interface-address";
+      default "use-global-transport-address";
       description
         "IP address to be advertised as the LDP transport address.";
     }
@@ -365,9 +392,10 @@ module ietf-mpls-ldp-extended {
     leaf igp-synchronization-delay {
       if-feature per-interface-timer-config;
       type uint16 {
-        range 3..300;
+        range "0 | 3..300";
       }
       units seconds;
+      default 0;
       description
         "Sets the interval that the LDP waits before notifying the
          Interior Gateway Protocol (IGP) that label exchange is
@@ -414,6 +442,7 @@ module ietf-mpls-ldp-extended {
     description "Augmentation to each peer list entry.";
 
     leaf admin-down {
+      if-feature per-peer-admin-down;
       type boolean;
       default false;
       description
@@ -657,15 +686,7 @@ module ietf-mpls-ldp-extended {
           }
 
           uses ldp:adjacency-state-attributes;
-
-          leaf peer {
-            type leafref {
-              path "../../../../../../../../ldp:peers/ldp:peer/"
-                + "ldp:lsr-id";
-            }
-            description
-              "LDP peer from this adjacency.";
-          }
+          uses ldp:ldp-peer-ref-container;
         } // hello-adjacency
       } // hello-adjacencies
     } // ipv6
@@ -704,15 +725,7 @@ module ietf-mpls-ldp-extended {
           }
 
           uses ldp:adjacency-state-attributes;
-
-          leaf peer {
-            type leafref {
-              path "../../../../../../../ldp:peers/ldp:peer/"
-                + "ldp:lsr-id";
-            }
-            description
-              "LDP peer from this adjacency.";
-          }
+          uses ldp:ldp-peer-ref-container;
         } // hello-adjacency
       } // hello-adjacencies
 
@@ -857,6 +870,7 @@ module ietf-mpls-ldp-extended {
 
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:peers/ldp:authentication/ldp:auth-type-selection" {
+    if-feature key-chain;
     description "Peers authentication augmentation.";
     case auth-key-chain {
       uses authentication-keychain-augment;
@@ -872,6 +886,7 @@ module ietf-mpls-ldp-extended {
   augment "/rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/"
     + "ldp:peers/ldp:peer/ldp:authentication/"
     + "ldp:auth-type-selection" {
+    if-feature key-chain;
     description "Peer list entry authentication augmentation.";
     case auth-key-chain {
       uses authentication-keychain-augment;
