@@ -1,3 +1,4 @@
+
 module: ietf-mpls-ldp
   augment /rt:routing/rt:control-plane-protocols:
     +--rw mpls-ldp!
@@ -18,7 +19,8 @@ module: ietf-mpls-ldp
        |  |  +--rw forwarding-holdtime?     uint16
        |  |  +--rw ldp-ext:helper-enable?   boolean
        |  |          {graceful-restart-helper-mode}?
-       |  +--rw lsr-id?                              rt-types:router-id
+       |  +--rw lsr-id?
+       |  |       rt-types:router-id
        |  +--rw address-families
        |  |  +--rw ipv4!
        |  |  |  +--rw enable?                           boolean
@@ -36,8 +38,10 @@ module: ietf-mpls-ldp
        |  |  |  |             [lsr-id label-space-id advertisement-type]
        |  |  |  |        +--ro lsr-id                leafref
        |  |  |  |        +--ro label-space-id        leafref
-       |  |  |  |        +--ro advertisement-type    advertised-received
-       |  |  |  |        +--ro label?                rt-types:mpls-label
+       |  |  |  |        +--ro advertisement-type
+       |  |  |  |        |       advertised-received
+       |  |  |  |        +--ro label?
+       |  |  |  |        |       rt-types:mpls-label
        |  |  |  |        +--ro used-in-forwarding?   boolean
        |  |  |  +--rw ldp-ext:label-policy
        |  |  |  |  +--rw ldp-ext:advertise
@@ -55,9 +59,11 @@ module: ietf-mpls-ldp
        |  |  |  |             {policy-ordered-label-config}?
        |  |  |  |        +--rw ldp-ext:egress-prefix-list?
        |  |  |  |                prefix-list-ref
-       |  |  |  +--rw ldp-ext:transport-address?        inet:ipv4-address
+       |  |  |  +--rw ldp-ext:transport-address?
+       |  |  |          inet:ipv4-address
        |  |  +--rw ldp-ext:ipv6!
-       |  |     +--rw ldp-ext:enable?                           boolean
+       |  |     +--rw ldp-ext:enable?
+       |  |     |       boolean
        |  |     +--rw ldp-ext:label-policy
        |  |     |  +--rw ldp-ext:advertise
        |  |     |  |  +--rw ldp-ext:egress-explicit-null
@@ -104,7 +110,8 @@ module: ietf-mpls-ldp
        |  |     +--rw ldp-ext:interface* [name]
        |  |        +--rw ldp-ext:name              if:interface-ref
        |  |        +--rw ldp-ext:address-family* [afi]
-       |  |           +--rw ldp-ext:afi            ldp:ldp-address-family
+       |  |           +--rw ldp-ext:afi
+       |  |           |       ldp:ldp-address-family
        |  |           +--rw ldp-ext:ldp-disable?   boolean
        |  +--rw ldp-ext:igp-synchronization-delay?   uint16
        +--rw discovery
@@ -120,7 +127,8 @@ module: ietf-mpls-ldp
        |  |     |  |  +--rw enable?                      boolean
        |  |     |  |  +--ro hello-adjacencies
        |  |     |  |  |  +--ro hello-adjacency* [adjacent-address]
-       |  |     |  |  |     +--ro adjacent-address    inet:ipv4-address
+       |  |     |  |  |     +--ro adjacent-address
+       |  |     |  |  |     |       inet:ipv4-address
        |  |     |  |  |     +--ro flag*               identityref
        |  |     |  |  |     +--ro hello-holdtime
        |  |     |  |  |     |  +--ro adjacent?     uint16
@@ -130,8 +138,10 @@ module: ietf-mpls-ldp
        |  |     |  |  |     +--ro statistics
        |  |     |  |  |     |  +--ro discontinuity-time
        |  |     |  |  |     |  |       yang:date-and-time
-       |  |     |  |  |     |  +--ro hello-received?       yang:counter64
-       |  |     |  |  |     |  +--ro hello-dropped?        yang:counter64
+       |  |     |  |  |     |  +--ro hello-received?
+       |  |     |  |  |     |  |       yang:counter64
+       |  |     |  |  |     |  +--ro hello-dropped?
+       |  |     |  |  |     |          yang:counter64
        |  |     |  |  |     +--ro peer
        |  |     |  |  |        +--ro lsr-id?           leafref
        |  |     |  |  |        +--ro label-space-id?   leafref
@@ -143,7 +153,8 @@ module: ietf-mpls-ldp
        |  |     |     |          [adjacent-address]
        |  |     |     |     +--ro ldp-ext:adjacent-address
        |  |     |     |     |       inet:ipv6-address
-       |  |     |     |     +--ro ldp-ext:flag*               identityref
+       |  |     |     |     +--ro ldp-ext:flag*
+       |  |     |     |     |       identityref
        |  |     |     |     +--ro ldp-ext:hello-holdtime
        |  |     |     |     |  +--ro ldp-ext:adjacent?     uint16
        |  |     |     |     |  +--ro ldp-ext:negotiated?   uint16
@@ -187,8 +198,10 @@ module: ietf-mpls-ldp
        |        |  |     +--ro statistics
        |        |  |     |  +--ro discontinuity-time
        |        |  |     |  |       yang:date-and-time
-       |        |  |     |  +--ro hello-received?       yang:counter64
-       |        |  |     |  +--ro hello-dropped?        yang:counter64
+       |        |  |     |  +--ro hello-received?
+       |        |  |     |  |       yang:counter64
+       |        |  |     |  +--ro hello-dropped?
+       |        |  |     |          yang:counter64
        |        |  |     +--ro peer
        |        |  |        +--ro lsr-id?           leafref
        |        |  |        +--ro label-space-id?   leafref
@@ -204,7 +217,8 @@ module: ietf-mpls-ldp
        |           |     |       inet:ipv6-address
        |           |     +--ro ldp-ext:adjacent-address
        |           |     |       inet:ipv6-address
-       |           |     +--ro ldp-ext:flag*               identityref
+       |           |     +--ro ldp-ext:flag*
+       |           |     |       identityref
        |           |     +--ro ldp-ext:hello-holdtime
        |           |     |  +--ro ldp-ext:adjacent?     uint16
        |           |     |  +--ro ldp-ext:negotiated?   uint16
@@ -221,9 +235,11 @@ module: ietf-mpls-ldp
        |           |        +--ro ldp-ext:lsr-id?           leafref
        |           |        +--ro ldp-ext:label-space-id?   leafref
        |           +--rw ldp-ext:target* [adjacent-address]
-       |              +--rw ldp-ext:adjacent-address    inet:ipv6-address
+       |              +--rw ldp-ext:adjacent-address
+       |              |       inet:ipv6-address
        |              +--rw ldp-ext:enable?             boolean
-       |              +--rw ldp-ext:local-address?      inet:ipv6-address
+       |              +--rw ldp-ext:local-address?
+       |                      inet:ipv6-address
        +--rw peers
           +--rw authentication
           |  +--rw (auth-type-selection)?
@@ -231,8 +247,8 @@ module: ietf-mpls-ldp
           |     |  +--rw md5-key?             string
           |     +--:(ldp-ext:auth-key-chain) {key-chain}?
           |        +--rw ldp-ext:key-chain?   key-chain:key-chain-ref
-          +--rw session-ka-holdtime?                    uint16
-          +--rw session-ka-interval?                    uint16
+          +--rw session-ka-holdtime?                        uint16
+          +--rw session-ka-interval?                        uint16
           +--rw peer* [lsr-id label-space-id]
           |  +--rw lsr-id                         rt-types:router-id
           |  +--rw label-space-id                 uint16
@@ -241,7 +257,8 @@ module: ietf-mpls-ldp
           |  |     +--:(auth-key)
           |  |     |  +--rw md5-key?             string
           |  |     +--:(ldp-ext:auth-key-chain) {key-chain}?
-          |  |        +--rw ldp-ext:key-chain?   key-chain:key-chain-ref
+          |  |        +--rw ldp-ext:key-chain?
+          |  |                key-chain:key-chain-ref
           |  +--rw capability
           |  +--rw address-families
           |  |  +--rw ipv4!
@@ -259,8 +276,10 @@ module: ietf-mpls-ldp
           |  |  |  |     +--ro statistics
           |  |  |  |     |  +--ro discontinuity-time
           |  |  |  |     |  |       yang:date-and-time
-          |  |  |  |     |  +--ro hello-received?       yang:counter64
-          |  |  |  |     |  +--ro hello-dropped?        yang:counter64
+          |  |  |  |     |  +--ro hello-received?
+          |  |  |  |     |  |       yang:counter64
+          |  |  |  |     |  +--ro hello-dropped?
+          |  |  |  |     |          yang:counter64
           |  |  |  |     +--ro interface?          if:interface-ref
           |  |  |  +--rw ldp-ext:label-policy
           |  |  |     +--rw ldp-ext:advertise
@@ -275,7 +294,8 @@ module: ietf-mpls-ldp
           |  |     |     |       inet:ipv6-address
           |  |     |     +--ro ldp-ext:adjacent-address
           |  |     |     |       inet:ipv6-address
-          |  |     |     +--ro ldp-ext:flag*               identityref
+          |  |     |     +--ro ldp-ext:flag*
+          |  |     |     |       identityref
           |  |     |     +--ro ldp-ext:hello-holdtime
           |  |     |     |  +--ro ldp-ext:adjacent?     uint16
           |  |     |     |  +--ro ldp-ext:negotiated?   uint16
@@ -363,9 +383,14 @@ module: ietf-mpls-ldp
           |  +--rw ldp-ext:session-ka-holdtime?   uint16
           |  +--rw ldp-ext:session-ka-interval?   uint16
           +--rw ldp-ext:session-downstream-on-demand
-                  {session-downstream-on-demand-config}?
-             +--rw ldp-ext:enable?      boolean
-             +--rw ldp-ext:peer-list?   peer-list-ref
+          |       {session-downstream-on-demand-config}?
+          |  +--rw ldp-ext:enable?      boolean
+          |  +--rw ldp-ext:peer-list?   peer-list-ref
+          +--rw ldp-ext:dual-stack-transport-pereference
+                  {dual-stack-transport-pereference}?
+             +--rw ldp-ext:max-wait?      uint16
+             +--rw ldp-ext:prefer-ipv4!
+                +--rw ldp-ext:peer-list?   peer-list-ref
 
   rpcs:
     +---x mpls-ldp-clear-peer
@@ -395,7 +420,7 @@ module: ietf-mpls-ldp
     |     +--ro lsr-id?           leafref
     |     +--ro label-space-id?   leafref
     +---n mpls-ldp-hello-adjacency-event
-    |  +--ro event-type?   oper-status-event-type
+    |  +--ro event-type?       oper-status-event-type
     |  +--ro (hello-adjacency-type)?
     |     +--:(targeted)
     |     |  +--ro targeted

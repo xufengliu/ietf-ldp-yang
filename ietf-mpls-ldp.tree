@@ -1,3 +1,4 @@
+
 module: ietf-mpls-ldp
   augment /rt:routing/rt:control-plane-protocols:
     +--rw mpls-ldp!
@@ -26,8 +27,10 @@ module: ietf-mpls-ldp
        |                      [lsr-id label-space-id advertisement-type]
        |                 +--ro lsr-id                leafref
        |                 +--ro label-space-id        leafref
-       |                 +--ro advertisement-type    advertised-received
-       |                 +--ro label?                rt-types:mpls-label
+       |                 +--ro advertisement-type
+       |                 |       advertised-received
+       |                 +--ro label?
+       |                 |       rt-types:mpls-label
        |                 +--ro used-in-forwarding?   boolean
        +--rw discovery
        |  +--rw interfaces
@@ -41,7 +44,8 @@ module: ietf-mpls-ldp
        |  |           +--rw enable?              boolean
        |  |           +--ro hello-adjacencies
        |  |              +--ro hello-adjacency* [adjacent-address]
-       |  |                 +--ro adjacent-address    inet:ipv4-address
+       |  |                 +--ro adjacent-address
+       |  |                 |       inet:ipv4-address
        |  |                 +--ro flag*               identityref
        |  |                 +--ro hello-holdtime
        |  |                 |  +--ro adjacent?     uint16
@@ -51,8 +55,10 @@ module: ietf-mpls-ldp
        |  |                 +--ro statistics
        |  |                 |  +--ro discontinuity-time
        |  |                 |  |       yang:date-and-time
-       |  |                 |  +--ro hello-received?       yang:counter64
-       |  |                 |  +--ro hello-dropped?        yang:counter64
+       |  |                 |  +--ro hello-received?
+       |  |                 |  |       yang:counter64
+       |  |                 |  +--ro hello-dropped?
+       |  |                 |          yang:counter64
        |  |                 +--ro peer
        |  |                    +--ro lsr-id?           leafref
        |  |                    +--ro label-space-id?   leafref
@@ -77,8 +83,10 @@ module: ietf-mpls-ldp
        |           |     +--ro statistics
        |           |     |  +--ro discontinuity-time
        |           |     |  |       yang:date-and-time
-       |           |     |  +--ro hello-received?       yang:counter64
-       |           |     |  +--ro hello-dropped?        yang:counter64
+       |           |     |  +--ro hello-received?
+       |           |     |  |       yang:counter64
+       |           |     |  +--ro hello-dropped?
+       |           |     |          yang:counter64
        |           |     +--ro peer
        |           |        +--ro lsr-id?           leafref
        |           |        +--ro label-space-id?   leafref
@@ -117,8 +125,10 @@ module: ietf-mpls-ldp
              |           +--ro statistics
              |           |  +--ro discontinuity-time
              |           |  |       yang:date-and-time
-             |           |  +--ro hello-received?       yang:counter64
-             |           |  +--ro hello-dropped?        yang:counter64
+             |           |  +--ro hello-received?
+             |           |  |       yang:counter64
+             |           |  +--ro hello-dropped?
+             |           |          yang:counter64
              |           +--ro interface?          if:interface-ref
              +--ro label-advertisement-mode
              |  +--ro local?        label-adv-mode
@@ -208,7 +218,7 @@ module: ietf-mpls-ldp
     |     +--ro lsr-id?           leafref
     |     +--ro label-space-id?   leafref
     +---n mpls-ldp-hello-adjacency-event
-    |  +--ro event-type?   oper-status-event-type
+    |  +--ro event-type?       oper-status-event-type
     |  +--ro (hello-adjacency-type)?
     |     +--:(targeted)
     |     |  +--ro targeted

@@ -1,32 +1,46 @@
+// RFC Editor: replace the above date 2018-02-28  with the date of
+// publication and remove this note.
+
 module ietf-mpls-ldp-extended {
+  yang-version 1.1;
+
   namespace "urn:ietf:params:xml:ns:yang:ietf-mpls-ldp-extended";
   prefix "ldp-ext";
 
   import ietf-inet-types {
     prefix "inet";
+    reference "RFC 6991: Common YANG Data Types";
   }
 
   import ietf-routing {
     prefix "rt";
+    reference
+      "RFC 8349: A YANG Data Model for Routing Management (NMDA
+       version)";
   }
 
   import ietf-key-chain {
     prefix "key-chain";
+    reference "RFC 8177: YANG Data Model for Key Chains";
   }
 
   import ietf-mpls-ldp {
     prefix "ldp";
+    reference "RFC XXXX: YANG Data Model for MPLS LDP";
+    // RFC Editor: replace XXXX with actual RFC number and remove
+    // this note
   }
 
   import ietf-interfaces {
     prefix "if";
+    reference "RFC 8343: A YANG Data Model for Interface Management";
   }
 
   organization
     "IETF MPLS Working Group";
   contact
-    "WG Web:   <http://tools.ietf.org/wg/teas/>
-     WG List:  <mailto:teas@ietf.org>
+    "WG Web:   <http://tools.ietf.org/wg/mpls/>
+     WG List:  <mailto:mpls@ietf.org>
 
      Editor:   Kamran Raza
                <mailto:skraza@cisco.com>
@@ -35,7 +49,7 @@ module ietf-mpls-ldp-extended {
                <mailto:rajiva@cisco.com>
 
      Editor:   Xufeng Liu
-               <mailto:Xufeng_Liu@jabil.com>
+               <mailto:xufeng.liu.ietf@gmail.com>
 
      Editor:   Santosh Esale
                <mailto:sesale@juniper.net>
@@ -65,16 +79,28 @@ module ietf-mpls-ldp-extended {
      This version of this YANG module is part of RFC XXXX; see the
      RFC itself for full legal notices.";
 
-  revision 2018-02-28 {
+     // RFC Editor: replace XXXX with actual RFC number and remove
+     // this note
+
+  revision 2018-10-11 {
     description
       "Initial revision.";
     reference
       "RFC XXXX: YANG Data Model for MPLS LDP.";
+
+      // RFC Editor: replace XXXX with actual RFC number and remove
+      // this note
   }
 
   /*
    * Features
    */
+  feature dual-stack-transport-pereference {
+    description
+      "This feature indicates that the system allows to configure
+       the transport connection pereference in a dual-stack setup.";
+  }
+
   feature capability-end-of-lib {
     description
       "This feature indicates that the system allows to configure
@@ -170,7 +196,8 @@ module ietf-mpls-ldp-extended {
        The string value is the name identifier for uniquely
        identifying the referenced address list, which contains a list
        of addresses that a routing policy can applied. The definition
-       of such an address list is outside the scope of this document.";
+       of such an address list is outside the scope of this
+       document.";
   }
 
   typedef prefix-list-ref {
@@ -191,7 +218,8 @@ module ietf-mpls-ldp-extended {
        The string value is the name identifier for uniquely
        identifying the referenced address list, which contains a list
        of addresses that a routing policy can applied. The definition
-       of such an address list is outside the scope of this document.";
+       of such an address list is outside the scope of this
+       document.";
   }
 
   /*
@@ -478,6 +506,42 @@ module ietf-mpls-ldp-extended {
            downstream-on-demand sessions.
            If this value is not specified, no filter is applied to
            any downstream-on-demand sessions.";
+      }
+    }
+    container dual-stack-transport-pereference {
+      if-feature dual-stack-transport-pereference;
+      description
+        "The settings of peers to establish TCP connection in a
+         dual-stack setup.";
+      leaf max-wait {
+          type uint16 {
+            range "0..60";
+          }
+          default 30;
+          description
+            "The maximum wait time in seconds for preferred transport
+             connection establishment. 0 indicates no preference.";
+      }
+      container prefer-ipv4 {
+        presence
+          "Present if IPv4 is prefered for transport connection
+           establishment, subject to the 'peer-list' in this
+           container.";
+        description
+          "Uses IPv4 as the prefered address family for transport
+           connection establishment, subject to the 'peer-list' in
+           this container.
+           If this container is not present, as a default, IPv6 is
+           the prefered address family for transport connection
+           establishment.";
+        leaf peer-list {
+          type peer-list-ref;
+          description
+            "The name of a peer ACL, to be applied to the IPv4
+             transport connections.
+             If this value is not specified, no filter is applied,
+             and the IPv4 is prefered for all peers.";
+        }
       }
     }
   } // peers-augment

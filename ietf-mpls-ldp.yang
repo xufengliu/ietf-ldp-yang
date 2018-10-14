@@ -1,36 +1,50 @@
+// RFC Editor: replace the above date 2018-10-11 with the date of
+// publication and remove this note.
+
 module ietf-mpls-ldp {
+  yang-version 1.1;
+
   namespace "urn:ietf:params:xml:ns:yang:ietf-mpls-ldp";
   prefix "ldp";
 
   import ietf-inet-types {
     prefix "inet";
+    reference "RFC 6991: Common YANG Data Types";
   }
 
   import ietf-yang-types {
     prefix "yang";
+    reference "RFC 6991: Common YANG Data Types";
   }
 
   import ietf-routing {
     prefix "rt";
+    reference
+      "RFC 8349: A YANG Data Model for Routing Management (NMDA
+       version)";
   }
 
   import ietf-routing-types {
     prefix "rt-types";
+    reference
+      "RFC 8294: Common YANG Data Types for the Routing Area";
   }
 
   import ietf-interfaces {
     prefix "if";
+    reference "RFC 8343: A YANG Data Model for Interface Management";
   }
 
   import ietf-ip {
     prefix "ip";
+    reference "RFC 7277: A YANG Data Model for IP Management";
   }
 
   organization
     "IETF MPLS Working Group";
   contact
-    "WG Web:   <http://tools.ietf.org/wg/teas/>
-     WG List:  <mailto:teas@ietf.org>
+    "WG Web:   <http://tools.ietf.org/wg/mpls/>
+     WG List:  <mailto:mpls@ietf.org>
 
      Editor:   Kamran Raza
                <mailto:skraza@cisco.com>
@@ -39,7 +53,7 @@ module ietf-mpls-ldp {
                <mailto:rajiva@cisco.com>
 
      Editor:   Xufeng Liu
-               <mailto:Xufeng_Liu@jabil.com>
+               <mailto:xufeng.liu.ietf@gmail.com>
 
      Editor:   Santosh Esale
                <mailto:sesale@juniper.net>
@@ -69,11 +83,16 @@ module ietf-mpls-ldp {
      This version of this YANG module is part of RFC XXXX; see the
      RFC itself for full legal notices.";
 
-  revision 2018-02-28 {
+     // RFC Editor: replace XXXX with actual RFC number and remove
+     // this note
+
+  revision 2018-10-11 {
     description
       "Initial revision.";
     reference
       "RFC XXXX: YANG Data Model for MPLS LDP.";
+      // RFC Editor: replace XXXX with actual RFC number and remove
+      // this note
   }
 
   /*
@@ -189,30 +208,30 @@ module ietf-mpls-ldp {
       type identityref {
         base adjacency-flag-base;
       }
-      description 
+      description
         "On or more flags to indicate whether the adjacency is
          actively created, passively accepted, or both.";
     }
     container hello-holdtime {
-      description 
+      description
         "Containing hello holdtime state information.";
       leaf adjacent {
         type uint16;
         units seconds;
-        description 
+        description
           "The holdtime value learned from the adjacent LSR.";
       }
       leaf negotiated {
         type uint16;
         units seconds;
-        description 
+        description
           "The holdtime negotiated between this LSR and the adjacent
            LSR.";
       }
       leaf remaining {
         type uint16;
         units seconds;
-        description 
+        description
           "The time remaining until the holdtime timer expires.";
       }
     }
@@ -220,7 +239,7 @@ module ietf-mpls-ldp {
     leaf next-hello {
       type uint16;
       units seconds;
-      description 
+      description
         "The time when the next Hello message will be sent.";
     }
 
@@ -339,7 +358,7 @@ module ietf-mpls-ldp {
 
   grouping graceful-restart-attributes-per-peer {
     description
-      "Per peer graceful restart attributes. 
+      "Per peer graceful restart attributes.
        On the local side, these attributes are configuration and
        operational state data. One the peer side, these attributes
        are operational state data reveiced from the peer.";
@@ -433,7 +452,7 @@ module ietf-mpls-ldp {
   } // ldp-peer-ref
 
   grouping peer-attributes {
-    description 
+    description
       "Peer configuration attributes, used in the per-peer setting
        can in the all-peer setting.";
 
@@ -468,7 +487,7 @@ module ietf-mpls-ldp {
        can in the all-peer setting.";
 
     container authentication {
-      description 
+      description
         "Containing authentication information.";
       choice auth-type-selection {
         description
@@ -485,7 +504,7 @@ module ietf-mpls-ldp {
   } // peer-authentication
 
   grouping peer-state-derived {
-    description 
+    description
       "The peer state information derived from the LDP protocol
        operatoins.";
 
@@ -517,7 +536,7 @@ module ietf-mpls-ldp {
 
     container received-peer-state {
       config false;
-      description 
+      description
         "Operational state information learned from the peer.";
 
       uses graceful-restart-attributes-per-peer;
@@ -744,7 +763,7 @@ module ietf-mpls-ldp {
     description "LDP augmentation.";
 
     container mpls-ldp {
-      presence 
+      presence
         "Enables the LDP protocol.";
       description
         "Containing configuration and operational data for the LDP
@@ -755,13 +774,13 @@ module ietf-mpls-ldp {
           "Global attributes for LDP.";
 
         container capability {
-          description 
+          description
             "Containing the LDP capability data. The container is
              used for augmentations.";
           reference
             "RFC5036: Sec. 1.5.";
         } // capability
-        
+
         container graceful-restart {
           description
             "Attributes for graceful restart.";
@@ -806,7 +825,7 @@ module ietf-mpls-ldp {
                termination of the recovery phase.";
           }
         } // graceful-restart
-        
+
         leaf lsr-id {
           type rt-types:router-id;
           description
@@ -985,7 +1004,7 @@ module ietf-mpls-ldp {
             description
               "LDP policy to control the acceptance of extended
                neighbor discovery Hello messages.";
-            
+
             leaf enable {
               type boolean;
               default false;
@@ -1076,7 +1095,7 @@ module ietf-mpls-ldp {
 
           leaf lsr-id {
             type rt-types:router-id;
-            description 
+            description
               "The LSR ID of the peer, to identify the globally
                unique LSR. This is the first four octets of the LDP
                ID. This leaf is used together with the leaf
@@ -1086,7 +1105,7 @@ module ietf-mpls-ldp {
           }
           leaf label-space-id {
             type uint16;
-            description 
+            description
               "The Label Space ID of the peer, to identify a specific
                label space within the LSR. This is the last two
                octets of the LDP ID. This leaf is used together with
@@ -1226,7 +1245,7 @@ module ietf-mpls-ldp {
     input {
       uses ldp-peer-ref {
         description
-          "The LDP peer whose statistics are to be cleared. 
+          "The LDP peer whose statistics are to be cleared.
            If this is not provided then all peers' statistics are
            cleared.
            The peer is identified by its LDP ID, which consists of
@@ -1263,7 +1282,7 @@ module ietf-mpls-ldp {
         "Interface or targeted adjacency.";
       case targeted {
         container targeted {
-          description 
+          description
             "Targeted adjacency through LDP extended discovery.";
           leaf target-address {
             type inet:ip-address;
@@ -1274,7 +1293,7 @@ module ietf-mpls-ldp {
       }
       case link {
         container link {
-          description 
+          description
             "Link adjacency through LDP basic discovery.";
           leaf next-hop-interface {
             type if:interface-ref;
