@@ -1,5 +1,7 @@
+
 module: ietf-mpls-mldp
-  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global/ldp:capability:
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp
+            /ldp:global/ldp:capability:
     +--rw mldp
        +--rw p2mp
        |  +--rw enable?   boolean
@@ -9,7 +11,9 @@ module: ietf-mpls-mldp
           +--rw enable?             boolean
           +--rw switchover-delay?   uint16
           +--rw timeout?            uint16
-  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:peers/ldp:peer/ldp:received-peer-state/ldp:capability:
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp
+            /ldp:peers/ldp:peer/ldp:received-peer-state
+            /ldp:capability:
     +--ro mldp
        +--ro p2mp
        |  +--ro enable?   boolean
@@ -17,7 +21,8 @@ module: ietf-mpls-mldp
        |  +--ro enable?   boolean
        +--ro make-before-break
           +--ro enable?   boolean
-  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp/ldp:global:
+  augment /rt:routing/rt:control-plane-protocols/ldp:mpls-ldp
+            /ldp:global:
     +--rw mldp
        +--rw enable?             boolean
        +--rw address-families
@@ -29,20 +34,25 @@ module: ietf-mpls-mldp
              |     +--ro reachability* [address interface]
              |     |  +--ro address      inet:ipv4-address
              |     |  +--ro interface    if:interface-ref
-             |     |  +--ro peer?        -> ../../../../../../../../ldp:peers/peer/lsr-id
+             |     |  +--ro peer?        leafref
              |     +--ro bindings
-             |        +--ro opaque-type-lspid
+             |        +--ro opaque-element-lspid
              |           +--ro fec-label* [lsp-id]
              |              +--ro lsp-id             uint32
              |              +--ro multipoint-type?   multipoint-type
-             |              +--ro peer* [direction peer advertisement-type]
-             |                 +--ro direction             ldp:downstream-upstream
-             |                 +--ro peer                  -> /rt:routing/control-plane-protocols/ldp:mpls-ldp/peers/peer/lsr-id
-             |                 +--ro advertisement-type    ldp:advertised-received
-             |                 +--ro label?                rt-types:mpls-label
-             |                 +--ro mbb-role?             enumeration
+             |              +--ro peer*
+             |                      [direction peer advertisement-type]
+             |                 +--ro direction
+             |                 |       ldp:downstream-upstream
+             |                 +--ro peer                  leafref
+             |                 +--ro advertisement-type
+             |                 |       ldp:advertised-received
+             |                 +--ro label?
+             |                 |       rt-types:mpls-label
+             |                 +--ro mbb-role?
+             |                         enumeration
              +--rw configured-leaf-lsps
-                +--rw opaque-type-lspid
+                +--rw opaque-element-lspid
                    +--rw fec-label* [root-address lsp-id]
                       +--rw root-address       inet:ipv4-address
                       +--rw lsp-id             uint32
@@ -50,10 +60,10 @@ module: ietf-mpls-mldp
 
   notifications:
     +---n mpls-mldp-fec-event
-       +--ro event-type?          ldp:oper-status-event-type
-       +--ro (opaque-type)?
-          +--:(opaque-type-lspid)
-             +--ro opaque-type-lspid
+       +--ro event-type?                   ldp:oper-status-event-type
+       +--ro (opaque-element)?
+          +--:(opaque-element-lspid)
+             +--ro opaque-element-lspid
                 +--ro root-address?      inet:ip-address
                 +--ro lsp-id?            uint32
                 +--ro multipoint-type?   multipoint-type
